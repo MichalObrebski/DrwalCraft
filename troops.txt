@@ -1,0 +1,72 @@
+synchro{
+    basic{
+        List<action>;
+    }
+    class troop action: action{
+        id;
+        go to position;
+        attack something;
+    }
+}
+
+class GameObject{
+    id;
+    hp;
+    maxHp;
+    size;
+    icon;
+}
+
+troops{
+    interface troop : GameObject{
+        speed;
+        actionSpeed;
+        goToPosition;
+        target;
+        MainAction(); // attackers will attack, builders will build
+    }
+
+    class virtual soldier : troop
+    {
+        damage;
+    }
+
+    class virtual cieć : troop
+    {
+        
+    }
+
+
+    knight;
+    archer;
+    artillery;
+    student;
+    builder;
+    tree miner;
+    miner;
+    super ultra tree miner;
+    mage;
+    sniper;
+    medic;
+    //dragon;
+}
+
+buildings{
+    class building : GameObject{
+        building status;
+    }
+
+    koshary;
+    castle;
+    wydział budownictwa;
+    artillery house;
+    agh;
+    mage creator;
+    smithery;
+}
+
+resources (and mines){
+    wood;
+    gold;
+    iron;
+}
