@@ -12,7 +12,7 @@ public abstract class GameObject{
 
 public class Tree: GameObject{
     public Tree(){
-        var uri = new Uri("C:/Users/mobre/OneDrive/Pulpit/rts-proj/rts-project/Assets/Icons/Tree.png", UriKind.Relative);
+        var uri = new Uri("../Assets/Icons/Tree.png", UriKind.Relative);
         var sourceImage = new BitmapImage(uri);
 
         FormatConvertedBitmap convertedBitmap = new FormatConvertedBitmap();
