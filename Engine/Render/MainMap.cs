@@ -7,45 +7,64 @@ namespace Engine.Render;
 
 public class MainMap{
     private WriteableBitmap _baseBitmap;
+    private int _offsetTop;
+    private int _offsetLeft;
+    private int _maxOffsetTop;
+    private int _maxOffsetLeft;
     public int Height {init; get;}
     public int Width {init; get; }
-    public int OffsetTop {set; get;}
-    public int OffsetLeft {set; get;}
+    public int OffsetTop {
+        get => _offsetTop;
+        set{
+            if(value < _maxOffsetTop)
+                _offsetTop = value > 0 ? value : 0;
+            else
+                _offsetTop = _maxOffsetTop;
+        }
+    }
+    public int OffsetLeft {
+        get => _offsetLeft;
+        set{
+            if(value < _maxOffsetLeft)
+                _offsetLeft = value > 0 ? value : 0;
+            else
+                _offsetLeft = _maxOffsetLeft;
+        }
+    }
 
-    // public WriteableBitmap SourceBitmap{set; get;}
-
-    public MainMap(int height, int width){
+    public MainMap(int height, int width, int chunkSize, int mapSize){
         Height = height;
         Width = width;
         OffsetTop = 0;
         OffsetLeft = 0;
+        _maxOffsetTop = mapSize - (height / chunkSize);
+        _maxOffsetLeft = mapSize - (width / chunkSize);
         _baseBitmap = new WriteableBitmap(width, height, 96, 96, PixelFormats.Bgra32, null);
         byte[] pixels = new byte[width * height * 4];
-        var tree = new Game.Tree();
-        // for(int i=0; i<1024; i++)
-        //     pixels[i] = tree.ObjectIcon[i];
         
         for(int i=0; i<width*height; i++)
         {
-            pixels[i*4 + 0] = 0x3A;    // B
-            pixels[i*4 + 1] = 0x7F;  // G
-            pixels[i*4 + 2] = 0x3A;    // R
+            pixels[i*4 + 0] = 0x3A; // B
+            pixels[i*4 + 1] = 0x7F; // G
+            pixels[i*4 + 2] = 0x3A; // R
             pixels[i*4 + 3] = 255;  // A
         }
 
         _baseBitmap.WritePixels(new Int32Rect(0,0,width,height), pixels, width*4, 0);
-        // SourceBitmap = _baseBitmap.Clone();
     }
 
     public WriteableBitmap RenderBitmap(Game.GameMap gameMap){
         var bitmap = _baseBitmap.Clone();
+        var ChunkSize = gameMap.ChunkSize;
+        var renderWidth = Width / ChunkSize;
+        var renderHeight = Height / ChunkSize;
 
-        for(int i=0; i<gameMap.Size; i++){
-            for(int j=0; j<gameMap.Size; j++){
-                var gameObject = gameMap.Map[i,j].GameObject;
+        for(int i=0; i<renderWidth; i++){
+            for(int j=0; j<renderHeight; j++){
+                var gameObject = gameMap.Map[i+OffsetLeft,j+OffsetTop].GameObject;
                 if(gameObject == null) continue;
-                var rect = new Int32Rect(i*gameMap.ChunkSize, j*gameMap.ChunkSize, gameMap.ChunkSize, gameMap.ChunkSize);
-                bitmap.WritePixels(rect, gameObject.ObjectIcon, gameMap.ChunkSize*4 ,0);
+                var rect = new Int32Rect(i*ChunkSize, j*ChunkSize, ChunkSize, ChunkSize);
+                bitmap.WritePixels(rect, gameObject.ObjectIcon, ChunkSize*4 ,0);
             }
         }
 

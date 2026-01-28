@@ -9,7 +9,7 @@
         WindowStyle="None"
         ResizeMode="NoResize"
         Title="DrwalCraft" Height="450" Width="800">
-    <Grid>
+    <Grid Background="#222">
         <!-- GŁÓWNY PODZIAŁ: MENU | MAPA -->
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="272"/>
@@ -64,11 +64,11 @@
             Grid.Column="1"
             Background="#3A7F3A"
             ClipToBounds="True">
-
             <Image x:Name="GameMapImage"
                 Stretch="Fill"
                 HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"/>
+                VerticalAlignment="Stretch"
+                MouseWheel="MainMapMouseWheel"/>
         </Grid>
 
 </Grid>

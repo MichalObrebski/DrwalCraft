@@ -15,6 +15,7 @@ class GameObject{
     maxHp;
     size;
     icon;
+    sightRange;
 }
 
 troops{
@@ -24,11 +25,14 @@ troops{
         goToPosition;
         target;
         MainAction(); // attackers will attack, builders will build
+        Move(); // invoked each tik;
+        moveProgress;
     }
 
     class virtual soldier : troop
     {
         damage;
+        attackRange;
     }
 
     class virtual cieć : troop
@@ -54,10 +58,12 @@ troops{
 buildings{
     class building : GameObject{
         building status;
+        critical hp;
     }
 
     koshary;
     castle;
+    tower;
     wydział budownictwa;
     artillery house;
     agh;
@@ -70,3 +76,12 @@ resources (and mines){
     gold;
     iron;
 }
+
+LOGIKA
+1. Co tik Klient ->(Ruch) Serwer -> Klienci [wysłany jedynie ruch]
+2. Co sekunda Klienci -> (weryfikacja zgodności) -> Serwer -> Ten sam klient [wysyłana cała mapa]
+
+PODZIAŁ PRACY
+Michał - Silnik skoncz
+Mateusz - Przesył danych serwer -> klient
+wspólna logika gry dla serwera i dla klienta: Każdy sobie rzepke skrobie
