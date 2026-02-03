@@ -53,15 +53,15 @@ public class MainMap{
         _baseBitmap.WritePixels(new Int32Rect(0,0,width,height), pixels, width*4, 0);
     }
 
-    public WriteableBitmap RenderBitmap(Game.GameMap gameMap){
+    async public Task<WriteableBitmap> RenderBitmap(){
         var bitmap = _baseBitmap.Clone();
-        var ChunkSize = gameMap.ChunkSize;
+        var ChunkSize = Game.GameMap.ChunkSize;
         var renderWidth = Width / ChunkSize;
         var renderHeight = Height / ChunkSize;
 
         for(int i=0; i<renderWidth; i++){
             for(int j=0; j<renderHeight; j++){
-                var gameObject = gameMap.Map[i+OffsetLeft,j+OffsetTop].GameObject;
+                var gameObject = Game.GameMap.Map[i+OffsetLeft,j+OffsetTop].GameObject;
                 if(gameObject == null) continue;
                 var rect = new Int32Rect(i*ChunkSize, j*ChunkSize, ChunkSize, ChunkSize);
                 bitmap.WritePixels(rect, gameObject.ObjectIcon, ChunkSize*4 ,0);

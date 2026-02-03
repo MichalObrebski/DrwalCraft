@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.Concurrent;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -9,6 +10,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Engine;
+using Engine.Game;
 
 namespace Engine;
 
@@ -16,36 +18,38 @@ namespace Engine;
 /// Interaction logic for MainWindow.xaml
 /// </summary>
 public partial class MainWindow : Window{
-    private Render.MainMap? mainMap;
-    private Game.GameMap? gameMap;
-    private Render.MiniMap miniMap;
+    public Render.MainMap? mainMap;
+    public Render.MiniMap? miniMap;
+    public Action<MouseButtonEventArgs, int, int> MainMapOnClick = (MouseButtonEventArgs e, int x, int y) => {};
+    public CancellationToken ct = new ();
     public MainWindow(){
         InitializeComponent();
     }
     protected override void OnContentRendered(EventArgs e){
         base.OnContentRendered(e);
         const int MapSize = 64;
+        Game.GameObjectId.Init(1);
 
-        gameMap = new Game.GameMap(MapSize);
+        Game.GameMap.Init(MapSize);
         var mapLock = new ReaderWriterLockSlim();
 
         int width = (int)GameMapGrid.ActualWidth;
-        width -= width % gameMap.ChunkSize;
+        width -= width % Game.GameMap.ChunkSize;
         GameMapGrid.Width = width;
         int height = (int)GameMapGrid.ActualHeight;
-        height -= height % gameMap.ChunkSize;
+        height -= height % Game.GameMap.ChunkSize;
         GameMapGrid.Height = height;
-        UnitNameText.Text = $"h: {height}, w: {width}";
-        mainMap = new Render.MainMap(height, width, gameMap.ChunkSize, MapSize);
+        // UnitNameText.Text = $"h: {height}, w: {width}";
+        mainMap = new Render.MainMap(height, width, Game.GameMap.ChunkSize, MapSize);
 
         width = (int)MiniMapImage.Width;
         height = (int)MiniMapImage.Height;
         miniMap = new Render.MiniMap(height, width);
 
-        Render.RenderLoop.StartRenderLoop(GameMapImage, MiniMapImage, mainMap, miniMap, gameMap, mapLock);
-        Game.GameLoop.StartGameLoop(gameMap, mapLock);
+        Render.RenderLoop.StartRenderLoop(GameMapImage, MiniMapImage, mainMap, miniMap, mapLock, ct);
+        Game.GameLoop.StartGameLoop(mapLock);
         
-        GameMapImage.MouseDown += MainMapOnClick;
+        GameMapImage.MouseDown += MainMapClick;
     }
     private void MainMapMouseWheel(object sender, MouseWheelEventArgs e){
         const int scrollSpeed = 120;
@@ -64,18 +68,20 @@ public partial class MainWindow : Window{
 
         e.Handled = true;
     }
-    protected void MainMapOnClick(object sender, MouseButtonEventArgs e){
+    protected void MainMapClick(object sender, MouseButtonEventArgs e){
         var position = Mouse.GetPosition(GameMapImage);
-        if(gameMap != null && mainMap != null){
-            int ChunkSize = gameMap.ChunkSize;
-            int x = (int)Math.Ceiling(position.X) / 32;
-            int y = (int)Math.Ceiling(position.Y) / 32;
+        if(mainMap != null){
+            int ChunkSize = Game.GameMap.ChunkSize;
+            int x = (int)Math.Ceiling(position.X) / ChunkSize;
+            int y = (int)Math.Ceiling(position.Y) / ChunkSize;
 
             x += mainMap.OffsetLeft;
             y += mainMap.OffsetTop;
 
-            gameMap.Map[x,y].GameObject = new Game.Tree();
+            MainMapOnClick(e, x, y);
         }
+        
+        Console.WriteLine("JebacKomunizm");
         e.Handled = true;
     }
 }

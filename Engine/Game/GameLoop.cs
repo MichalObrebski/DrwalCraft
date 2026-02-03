@@ -5,20 +5,21 @@ using System.Threading;
 namespace Engine.Game;
 
 public static class GameLoop{
-    public static void StartGameLoop(GameMap map, ReaderWriterLockSlim mapLock){
-        var gameThread = new Thread(()=>{Loop(map, mapLock);});
+    public static Action UpdateGameLogic = () => {};
+    public static void StartGameLoop(ReaderWriterLockSlim mapLock){
+        var gameThread = new Thread(()=>{Loop(mapLock);});
         gameThread.IsBackground = true;
         gameThread.Start();
     }
 
-    private static void Loop(GameMap map, ReaderWriterLockSlim mapLock){
+    private static void Loop(ReaderWriterLockSlim mapLock){
         const int TickRate = 12;
         const double TargetDt = 1000.0 / TickRate; 
         
         var timer = Stopwatch.StartNew();
         double accumulator = 0.0;
         long lastTime = 0;
-        var trees = map.Trees();
+        var trees = Game.GameMap.Trees();
         while (true){
             long currentTime = timer.ElapsedMilliseconds;
             double deltaTime = currentTime - lastTime;
@@ -29,8 +30,8 @@ public static class GameLoop{
             while (accumulator >= TargetDt){
                 mapLock.EnterWriteLock();
                 try{
-                    UpdateGameLogic(map, mapLock);
-                    trees.MoveNext();
+                    UpdateGameLogic();
+                    // trees.MoveNext();
                     accumulator -= TargetDt;
                 }
                 finally{
@@ -39,12 +40,9 @@ public static class GameLoop{
             }
 
             if (accumulator < TargetDt - 1){
-                Thread.Sleep(1);
+                Thread.Sleep((int)(TargetDt - accumulator));
             }
         }
     }
 
-    private static void UpdateGameLogic(GameMap map, ReaderWriterLockSlim mapLock){
-        // To wykona się średnio dokładnie 36 razy na sekundę
-    }
 }

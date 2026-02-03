@@ -29,9 +29,9 @@ public class MiniMap{
         _baseBitmap.WritePixels(new Int32Rect(0,0,width,height), pixels, width*4, 0);
     }
 
-    public WriteableBitmap RenderBitmap(Game.GameMap gameMap){
+    async public Task<WriteableBitmap> RenderBitmap(){
         var bitmap = _baseBitmap.Clone();
-        int ChunkSize = Height / gameMap.Size;
+        int ChunkSize = Height / Game.GameMap.Size;
 
         byte[] pixels = new byte[ChunkSize * ChunkSize * 4];
         for(int i=0; i<(ChunkSize * ChunkSize); i++)
@@ -41,10 +41,30 @@ public class MiniMap{
             pixels[i*4 + 2] = 0x00;    // R
             pixels[i*4 + 3] = 255;  // A
         }
+        // var ind = 0;
+        //     pixels[ind*4 + 0] = 0x3A;    // B
+        //     pixels[ind*4 + 1] = 0x7F;  // G
+        //     pixels[ind*4 + 2] = 0x3A;    // R
+        //     pixels[ind*4 + 3] = 255;  // A
+        // ind = ChunkSize - 1;
+        //     pixels[ind*4 + 0] = 0x3A;    // B
+        //     pixels[ind*4 + 1] = 0x7F;  // G
+        //     pixels[ind*4 + 2] = 0x3A;    // R
+        //     pixels[ind*4 + 3] = 255;  // A
+        // ind = ChunkSize * (ChunkSize - 1);
+        //     pixels[ind*4 + 0] = 0x3A;    // B
+        //     pixels[ind*4 + 1] = 0x7F;  // G
+        //     pixels[ind*4 + 2] = 0x3A;    // R
+        //     pixels[ind*4 + 3] = 255;  // A
+        // ind = ChunkSize * ChunkSize - 1;
+        //     pixels[ind*4 + 0] = 0x3A;    // B
+        //     pixels[ind*4 + 1] = 0x7F;  // G
+        //     pixels[ind*4 + 2] = 0x3A;    // R
+        //     pixels[ind*4 + 3] = 255;  // A
 
-        for(int i=0; i<gameMap.Size; i++){
-            for(int j=0; j<gameMap.Size; j++){
-                var gameObject = gameMap.Map[i,j].GameObject;
+        for(int i=0; i<Game.GameMap.Size; i++){
+            for(int j=0; j<Game.GameMap.Size; j++){
+                var gameObject = Game.GameMap.Map[i,j].GameObject;
                 if(gameObject == null) continue;
                 var rect = new Int32Rect(i*ChunkSize, j*ChunkSize, ChunkSize, ChunkSize);
                 bitmap.WritePixels(rect, pixels, ChunkSize*4 ,0);
