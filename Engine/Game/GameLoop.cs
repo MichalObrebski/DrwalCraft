@@ -14,7 +14,7 @@ public static class GameLoop{
 
     private static void Loop(ReaderWriterLockSlim mapLock){
         const int TickRate = 12;
-        const double TargetDt = 1000.0 / TickRate; 
+        const double TargetDt = 1000.0 / TickRate;
         
         var timer = Stopwatch.StartNew();
         double accumulator = 0.0;

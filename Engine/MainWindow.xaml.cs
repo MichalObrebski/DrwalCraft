@@ -80,8 +80,6 @@ public partial class MainWindow : Window{
 
             MainMapOnClick(e, x, y);
         }
-        
-        Console.WriteLine("JebacKomunizm");
         e.Handled = true;
     }
 }
