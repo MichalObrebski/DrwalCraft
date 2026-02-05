@@ -38,42 +38,153 @@ public static class GameMap{
             }
         }
     }
-    public static (int, int)? FindPath((int, int) position, (int, int) target, int range){
-        (int, int)? result = null;
-        int i = 0;
-        while(position != target){
-            if(i == range) break;
-            (int, int) nextField;
-            if(position.Item1 == target.Item1){
-                nextField = (position.Item2 < target.Item2) switch {
-                    true => (position.Item1, position.Item2 + 1),
-                    false => (position.Item1, position.Item2 - 1),
-                };
-            }
-            else if(position.Item2 == target.Item2){
-                nextField = (position.Item1 < target.Item1) switch {
-                    true => (position.Item1 + 1, position.Item2),
-                    false => (position.Item1 - 1, position.Item2),
-                };
-            }
-            else{
-                nextField = (position.Item1 < target.Item1, position.Item2 < target.Item2) switch {
-                    (true, true) => (position.Item1 + 1, position.Item2 + 1),
-                    (true, false) => (position.Item1 + 1, position.Item2 - 1),
-                    (false, true) => (position.Item1 - 1, position.Item2 + 1),
-                    (false, false) => (position.Item1 - 1, position.Item2 - 1)
-                };
-            }
-            if(result == null) result = nextField;
+    private enum FieldPosition{
+        XEqualYGreater,
+        XEqualYSmaller,
+        XGreaterYEqual,
+        XSmallerYEqual,
+        XGreaterYGreater,
+        XSmallerYGreater,
+        XGreaterYSmaller,
+        XSmallerYSmaller,
+    }
+    public static Stack<(int, int)> BFS((int, int) position, (int, int) target){
+        var visited = new bool[Size, Size];
+        var path = new (int, int)[Size, Size];
+        var queue = new Queue<((int, int), (int, int))>();
 
-            // Map[]
+        visited[position.Item1, position.Item2] = true;
+        for(int i=0; i<8; i++)
+            queue.Enqueue((NeigbourghingField(position, (FieldPosition)i), position));
 
-            i++;
+        while(queue.Count != 0){
+            var deq = queue.Dequeue();
+            var currnetField = deq.Item1;
+            var previousField = deq.Item2;
+
+
+            if(!IsValid(currnetField) || visited[currnetField.Item1, currnetField.Item2])
+                continue;
+            
+            visited[currnetField.Item1, currnetField.Item2] = true;
+            path[currnetField.Item1, currnetField.Item2] = previousField;
+
+            if(currnetField == target)
+                break;
+
+            if(Map[currnetField.Item1, currnetField.Item2].GameObject != null)
+                continue;
+
+            for(int i=0; i<8; i++)
+                queue.Enqueue((NeigbourghingField(currnetField, (FieldPosition)i), currnetField));
         }
-        return result;
+
+        var stack = new Stack<(int, int)>();
+
+        if(visited[target.Item1, target.Item2]){
+            if(Map[target.Item1, target.Item2].GameObject == null)
+                stack.Push(target);
+            
+            while(target != position){
+                target = path[target.Item1, target.Item2];
+                if(target != position)
+                    stack.Push(target);
+            }
+        }
+
+        return stack;
+    }
+    private static bool IsValid((int, int) field){
+        var x = field.Item1;
+        var y = field.Item2;
+        if(x < 0 || y < 0)
+            return false;
+        if(x >= Size || y >= Size)
+            return false;
+        return true;
+    }
+
+    public static Queue<(int, int)> CorrectPath((int, int) position, List<(int, int)> currentPath, int radius){
+        var visited = new bool[2*radius + 1, 2*radius + 1];
+        var path = new (int, int)[2*radius + 1, 2*radius + 1];
+        var queue = new Queue<((int, int), (int, int))>();
+
+        var blockPosition = (position.Item1 - radius, position.Item2 - radius);
+
+        visited[radius, radius] = true;
+        for(int i=0; i<8; i++)
+            queue.Enqueue((NeigbourghingField(position, (FieldPosition)i), position));
+
+        while(queue.Count != 0){
+            var deq = queue.Dequeue();
+            var currnetField = deq.Item1;
+            var previousField = deq.Item2;
+
+
+            if(currnetField.Item1 - blockPosition.Item1 < 0 || currnetField.Item2 - blockPosition.Item2 < 0)
+                continue;
+            if(currnetField.Item1 - blockPosition.Item1 > 2 * radius || currnetField.Item2 - blockPosition.Item2 > 2 * radius)
+                continue;
+            if(!IsValid(currnetField) || visited[currnetField.Item1 - blockPosition.Item1, currnetField.Item2 - blockPosition.Item2])
+                continue;
+            
+            visited[currnetField.Item1 - blockPosition.Item1, currnetField.Item2 - blockPosition.Item2] = true;
+            path[currnetField.Item1 - blockPosition.Item1, currnetField.Item2 - blockPosition.Item2] = previousField;
+
+            if(currentPath.Contains(currnetField))
+                break;
+
+            if(Map[currnetField.Item1, currnetField.Item2].GameObject != null)
+                continue;
+
+            for(int i=0; i<8; i++)
+                queue.Enqueue((NeigbourghingField(currnetField, (FieldPosition)i), currnetField));
+        }
+
+        var resultQueue = new Queue<(int, int)>();
+
+        (int, int) target = (-1, -1);
+        var tempStack = new Stack<(int, int)>();
+        foreach(var field in currentPath){
+            var relativeField = (field.Item1 - blockPosition.Item1, field.Item2 - blockPosition.Item2);
+            if(target != (-1, -1))
+                tempStack.Push(field);
+            else if(visited[relativeField.Item1, relativeField.Item2])
+                target = field;
+        }
+
+        foreach(var field in tempStack){
+            resultQueue.Enqueue(field);
+        }
+
+        if(target != (-1, -1)){
+            resultQueue.Enqueue(target);
+            
+            while(target != position){
+                target = path[target.Item1 - blockPosition.Item1, target.Item2 - blockPosition.Item2];
+                if(target != position)
+                    resultQueue.Enqueue(target);
+            }
+        }
+
+        return resultQueue;
+    }
+
+    private static (int, int) NeigbourghingField((int, int) field, FieldPosition direction){
+        return direction switch{
+            FieldPosition.XEqualYGreater => (field.Item1, field.Item2 + 1), 
+            FieldPosition.XEqualYSmaller => (field.Item1, field.Item2 - 1),
+            FieldPosition.XGreaterYEqual => (field.Item1 + 1, field.Item2),
+            FieldPosition.XSmallerYEqual => (field.Item1 - 1, field.Item2),
+            FieldPosition.XGreaterYGreater => (field.Item1 + 1, field.Item2 + 1),
+            FieldPosition.XGreaterYSmaller => (field.Item1 + 1, field.Item2 - 1),
+            FieldPosition.XSmallerYGreater => (field.Item1 - 1, field.Item2 + 1),
+            FieldPosition.XSmallerYSmaller => (field.Item1 - 1, field.Item2 - 1),
+            _ => (-1, -1)
+        };
     }
     public static IEnumerator<int> Trees(){
-        while(true){
+        // while(true){
         Map[11,12].GameObject = new Game.Tree();yield return 0;
         Map[11,13].GameObject =  new Game.Tree();yield return 0;
         Map[12,12].GameObject =  new Game.Tree();yield return 0;
@@ -111,15 +222,15 @@ public static class GameMap{
         Map[13,5].GameObject  =  new Game.Tree();yield return 0;
         Map[16,5].GameObject  =  new Game.Tree();yield return 0;
 
-        for(int i=0;i<24;i++)
-            yield return 0;
+        // for(int i=0;i<24;i++)
+        //     yield return 0;
 
-        for(int i=0; i<Size; i++){
-            for(int j=0; j<Size; j++){
-                Map[i,j].GameObject = null;
-            }
-        }
-        yield return 0;
+        // for(int i=0; i<Size; i++){
+        //     for(int j=0; j<Size; j++){
+        //         Map[i,j].GameObject = null;
+        //     }
+        // }
+        // yield return 0;
+    // }
     }
-}
 }

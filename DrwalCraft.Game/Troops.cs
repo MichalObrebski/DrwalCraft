@@ -16,40 +16,33 @@ public abstract class Troop : GameObject, ITroop{
     protected int range;
     protected int _speed;
     protected int _actionSpeed;
-    protected (int, int)? TravelTarget{get; set;}
-    protected int position;
-    protected GameObject? AttackTarget{get;set;}
+    protected (int, int)? _travelTarget;
     protected int _moveProgress;
+    protected Stack<(int, int)> _travelPath = new ();
+    public (int, int)? TravelTarget{
+        get{
+            return _travelTarget;
+        }
+        set{
+            _travelTarget = value;
+            if(value == null) return;
+            
+            _travelPath = Engine.Game.GameMap.BFS(Position, value.Value);
+        }
+    }
+    public Troop(Uri IconUri) : base(IconUri){}
+    public GameObject? AttackTarget{get;set;}
     public abstract void MainAction();
     public abstract void Move();
 }
 
 public class Soldier: Troop{
-    public Soldier(){
-        _speed = 12;
+    public Soldier() : base(new Uri("../Assets/Icons/Tree.png", UriKind.Relative)){
+        _speed = 6;
         _actionSpeed = 1;
         TravelTarget = null;
         AttackTarget = null;
         _moveProgress = 0;
-        var uri = new Uri("../Assets/Icons/Tree.png", UriKind.Relative);
-        var sourceImage = new BitmapImage(uri);
-
-        FormatConvertedBitmap convertedBitmap = new FormatConvertedBitmap();
-        convertedBitmap.BeginInit();
-        convertedBitmap.Source = sourceImage;
-        convertedBitmap.DestinationFormat = PixelFormats.Pbgra32;
-        convertedBitmap.EndInit();
-
-        int width = convertedBitmap.PixelWidth;
-        int height = convertedBitmap.PixelHeight;
-        int bytesPerPixel = (convertedBitmap.Format.BitsPerPixel + 7) / 8; // Dla Pbgra32 to 4
-        int stride = width * bytesPerPixel; // Długość jednego wiersza w bajtach
-
-        // // 4. Przygotowanie tablicy bajtów
-        this.ObjectIcon = new byte[height * stride];
-
-        // // 5. Kopiowanie pikseli z Tree.png do tablicy
-        convertedBitmap.CopyPixels(ObjectIcon, stride, 0);
     }
     public override void MainAction()
     {
@@ -57,9 +50,42 @@ public class Soldier: Troop{
         
     }
     public override void Move(){
+        if(TravelTarget == null || TravelTarget == Position) return;
+        if(_travelPath.Count == 0) return;
+
         if(_moveProgress == 0){
-            (int, int) nextPosition = Engine.Game.GameMap.FindPath(this.Position, (16,16), 8) ?? (-1, -1);
+            (int, int) nextPosition = _travelPath.Pop();
+            if(nextPosition == Position) return;
             GameObject? self = Engine.Game.GameMap.Map[this.Position.Item1, this.Position.Item2].GameObject;
+            
+            if(Engine.Game.GameMap.Map[nextPosition.Item1, nextPosition.Item2].GameObject != null){
+                List<(int, int)> currentPath = new ();
+                int maxRadius;
+                if(Engine.Game.GameMap.Map[nextPosition.Item1, nextPosition.Item2].GameObject is Troop)
+                    maxRadius = 2;
+                else
+                    maxRadius = 4;
+
+                int radius = 0;
+                for(; radius < maxRadius - 1 && _travelPath.Count != 0; radius++)
+                    currentPath.Add(_travelPath.Pop());
+                var correctedPath = Engine.Game.GameMap.CorrectPath(Position, currentPath, radius+1);
+
+                if(correctedPath.Count == 0){
+                    currentPath.Reverse();
+                    foreach(var field in currentPath)
+                        _travelPath.Push(field);
+                    _moveProgress = _speed;
+                    _travelPath.Push(nextPosition);
+                    return;
+                }
+                else{
+                    foreach(var field in correctedPath)
+                        _travelPath.Push(field);
+                    nextPosition = _travelPath.Pop();
+                }
+            }
+
             if(nextPosition != (-1, -1)){
                 Engine.Game.GameMap.Map[this.Position.Item1, this.Position.Item2].GameObject = null;
                 Engine.Game.GameMap.Map[nextPosition.Item1, nextPosition.Item2].GameObject = self;
@@ -67,6 +93,7 @@ public class Soldier: Troop{
                 _moveProgress = _speed;
             }
         }
+
         else{
             _moveProgress --;
         }

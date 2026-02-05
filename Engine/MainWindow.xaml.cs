@@ -21,6 +21,7 @@ public partial class MainWindow : Window{
     public Render.MainMap? mainMap;
     public Render.MiniMap? miniMap;
     public Action<MouseButtonEventArgs, int, int> MainMapOnClick = (MouseButtonEventArgs e, int x, int y) => {};
+    public Action ContentRenderd = () => {};
     public CancellationToken ct = new ();
     public MainWindow(){
         InitializeComponent();
@@ -48,6 +49,7 @@ public partial class MainWindow : Window{
 
         Render.RenderLoop.StartRenderLoop(GameMapImage, MiniMapImage, mainMap, miniMap, mapLock, ct);
         Game.GameLoop.StartGameLoop(mapLock);
+        ContentRenderd();
         
         GameMapImage.MouseDown += MainMapClick;
     }
@@ -77,6 +79,8 @@ public partial class MainWindow : Window{
 
             x += mainMap.OffsetLeft;
             y += mainMap.OffsetTop;
+            x = x >= GameMap.Size? GameMap.Size - 1 : x;
+            y = y >= GameMap.Size? GameMap.Size - 1 : y;
 
             MainMapOnClick(e, x, y);
         }
