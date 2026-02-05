@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -52,7 +53,13 @@ public abstract class GameObject : IGameObject{
 
 public class Tree: GameObject{
     public Tree() : base(){
-        var uri = new Uri("../Assets/Icons/Tree.png", UriKind.Relative);
+        //var uri = new Uri("../Assets/Icons/Tree.png", UriKind.Relative);
+        var fullPath = Path.Combine(
+            AppContext.BaseDirectory,
+            "Assets",
+            "Icons",
+            "Tree.png");
+        var uri = new Uri(fullPath);
         var sourceImage = new BitmapImage(uri);
 
         FormatConvertedBitmap convertedBitmap = new FormatConvertedBitmap();

@@ -31,7 +31,13 @@ public class Soldier: Troop{
         TravelTarget = null;
         AttackTarget = null;
         _moveProgress = 0;
-        var uri = new Uri("../Assets/Icons/Tree.png", UriKind.Relative);
+        var fullPath = Path.Combine(
+            AppContext.BaseDirectory,
+            "Assets",
+            "Icons",
+            "Tree.png");
+        var uri = new Uri(fullPath);
+        //var uri = new Uri("../Assets/Icons/Tree.png", UriKind.Relative);
         var sourceImage = new BitmapImage(uri);
 
         FormatConvertedBitmap convertedBitmap = new FormatConvertedBitmap();
