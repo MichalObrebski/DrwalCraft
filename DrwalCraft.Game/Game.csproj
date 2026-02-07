@@ -10,6 +10,7 @@
     
     <ItemGroup>
         <ProjectReference Include="..\Engine\Engine.csproj" />
+        <ProjectReference Include="..\DrwalCraft.Core\DrwalCraft.Core.csproj" />
     </ItemGroup>
 
 </Project>

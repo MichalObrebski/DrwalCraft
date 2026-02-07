@@ -10,7 +10,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Engine;
-using Engine.Game;
+using Engine.Render.GameUIDataContext;
 
 namespace Engine;
 
@@ -20,7 +20,7 @@ namespace Engine;
 public partial class MainWindow : Window{
     public Render.MainMap? mainMap;
     public Render.MiniMap? miniMap;
-    public Action<MouseButtonEventArgs, int, int> MainMapOnClick = (MouseButtonEventArgs e, int x, int y) => {};
+    public Action<MouseButtonEventArgs, int, int, GameUIDataContext?> MainMapOnClick = (MouseButtonEventArgs e, int x, int y, GameUIDataContext? dc) => {};
     public Action ContentRenderd = () => {};
     public CancellationToken ct = new ();
     public MainWindow(){
@@ -29,26 +29,26 @@ public partial class MainWindow : Window{
     protected override void OnContentRendered(EventArgs e){
         base.OnContentRendered(e);
         const int MapSize = 64;
-        Game.GameObjectId.Init(1);
+        DrwalCraft.Core.GameObjectId.Init(1);
 
-        Game.GameMap.Init(MapSize);
+        DrwalCraft.Core.GameMap.Init(MapSize);
         var mapLock = new ReaderWriterLockSlim();
 
         int width = (int)GameMapGrid.ActualWidth;
-        width -= width % Game.GameMap.ChunkSize;
+        width -= width % DrwalCraft.Core.GameMap.ChunkSize;
         GameMapGrid.Width = width;
         int height = (int)GameMapGrid.ActualHeight;
-        height -= height % Game.GameMap.ChunkSize;
+        height -= height % DrwalCraft.Core.GameMap.ChunkSize;
         GameMapGrid.Height = height;
         // UnitNameText.Text = $"h: {height}, w: {width}";
-        mainMap = new Render.MainMap(height, width, Game.GameMap.ChunkSize, MapSize);
+        mainMap = new Render.MainMap(height, width, DrwalCraft.Core.GameMap.ChunkSize, MapSize);
 
         width = (int)MiniMapImage.Width;
         height = (int)MiniMapImage.Height;
         miniMap = new Render.MiniMap(height, width);
 
         Render.RenderLoop.StartRenderLoop(GameMapImage, MiniMapImage, mainMap, miniMap, mapLock, ct);
-        Game.GameLoop.StartGameLoop(mapLock);
+        GameLoop.GameLoop.StartGameLoop(mapLock);
         ContentRenderd();
         
         GameMapImage.MouseDown += MainMapClick;
@@ -72,17 +72,18 @@ public partial class MainWindow : Window{
     }
     protected void MainMapClick(object sender, MouseButtonEventArgs e){
         var position = Mouse.GetPosition(GameMapImage);
+        var dataContext = this.DataContext as GameUIDataContext;
         if(mainMap != null){
-            int ChunkSize = Game.GameMap.ChunkSize;
+            int ChunkSize = DrwalCraft.Core.GameMap.ChunkSize;
             int x = (int)Math.Ceiling(position.X) / ChunkSize;
             int y = (int)Math.Ceiling(position.Y) / ChunkSize;
 
             x += mainMap.OffsetLeft;
             y += mainMap.OffsetTop;
-            x = x >= GameMap.Size? GameMap.Size - 1 : x;
-            y = y >= GameMap.Size? GameMap.Size - 1 : y;
+            x = x >= DrwalCraft.Core.GameMap.Size? DrwalCraft.Core.GameMap.Size - 1 : x;
+            y = y >= DrwalCraft.Core.GameMap.Size? DrwalCraft.Core.GameMap.Size - 1 : y;
 
-            MainMapOnClick(e, x, y);
+            MainMapOnClick(e, x, y, dataContext);
         }
         e.Handled = true;
     }

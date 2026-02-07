@@ -1,17 +1,17 @@
 using System.Windows.Input;
 using Engine;
-using Engine.Game;
 using DrwalCraft.Game;
 using Microsoft.VisualBasic;
 using System.Windows.Media;
-using DrwalCraft.Game.Troops;
+using DrwalCraft.Core;
+using Engine.Render.GameUIDataContext;
 
 namespace DrwalCraft.Game;
 public class Program{
-    public static Troops.Soldier? soldier;
-    public static Soldier? soldier1;
-    public static Soldier? soldier2;
-    public static Soldier? soldier3;
+    public static DrwalCraft.Core.Troops.Soldier? soldier;
+    public static DrwalCraft.Core.Troops.Soldier? soldier1;
+    public static DrwalCraft.Core.Troops.Soldier? soldier2;
+    public static DrwalCraft.Core.Troops.Soldier? soldier3;
     [STAThread]
     public static void Main(){
         var DrwalCraftApp = new Engine.App();
@@ -21,18 +21,19 @@ public class Program{
         DrwalCraftApp.Run(DrwalCraftWindow);
     }
     public static void ContentRenderd(){
-        Engine.Game.GameLoop.UpdateGameLogic = GameLoopLogic;
-        soldier1 = new Troops.Soldier();
+        Engine.GameLoop.GameLoop.UpdateGameLogic = GameLoopLogic;
+        soldier1 = new DrwalCraft.Core.Troops.Soldier();
         soldier1.Position = (16,16);
-        Engine.Game.GameMap.Map[16,16].GameObject = soldier1;
-        soldier2 = new Troops.Soldier();
+        DrwalCraft.Core.GameMap.Map[16,16].GameObject = soldier1;
+        soldier2 = new DrwalCraft.Core.Troops.Soldier();
         soldier2.Position = (8,16);
-        Engine.Game.GameMap.Map[8,16].GameObject = soldier2;
-        soldier3 = new Troops.Soldier();
+        DrwalCraft.Core.GameMap.Map[8,16].GameObject = soldier2;
+        soldier3 = new DrwalCraft.Core.Troops.Soldier();
         soldier3.Position = (8,8);
         soldier3.TravelTarget = (20,10);
-        Engine.Game.GameMap.Map[8,8].GameObject = soldier3;
-        Engine.Game.GameMap.Map[2,2].GameObject = new Engine.Game.Tree();
+        DrwalCraft.Core.GameMap.Map[8,8].GameObject = soldier3;
+        DrwalCraft.Core.GameMap.Map[2,2].GameObject = new DrwalCraft.Core.Tree();
+        DrwalCraft.Core.GameMap.AddObjectToMap(24, 8, new DrwalCraft.Core.Buildings.Building());
     }
     public static void GameLoopLogic(){
         if(soldier1 != null)
@@ -42,12 +43,16 @@ public class Program{
         if(soldier3 != null)
             soldier3.Move();
     }
-    public static void MainMapOnClick(MouseButtonEventArgs e, int x, int y){
+    public static void MainMapOnClick(MouseButtonEventArgs e, int x, int y, GameUIDataContext? dataContext){
         if(e.LeftButton == MouseButtonState.Pressed){
-            var field = Engine.Game.GameMap.Map[x,y].GameObject;
-            if(field is Soldier s){
+            var field = DrwalCraft.Core.GameMap.Map[x,y].GameObject;
+            if(field is null) return;
+            
+            if(field is DrwalCraft.Core.Troops.Soldier s){
                 soldier = s;
             }
+            if(dataContext != null)
+                dataContext.ActiveUnit = field;
         }
         else if(e.RightButton == MouseButtonState.Pressed){
             if(soldier!=null)soldier.TravelTarget = (x,y);

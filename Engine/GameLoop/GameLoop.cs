@@ -1,8 +1,7 @@
 using System.Diagnostics;
-using System.DirectoryServices;
-using System.Threading;
+using DrwalCraft.Core;
 
-namespace Engine.Game;
+namespace Engine.GameLoop;
 
 public static class GameLoop{
     public static Action UpdateGameLogic = () => {};
@@ -19,7 +18,7 @@ public static class GameLoop{
         var timer = Stopwatch.StartNew();
         double accumulator = 0.0;
         long lastTime = 0;
-        var trees = Game.GameMap.Trees();
+        var trees = DrwalCraft.Core.GameMap.Trees();
         while (true){
             long currentTime = timer.ElapsedMilliseconds;
             double deltaTime = currentTime - lastTime;

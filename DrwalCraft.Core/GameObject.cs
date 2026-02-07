@@ -1,9 +1,7 @@
-using System.Diagnostics;
-using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace Engine.Game;
+namespace DrwalCraft.Core;
 
 public static class GameObjectId{
     private static int _player;
@@ -44,8 +42,13 @@ public abstract class GameObject : IGameObject{
     public int Id {init; get;}
     public byte[]? ObjectIcon {set; get;}
     public (int, int) Position {set; get;}
+    public int Size {set; get;}
+    public int Hp{set; get;}
+    public int MaxHp{set; get;}
+    public string Name{init; get;}
     public GameObject(Uri? IconUri = null){
         Id = GameObjectId.GetNewId();
+        Size = 1;
 
         if(IconUri is not null){
             var sourceImage = new BitmapImage(IconUri);
@@ -70,9 +73,8 @@ public abstract class GameObject : IGameObject{
     }
 }
 
-
 public class Tree: GameObject{
     public Tree() : base(new Uri("../Assets/Icons/Tree.png", UriKind.Relative)){
-        
+        Name = "Tree";
     }
 }

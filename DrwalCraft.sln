@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DrwalCraft.Game", "DrwalCra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game", "DrwalCraft.Game\Game.csproj", "{57EE392E-E4BD-4C0F-AF31-3F675FF0A37D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrwalCraft.Core", "DrwalCraft.Core\DrwalCraft.Core.csproj", "{067938F5-65D2-47F2-85A3-3AA0F6242272}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,18 @@ Global
 		{57EE392E-E4BD-4C0F-AF31-3F675FF0A37D}.Release|x64.Build.0 = Release|Any CPU
 		{57EE392E-E4BD-4C0F-AF31-3F675FF0A37D}.Release|x86.ActiveCfg = Release|Any CPU
 		{57EE392E-E4BD-4C0F-AF31-3F675FF0A37D}.Release|x86.Build.0 = Release|Any CPU
+		{067938F5-65D2-47F2-85A3-3AA0F6242272}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{067938F5-65D2-47F2-85A3-3AA0F6242272}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{067938F5-65D2-47F2-85A3-3AA0F6242272}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{067938F5-65D2-47F2-85A3-3AA0F6242272}.Debug|x64.Build.0 = Debug|Any CPU
+		{067938F5-65D2-47F2-85A3-3AA0F6242272}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{067938F5-65D2-47F2-85A3-3AA0F6242272}.Debug|x86.Build.0 = Debug|Any CPU
+		{067938F5-65D2-47F2-85A3-3AA0F6242272}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{067938F5-65D2-47F2-85A3-3AA0F6242272}.Release|Any CPU.Build.0 = Release|Any CPU
+		{067938F5-65D2-47F2-85A3-3AA0F6242272}.Release|x64.ActiveCfg = Release|Any CPU
+		{067938F5-65D2-47F2-85A3-3AA0F6242272}.Release|x64.Build.0 = Release|Any CPU
+		{067938F5-65D2-47F2-85A3-3AA0F6242272}.Release|x86.ActiveCfg = Release|Any CPU
+		{067938F5-65D2-47F2-85A3-3AA0F6242272}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

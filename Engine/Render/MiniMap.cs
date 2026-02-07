@@ -31,7 +31,7 @@ public class MiniMap{
 
     async public Task<WriteableBitmap> RenderBitmap(){
         var bitmap = _baseBitmap.Clone();
-        int ChunkSize = Height / Game.GameMap.Size;
+        int ChunkSize = Height / DrwalCraft.Core.GameMap.Size;
 
         byte[] pixels = new byte[ChunkSize * ChunkSize * 4];
         for(int i=0; i<(ChunkSize * ChunkSize); i++)
@@ -62,9 +62,9 @@ public class MiniMap{
         //     pixels[ind*4 + 2] = 0x3A;    // R
         //     pixels[ind*4 + 3] = 255;  // A
 
-        for(int i=0; i<Game.GameMap.Size; i++){
-            for(int j=0; j<Game.GameMap.Size; j++){
-                var gameObject = Game.GameMap.Map[i,j].GameObject;
+        for(int i=0; i<DrwalCraft.Core.GameMap.Size; i++){
+            for(int j=0; j<DrwalCraft.Core.GameMap.Size; j++){
+                var gameObject = DrwalCraft.Core.GameMap.Map[i,j].GameObject;
                 if(gameObject == null) continue;
                 var rect = new Int32Rect(i*ChunkSize, j*ChunkSize, ChunkSize, ChunkSize);
                 bitmap.WritePixels(rect, pixels, ChunkSize*4 ,0);

@@ -55,16 +55,17 @@ public class MainMap{
 
     async public Task<WriteableBitmap> RenderBitmap(){
         var bitmap = _baseBitmap.Clone();
-        var ChunkSize = Game.GameMap.ChunkSize;
+        var ChunkSize = DrwalCraft.Core.GameMap.ChunkSize;
         var renderWidth = Width / ChunkSize;
         var renderHeight = Height / ChunkSize;
 
         for(int i=0; i<renderWidth; i++){
             for(int j=0; j<renderHeight; j++){
-                var gameObject = Game.GameMap.Map[i+OffsetLeft,j+OffsetTop].GameObject;
-                if(gameObject == null) continue;
-                var rect = new Int32Rect(i*ChunkSize, j*ChunkSize, ChunkSize, ChunkSize);
-                bitmap.WritePixels(rect, gameObject.ObjectIcon, ChunkSize*4 ,0);
+                var mapField = DrwalCraft.Core.GameMap.Map[i+OffsetLeft,j+OffsetTop];
+                var gameObject = mapField.GameObject;
+                if(gameObject == null || !mapField.IsMainObjectPosition) continue;
+                var rect = new Int32Rect(i*ChunkSize, j*ChunkSize, ChunkSize * gameObject.Size, ChunkSize * gameObject.Size);
+                bitmap.WritePixels(rect, gameObject.ObjectIcon, ChunkSize * gameObject.Size * 4 ,0);
             }
         }
 
