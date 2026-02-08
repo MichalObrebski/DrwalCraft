@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text.Json;
 using System.Threading.Channels;
+using Messages;
 
 namespace DrwalCraft.Server;
 
@@ -12,7 +13,6 @@ public static class Program
     private static ConcurrentQueue<TcpClient> _serverQueue = new ConcurrentQueue<TcpClient>();
     private static Dictionary<TcpClient, Channel<Message>> _clientsQueues =  new Dictionary<TcpClient, Channel<Message>>();
     private static List<TcpClient>_clients = new List<TcpClient>(); 
-    private record Message(string From, string Text);
     
     public static async Task Main()
     {

@@ -16,7 +16,7 @@ public class Client
     private readonly SemaphoreSlim InSemaphore;
 
     public Client(PriorityQueue<Message, int> inQueue, PriorityQueue<string, int> outQueue, Lock inQueueLock,
-        Lock outQueueLock, SemaphoreSlim outSemaphore, SemaphoreSlim inSemaphore)
+        Lock outQueueLock, SemaphoreSlim inSemaphore, SemaphoreSlim outSemaphore)
     {
         InQueue = inQueue;
         OutQueue = outQueue;
@@ -47,17 +47,14 @@ public class Client
         {
             var line = await reader.ReadLineAsync();
             if (line is null) break;
-            if (CheckMessage(line) == "JSON")
+            Message? msg = JsonSerializer.Deserialize<Message>(line); 
+            if (msg == null) break; 
+            lock (InQueueLock) 
             { 
-                Message? msg = JsonSerializer.Deserialize<Message>(line);
-                if (msg == null) break;
-                lock (InQueueLock)
-                {
-                    InQueue.Enqueue(msg, i);
-                    InSemaphore.Release();
-                }
-                i++;
-            }
+                InQueue.Enqueue(msg, i); 
+                InSemaphore.Release();
+            } 
+            i++;
         }
     }
 
@@ -79,9 +76,10 @@ public class Client
 
     public async Task GameLoop(TcpClient client)
     {
-        Task dequeue = GameLoopDequeue(client);
         Task enqueue = GameLoopEnqueue(client); //tutaj są kładzione akcje gracze zarówno na InQueue - akcje do wykonania
         //przez gracza jak i na OutQueue - akcje do wykonania przez innych graczy i serwer
+        Task dequeue = GameLoopDequeue(client);
+        
         await Task.WhenAll(dequeue, enqueue);
     }
     

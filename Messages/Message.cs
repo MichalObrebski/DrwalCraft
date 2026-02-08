@@ -1,4 +1,6 @@
-﻿namespace Messages;
+﻿using System.Text.Json.Serialization;
+
+namespace Messages;
 
 public enum ActionType
 {
@@ -13,12 +15,17 @@ public enum UnitType
 
 public class Message
 {
-    public string From = "default";
-    public string Text = "default";
-    ActionType actionType;
-    UnitType unitType;
-    private int id;
-    private (int,int) position;
+    public string From { get; set; } = "default";
+    public string Text { get; set; }= "default";
+    public ActionType ActionType { get; set; }
+    public UnitType UnitType { get; set; }
+    public int Id { get; set; }
+    public (int,int) Position { get; set; }
+
+    public Message()
+    {
+        
+    }
 
     public Message(string from, string text)
     {
@@ -27,9 +34,9 @@ public class Message
     }
     public Message(ActionType actionType, UnitType unitType, int id, (int,int) position)
     {
-        this.actionType = actionType;
-        this.unitType = unitType;
-        this.id = id;
-        this.position = position;
+        this.ActionType = actionType;
+        this.UnitType = unitType;
+        this.Id = id;
+        this.Position = position;
     }
 }

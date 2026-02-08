@@ -3,13 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Engine", "Engine\Engine.csproj", "{F7969D6F-32C6-4B9D-85A4-48183F63054C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Engine", "DrwalCraft.Engine\DrwalCraft.Engine.csproj", "{F7969D6F-32C6-4B9D-85A4-48183F63054C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DrwalCraft.Game", "DrwalCraft.Game", "{9C9D97B6-59ED-BA27-A9A8-0747E3E6A239}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Game", "DrwalCraft.Game\Game.csproj", "{57EE392E-E4BD-4C0F-AF31-3F675FF0A37D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrwalCraft.Game", "DrwalCraft.Game\DrwalCraft.Game.csproj", "{57EE392E-E4BD-4C0F-AF31-3F675FF0A37D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrwalCraft.Core", "DrwalCraft.Core\DrwalCraft.Core.csproj", "{067938F5-65D2-47F2-85A3-3AA0F6242272}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrwalCraft.Client", "DrwalCraft.Client\DrwalCraft.Client.csproj", "{067938F5-65D2-47F2-85A3-3AA0F6242272}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrwalCraft.Server", "DrwalCraft.Server\DrwalCraft.Server.csproj", "{067938F5-65D2-47F2-85A3-3AA0F6242272}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messages", "Messages\Messages.csproj", "{067938F5-65D2-47F2-85A3-3AA0F6242272}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
