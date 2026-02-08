@@ -1,5 +1,4 @@
 using System.Windows.Input;
-using Engine;
 using DrwalCraft.Game;
 using Microsoft.VisualBasic;
 using System.Windows.Media;
@@ -81,8 +80,11 @@ public class Program{
                 }
             }
         }
+        if(dataContext is null) return;
+
         if(army.Troops.Count > 1)
-            if(dataContext is not null)
-                dataContext.ActiveUnit = army;
+            dataContext.ActiveUnit = army;
+        else if(army.Troops.Count == 1 && army.Troops[0] != dataContext.ActiveUnit)
+            dataContext.ActiveUnit = army.Troops[0];
     }
 }

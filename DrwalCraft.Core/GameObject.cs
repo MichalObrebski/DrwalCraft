@@ -1,3 +1,4 @@
+using System.IO;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -60,7 +61,7 @@ public abstract class GameObject : IGameObject{
     public int MaxHp{set; get;}
     public string Name{init; get;}
     public virtual bool IsActive{set; get;}
-    public GameObject(Uri? IconUri = null, int? playerId = null, int? objectId = null, int size = 1){
+    public GameObject(string? Icon = null, int? playerId = null, int? objectId = null, int size = 1){
         if(playerId is null)
             PlayerId = GameObjectId.PlayerId;
         else
@@ -72,8 +73,14 @@ public abstract class GameObject : IGameObject{
         Size = size;
         IsDead = false;
 
-        if(IconUri is not null){
-            var sourceImage = new BitmapImage(IconUri);
+        if(Icon is not null){
+            var fullPath = Path.Combine(
+                AppContext.BaseDirectory,
+                "Assets",
+                "Icons",
+                Icon);
+            var uri = new Uri(fullPath);
+            var sourceImage = new BitmapImage(uri);
 
             FormatConvertedBitmap convertedBitmap = new FormatConvertedBitmap();
             convertedBitmap.BeginInit();
@@ -109,10 +116,16 @@ public abstract class GameObject : IGameObject{
                 // if(ObjectIcon[i] == 0 && dist <= height*height/4){
                     if(ObjectIcon[i] == 0 && ((ObjectIcon[i-4] > j && (i-4) / stride == i / stride) || (ObjectIcon[i+4] > j && (i+4) / stride == i / stride))){
                         ObjectIcon[i] = j;
-                        if(PlayerId == GameObjectId.PlayerId)
+                        if(PlayerId == GameObjectId.PlayerId){
+                            ObjectIcon[i-1] = 0x00;
+                            ObjectIcon[i-2] = 0x00;
                             ObjectIcon[i-3] = 0xFF;
-                        else
+                        }
+                        else{
                             ObjectIcon[i-1] = 0xFF;
+                            ObjectIcon[i-2] = 0x00;
+                            ObjectIcon[i-3] = 0x00;
+                        }
                     }
                 }
             }
@@ -121,7 +134,7 @@ public abstract class GameObject : IGameObject{
 }
 
 public class Tree: GameObject{
-    public Tree() : base(new Uri("../Assets/Icons/Tree.png", UriKind.Relative)){
+    public Tree() : base("Tree.png"){
         Name = "Tree";
     }
 }

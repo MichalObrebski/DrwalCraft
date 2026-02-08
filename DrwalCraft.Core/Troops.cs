@@ -30,7 +30,7 @@ public abstract class Troop : GameObject, ITroop{
             _travelPath = GameMap.BFS(Position, value.Value);
         }
     }
-    public Troop(Uri IconUri, int? playerId = null, int? objectId = null) : base(IconUri, playerId, objectId){}
+    public Troop(string Icon, int? playerId = null, int? objectId = null) : base(Icon, playerId, objectId){}
     public abstract void MainAction();
     public virtual void Move(){
         if(TravelTarget == null || TravelTarget == Position) return;
@@ -102,7 +102,7 @@ public class Soldier: Troop{
             }
         }
     }
-    public Soldier(int? playerId = null, int? objectId = null) : base(new Uri("../Assets/Icons/Knight.png", UriKind.Relative), playerId, objectId){
+    public Soldier(int? playerId = null, int? objectId = null) : base("Knight.png", playerId, objectId){
         _speed = 6;
         MaxHp = 50;
         Hp = 50;

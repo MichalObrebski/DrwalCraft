@@ -7,7 +7,7 @@ public interface IBuilding : IGameObject{
 }
 
 public class Building : GameObject, IBuilding{
-    public Building() : base(new Uri("../Assets/Icons/Castle.png", UriKind.Relative), size:4){
+    public Building() : base("Castle.png", size:4){
         Name = "Castle";
     }
 }
