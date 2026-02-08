@@ -17,13 +17,13 @@ public class Game{
     public static DrwalCraft.Core.Troops.Soldier? soldier3;
     
     private readonly PriorityQueue<Message, int> InQueue;
-    private readonly PriorityQueue<string, int> OutQueue;
+    private readonly PriorityQueue<Message, int> OutQueue;
     private readonly Lock InQueueLock;
     private readonly Lock OutQueueLock;
     private readonly SemaphoreSlim OutSemaphore;
     private readonly SemaphoreSlim InSemaphore;
     
-    public Game(PriorityQueue<Message, int> inQueue, PriorityQueue<string, int> outQueue, Lock inQueueLock,
+    public Game(PriorityQueue<Message, int> inQueue, PriorityQueue<Message, int> outQueue, Lock inQueueLock,
         Lock outQueueLock, SemaphoreSlim outSemaphore, SemaphoreSlim inSemaphore)
     {
         InQueue = inQueue;
