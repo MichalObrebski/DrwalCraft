@@ -1,9 +1,9 @@
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Engine;
+using DrwalCraft.Engine;
 
-namespace Engine.Render;
+namespace DrwalCraft.Engine.Render;
 
 public class MainMap{
     private WriteableBitmap _baseBitmap;

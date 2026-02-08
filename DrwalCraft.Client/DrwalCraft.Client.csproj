@@ -7,4 +7,13 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\DrwalCraft.Game\DrwalCraft.Game.csproj" />
+        <ProjectReference Include="..\DrwalCraft.Engine\DrwalCraft.Engine.csproj" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <ProjectReference Include="..\Messages\Messages.csproj" />
+    </ItemGroup>
+
 </Project>

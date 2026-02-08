@@ -13,6 +13,10 @@
         <ProjectReference Include="..\DrwalCraft.Core\DrwalCraft.Core.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\Messages\Messages.csproj" />
+    </ItemGroup>
+
   <ItemGroup>
     <Content Include ="..\Assets\**\*.*">
       <Link>Assets\%(RecursiveDir)%(Filename)%(Extension)</Link>

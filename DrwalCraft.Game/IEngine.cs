@@ -1,29 +1,50 @@
+using System.Runtime.InteropServices.ObjectiveC;
 using System.Windows.Input;
 using DrwalCraft.Game;
+using Messages;
 using Microsoft.VisualBasic;
 using System.Windows.Media;
 using DrwalCraft.Core;
-using Engine.Render.GameUIDataContext;
+using DrwalCraft.Engine.Render.GameUIDataContext;
 using DrwalCraft.Core.Troops;
 using DrwalCraft.Core.Army;
 
 namespace DrwalCraft.Game;
-public class Program{
+public class Game{
     public static DrwalCraft.Core.Troops.Soldier? soldier;
     public static DrwalCraft.Core.Troops.Soldier? soldier1;
     public static DrwalCraft.Core.Troops.Soldier? soldier2;
     public static DrwalCraft.Core.Troops.Soldier? soldier3;
+    
+    private readonly PriorityQueue<Message, int> InQueue;
+    private readonly PriorityQueue<string, int> OutQueue;
+    private readonly Lock InQueueLock;
+    private readonly Lock OutQueueLock;
+    private readonly SemaphoreSlim OutSemaphore;
+    private readonly SemaphoreSlim InSemaphore;
+    
+    public Game(PriorityQueue<Message, int> inQueue, PriorityQueue<string, int> outQueue, Lock inQueueLock,
+        Lock outQueueLock, SemaphoreSlim outSemaphore, SemaphoreSlim inSemaphore)
+    {
+        InQueue = inQueue;
+        OutQueue = outQueue;
+        InQueueLock = inQueueLock;
+        OutQueueLock = outQueueLock;
+        OutSemaphore =  outSemaphore;
+        InSemaphore =  inSemaphore;
+    }
+
     [STAThread]
     public static void Main(){
-        var DrwalCraftApp = new Engine.App();
-        var DrwalCraftWindow = new Engine.MainWindow();
+        var DrwalCraftApp = new DrwalCraft.Engine.App();
+        var DrwalCraftWindow = new DrwalCraft.Engine.MainWindow();
         DrwalCraftWindow.MainMapOnClick = MainMapOnClick;
         DrwalCraftWindow.ContentRenderd = ContentRenderd;
         DrwalCraftWindow.MainMapSelection = MainMapSelection;
         DrwalCraftApp.Run(DrwalCraftWindow);
     }
     public static void ContentRenderd(){
-        Engine.GameLoop.GameLoop.UpdateGameLogic = GameLoopLogic;
+        DrwalCraft.Engine.GameLoop.GameLoop.UpdateGameLogic = GameLoopLogic;
         soldier1 = new DrwalCraft.Core.Troops.Soldier();
         soldier1.Position = (16,16);
         DrwalCraft.Core.GameMap.Map[16,16].GameObject = soldier1;
@@ -45,8 +66,11 @@ public class Program{
             soldier2.MainAction();
         if(soldier3 != null)
             soldier3.MainAction();
+        //zdejmuj polecenia z kolejki i je wykonuj
     }
+
     public static void MainMapOnClick(MouseButtonEventArgs e, int x, int y, GameUIDataContext? dataContext){
+        //dodaj polecenie do kolejki o nowym zolnierzu
         if(e.LeftButton == MouseButtonState.Pressed){
             var field = DrwalCraft.Core.GameMap.Map[x,y].GameObject;
             if(field is null) return;

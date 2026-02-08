@@ -3,7 +3,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using DrwalCraft.Core;
 
-namespace Engine.Render;
+namespace DrwalCraft.Engine.Render;
 
 public class MiniMap{
     private WriteableBitmap _baseBitmap;

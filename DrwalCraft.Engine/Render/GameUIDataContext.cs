@@ -1,8 +1,8 @@
 using System.ComponentModel;
 using DrwalCraft.Core.Army;
-using Engine;
+using DrwalCraft.Engine;
 
-namespace Engine.Render.GameUIDataContext;
+namespace DrwalCraft.Engine.Render.GameUIDataContext;
 
 public class GameUIDataContext : INotifyPropertyChanged{
     private DrwalCraft.Core.GameObject? _activeUnit;

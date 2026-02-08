@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using DrwalCraft.Core;
 
-namespace Engine.GameLoop;
+namespace DrwalCraft.Engine.GameLoop;
 
 public static class GameLoop{
     public static Action UpdateGameLogic = () => {};

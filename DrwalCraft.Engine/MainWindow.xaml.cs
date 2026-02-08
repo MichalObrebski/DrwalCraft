@@ -9,10 +9,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Engine;
-using Engine.Render.GameUIDataContext;
+using DrwalCraft.Engine;
+using DrwalCraft.Engine.Render.GameUIDataContext;
 
-namespace Engine;
+namespace DrwalCraft.Engine;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml
@@ -51,7 +51,7 @@ public partial class MainWindow : Window{
         miniMap = new Render.MiniMap(height, width);
 
         Render.RenderLoop.StartRenderLoop(GameMapImage, MiniMapImage, mainMap, miniMap, mapLock, ct);
-        GameLoop.GameLoop.StartGameLoop(mapLock);
+        DrwalCraft.Engine.GameLoop.GameLoop.StartGameLoop(mapLock);
         ContentRenderd();
         
         GameMapImage.MouseDown += MainMapClick;

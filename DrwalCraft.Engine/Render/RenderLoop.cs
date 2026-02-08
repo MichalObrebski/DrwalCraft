@@ -5,9 +5,9 @@ using System.Threading;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Engine;
+using DrwalCraft.Engine;
 
-namespace Engine.Render;
+namespace DrwalCraft.Engine.Render;
 
 public static class RenderLoop{
     public static async Task StartRenderLoop(
