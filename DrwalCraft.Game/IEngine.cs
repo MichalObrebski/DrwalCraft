@@ -1,12 +1,33 @@
+using System.Runtime.InteropServices.ObjectiveC;
 using System.Windows.Input;
 using Engine;
 using Engine.Game;
 using DrwalCraft.Game;
+using Messages;
 using Microsoft.VisualBasic;
 using System.Windows.Media;
 
 namespace DrwalCraft.Game;
-public class Program{
+public class Game{
+    
+    private readonly PriorityQueue<Message, int> InQueue;
+    private readonly PriorityQueue<string, int> OutQueue;
+    private readonly Lock InQueueLock;
+    private readonly Lock OutQueueLock;
+    private readonly SemaphoreSlim OutSemaphore;
+    private readonly SemaphoreSlim InSemaphore;
+    
+    public Game(PriorityQueue<Message, int> inQueue, PriorityQueue<string, int> outQueue, Lock inQueueLock,
+        Lock outQueueLock, SemaphoreSlim outSemaphore, SemaphoreSlim inSemaphore)
+    {
+        InQueue = inQueue;
+        OutQueue = outQueue;
+        InQueueLock = inQueueLock;
+        OutQueueLock = outQueueLock;
+        OutSemaphore =  outSemaphore;
+        InSemaphore =  inSemaphore;
+    }
+    
     public static Troops.Soldier? soldier;
     [STAThread]
     public static void Main(){
@@ -16,10 +37,12 @@ public class Program{
         DrwalCraftApp.Run(DrwalCraftWindow);
     }
     public static void GameLoopLogic(){
+        //zdejmuj polecenia z kolejki i je wykonuj
         if(soldier != null)
             soldier.Move();
     }
     public static void MainMapOnClick(MouseButtonEventArgs e, int x, int y){
+        //dodaj polecenie do kolejki o nowym zolnierzu
         Engine.Game.GameLoop.UpdateGameLogic = GameLoopLogic;
         if(e.LeftButton == MouseButtonState.Pressed){
             soldier = new DrwalCraft.Game.Troops.Soldier();
