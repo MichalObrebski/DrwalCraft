@@ -15,6 +15,12 @@ public static class GameMap{
             GameObject = gameObject;
             IsMainObjectPosition = true;
         }
+        public void SetDefault(){
+            Player = 0;
+            GameObject = null;
+            Type = 0;
+            IsMainObjectPosition = true;
+        }
     }
 
     public static ObjectId[,] Map{set; get;}

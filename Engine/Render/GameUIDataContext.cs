@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using DrwalCraft.Core.Army;
 using Engine;
 
 namespace Engine.Render.GameUIDataContext;
@@ -9,8 +10,15 @@ public class GameUIDataContext : INotifyPropertyChanged{
     public DrwalCraft.Core.GameObject? ActiveUnit{
         get => _activeUnit;
         set{
+            if(_activeUnit is not null)
+                _activeUnit.IsActive = false;
+            
             if (_activeUnit == value) return;
             _activeUnit = value;
+
+            if(_activeUnit is not null)
+                _activeUnit.IsActive = true;
+
             OnPropertyChanged();
         }
     }

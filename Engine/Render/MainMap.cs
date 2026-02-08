@@ -11,6 +11,7 @@ public class MainMap{
     private int _offsetLeft;
     private int _maxOffsetTop;
     private int _maxOffsetLeft;
+    private GameUIDataContext.GameUIDataContext _dataContext;
     public int Height {init; get;}
     public int Width {init; get; }
     public int OffsetTop {
@@ -32,7 +33,8 @@ public class MainMap{
         }
     }
 
-    public MainMap(int height, int width, int chunkSize, int mapSize){
+    public MainMap(int height, int width, int chunkSize, int mapSize, GameUIDataContext.GameUIDataContext dataContext){
+        _dataContext = dataContext;
         Height = height;
         Width = width;
         OffsetTop = 0;
@@ -42,8 +44,7 @@ public class MainMap{
         _baseBitmap = new WriteableBitmap(width, height, 96, 96, PixelFormats.Bgra32, null);
         byte[] pixels = new byte[width * height * 4];
         
-        for(int i=0; i<width*height; i++)
-        {
+        for(int i=0; i<width*height; i++){
             pixels[i*4 + 0] = 0x3A; // B
             pixels[i*4 + 1] = 0x7F; // G
             pixels[i*4 + 2] = 0x3A; // R
@@ -55,20 +56,55 @@ public class MainMap{
 
     async public Task<WriteableBitmap> RenderBitmap(){
         var bitmap = _baseBitmap.Clone();
-        var ChunkSize = DrwalCraft.Core.GameMap.ChunkSize;
-        var renderWidth = Width / ChunkSize;
-        var renderHeight = Height / ChunkSize;
+        var chunkSize = DrwalCraft.Core.GameMap.ChunkSize;
+        var renderWidth = Width / chunkSize;
+        var renderHeight = Height / chunkSize;
 
         for(int i=0; i<renderWidth; i++){
             for(int j=0; j<renderHeight; j++){
                 var mapField = DrwalCraft.Core.GameMap.Map[i+OffsetLeft,j+OffsetTop];
                 var gameObject = mapField.GameObject;
                 if(gameObject == null || !mapField.IsMainObjectPosition) continue;
-                var rect = new Int32Rect(i*ChunkSize, j*ChunkSize, ChunkSize * gameObject.Size, ChunkSize * gameObject.Size);
-                bitmap.WritePixels(rect, gameObject.ObjectIcon, ChunkSize * gameObject.Size * 4 ,0);
+                var objectSize = chunkSize * gameObject.Size;
+
+                if(gameObject.IsActive){
+                    var objectIcon = (byte[])gameObject.ObjectIcon.Clone();
+                    Highlight(objectIcon, objectSize);
+
+                    var rect = new Int32Rect(i*chunkSize, j*chunkSize, objectSize, objectSize);
+                    bitmap.WritePixels(rect, objectIcon, objectSize * 4 ,0);
+                }
+                else{
+                    var rect = new Int32Rect(i*chunkSize, j*chunkSize, objectSize, objectSize);
+                    bitmap.WritePixels(rect, gameObject.ObjectIcon, objectSize * 4 ,0);
+                }
             }
         }
 
         return bitmap;
+    }
+    private void Highlight(byte[] objectIcon, int objectSize){
+        for(int k=0; k<objectSize; k++){
+            objectIcon[k*4 + 0] = 0x00; // B
+            objectIcon[k*4 + 1] = 0xFF; // G
+            objectIcon[k*4 + 2] = 0x00; // R
+            objectIcon[k*4 + 3] = 0xFF; // A
+        }
+        for(int k=objectSize; k<objectSize*objectSize; k+=objectSize){
+            objectIcon[k*4 + 0] = 0x00; // B
+            objectIcon[k*4 + 1] = 0xFF; // G
+            objectIcon[k*4 + 2] = 0x00; // R
+            objectIcon[k*4 + 3] = 0xFF; // A
+            objectIcon[(k-1)*4 + 0] = 0x00; // B
+            objectIcon[(k-1)*4 + 1] = 0xFF; // G
+            objectIcon[(k-1)*4 + 2] = 0x00; // R
+            objectIcon[(k-1)*4 + 3] = 0xFF; // A
+        }
+        for(int k=objectSize*(objectSize-1); k<objectSize*objectSize; k++){
+            objectIcon[k*4 + 0] = 0x00; // B
+            objectIcon[k*4 + 1] = 0xFF; // G
+            objectIcon[k*4 + 2] = 0x00; // R
+            objectIcon[k*4 + 3] = 0xFF; // A
+        }
     }
 }

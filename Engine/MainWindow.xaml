@@ -6,6 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:troops="clr-namespace:DrwalCraft.Core.Troops;assembly=DrwalCraft.Core"
         xmlns:buildings="clr-namespace:DrwalCraft.Core.Buildings;assembly=DrwalCraft.Core"
+        xmlns:army="clr-namespace:DrwalCraft.Core.Army;assembly=DrwalCraft.Core"
         xmlns:core="clr-namespace:DrwalCraft.Core;assembly=DrwalCraft.Core"
         mc:Ignorable="d"
         WindowState="Maximized"
@@ -17,21 +18,33 @@
         <DataTemplate x:Key="GameObjectTemplate">
             <StackPanel>                
                 <TextBlock FontSize="32"
-                Foreground="White">
-                <TextBlock.Text>
-                    <Binding Path="Name" />
-                </TextBlock.Text>  
+                    Foreground="White">
+                    <TextBlock.Text>
+                        <Binding Path="Name" />
+                    </TextBlock.Text>  
                 </TextBlock>
                 <TextBlock FontSize="24"
-                Foreground="White">
-                <TextBlock.Text>
-                    <MultiBinding StringFormat="Hp: {0} / {1}">
-                        <Binding Path="Hp" />
-                        <Binding Path="MaxHp" />
-                    </MultiBinding>
-                </TextBlock.Text>
-            </TextBlock>
+                    Foreground="White">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="Hp: {0} / {1}">
+                            <Binding Path="Hp" />
+                            <Binding Path="MaxHp" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
             </StackPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="TroopInArmy">
+                <TextBlock FontSize="16"
+                    Foreground="White">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat=" {0}: {1} / {2}">
+                            <Binding Path="Name"/>
+                            <Binding Path="Hp" />
+                            <Binding Path="MaxHp" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
         </DataTemplate>
         <DataTemplate DataType="{x:Type troops:Troop}">
             <StackPanel>
@@ -41,6 +54,14 @@
         <DataTemplate DataType="{x:Type buildings:Building}">
             <StackPanel>
                 <ContentControl Content="{Binding}" ContentTemplate="{StaticResource GameObjectTemplate}" />
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type army:Army}">
+            <StackPanel>
+                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource GameObjectTemplate}" />
+                <ItemsControl Background="#222"
+                    ItemsSource="{Binding Troops}"
+                    ItemTemplate="{StaticResource TroopInArmy}" />
             </StackPanel>
         </DataTemplate>
         <DataTemplate DataType="{x:Type core:Tree}">
@@ -107,6 +128,15 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 MouseWheel="MainMapMouseWheel"/>
+            <Canvas>
+                <Rectangle
+                    x:Name="MainMapSelectionBox"
+                    Visibility="Collapsed"
+                    Stroke="#00FF00"
+                    Fill="#1000FF00"
+                    StrokeThickness="1"
+                    />
+            </Canvas>
         </Grid>
 
 </Grid>

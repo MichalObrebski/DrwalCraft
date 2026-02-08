@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -11,11 +12,12 @@ public interface ITroop : IGameObject{
 }
 
 public abstract class Troop : GameObject, ITroop{
-    protected int range;
+    protected int _range;
     protected int _speed;
     protected int _actionSpeed;
     protected (int, int)? _travelTarget;
     protected int _moveProgress;
+    protected int _actionProgress;
     protected Stack<(int, int)> _travelPath = new ();
     public (int, int)? TravelTarget{
         get{
@@ -28,27 +30,9 @@ public abstract class Troop : GameObject, ITroop{
             _travelPath = GameMap.BFS(Position, value.Value);
         }
     }
-    public Troop(Uri IconUri) : base(IconUri){}
-    public GameObject? AttackTarget{get;set;}
+    public Troop(Uri IconUri, int? playerId = null, int? objectId = null) : base(IconUri, playerId, objectId){}
     public abstract void MainAction();
-    public abstract void Move();
-}
-
-public class Soldier: Troop{
-    public Soldier() : base(new Uri("../Assets/Icons/Knight.png", UriKind.Relative)){
-        _speed = 6;
-        _actionSpeed = 1;
-        TravelTarget = null;
-        AttackTarget = null;
-        _moveProgress = 0;
-        Name = "Soldier";
-    }
-    public override void MainAction()
-    {
-        //jesli odleglosc od Targetu < range - w jednej lini bez przeszkód
-        
-    }
-    public override void Move(){
+    public virtual void Move(){
         if(TravelTarget == null || TravelTarget == Position) return;
         if(_travelPath.Count == 0) return;
 
@@ -95,6 +79,72 @@ public class Soldier: Troop{
 
         else{
             _moveProgress --;
+        }
+    }
+}
+
+public class Soldier: Troop{
+    private int _damage;
+    public GameObject? AttackTarget{get;set;}
+    public (int, int) Target{
+        set{
+            var gameObject = GameMap.Map[value.Item1, value.Item2].GameObject;
+            if(gameObject is null){
+                TravelTarget = value;
+                AttackTarget = null;
+            }
+            else if(gameObject.PlayerId != GameObjectId.PlayerId && gameObject.PlayerId != 0){
+                AttackTarget = gameObject;
+            }
+            else{
+                TravelTarget = value;
+                AttackTarget = null;
+            }
+        }
+    }
+    public Soldier(int? playerId = null, int? objectId = null) : base(new Uri("../Assets/Icons/Knight.png", UriKind.Relative), playerId, objectId){
+        _speed = 6;
+        MaxHp = 50;
+        Hp = 50;
+        _actionSpeed = 6;
+        TravelTarget = null;
+        AttackTarget = null;
+        _moveProgress = 0;
+        _range = 1;
+        _damage = 16;
+        Name = "Soldier";
+    }
+    public override void MainAction(){
+        if(AttackTarget is null){
+            Move();
+        }
+        else{
+            int distX = Math.Abs(AttackTarget.Position.Item1 - Position.Item1);
+            int distY = Math.Abs(AttackTarget.Position.Item2 - Position.Item2);
+            if(Math.Max(distX, distY) <= _range){
+                Attack();
+            }
+            else{
+                if(TravelTarget != AttackTarget.Position)
+                    TravelTarget = AttackTarget.Position;
+                Move();
+            }
+        }
+    }
+    
+    public void Attack(){
+        if(AttackTarget is null) return;
+        if(AttackTarget.IsDead){
+            AttackTarget = null;
+            return;
+        }
+
+        if(_actionProgress == 0){
+            AttackTarget.Hp -= _damage;
+            _actionProgress = _actionSpeed;
+        }
+        else{
+            _actionProgress--;
         }
     }
 }

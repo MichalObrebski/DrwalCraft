@@ -5,6 +5,8 @@ using Microsoft.VisualBasic;
 using System.Windows.Media;
 using DrwalCraft.Core;
 using Engine.Render.GameUIDataContext;
+using DrwalCraft.Core.Troops;
+using DrwalCraft.Core.Army;
 
 namespace DrwalCraft.Game;
 public class Program{
@@ -18,6 +20,7 @@ public class Program{
         var DrwalCraftWindow = new Engine.MainWindow();
         DrwalCraftWindow.MainMapOnClick = MainMapOnClick;
         DrwalCraftWindow.ContentRenderd = ContentRenderd;
+        DrwalCraftWindow.MainMapSelection = MainMapSelection;
         DrwalCraftApp.Run(DrwalCraftWindow);
     }
     public static void ContentRenderd(){
@@ -34,31 +37,52 @@ public class Program{
         DrwalCraft.Core.GameMap.Map[8,8].GameObject = soldier3;
         DrwalCraft.Core.GameMap.Map[2,2].GameObject = new DrwalCraft.Core.Tree();
         DrwalCraft.Core.GameMap.AddObjectToMap(24, 8, new DrwalCraft.Core.Buildings.Building());
+        DrwalCraft.Core.GameMap.AddObjectToMap(12, 8, new Soldier(5, 10));
     }
     public static void GameLoopLogic(){
         if(soldier1 != null)
-            soldier1.Move();
+            soldier1.MainAction();
         if(soldier2 != null)
-            soldier2.Move();
+            soldier2.MainAction();
         if(soldier3 != null)
-            soldier3.Move();
+            soldier3.MainAction();
     }
     public static void MainMapOnClick(MouseButtonEventArgs e, int x, int y, GameUIDataContext? dataContext){
         if(e.LeftButton == MouseButtonState.Pressed){
             var field = DrwalCraft.Core.GameMap.Map[x,y].GameObject;
             if(field is null) return;
-            
-            if(field is DrwalCraft.Core.Troops.Soldier s){
-                soldier = s;
-            }
+
             if(dataContext != null)
                 dataContext.ActiveUnit = field;
         }
         else if(e.RightButton == MouseButtonState.Pressed){
-            if(soldier!=null)soldier.TravelTarget = (x,y);
+            if(dataContext == null || dataContext.ActiveUnit == null) return;
+            
+            var activeUnit = dataContext.ActiveUnit;
+            if(activeUnit is Army army)
+                foreach(var troop in army.Troops){
+                    if(troop is Soldier soldier)
+                        soldier.Target = (x, y);
+                }
+            else if(activeUnit is Soldier soldier)
+                soldier.Target = (x, y);
         }
         else{
 
         }
+    }
+    public static void MainMapSelection(MouseButtonEventArgs e, (int, int) start, (int, int) end, GameUIDataContext? dataContext){
+        var army = new DrwalCraft.Core.Army.Army();
+        for(int i = start.Item1; i <= end.Item1; i++){
+            for(int j = start.Item2; j <= end.Item2; j++){
+                var gameObject = GameMap.Map[i, j].GameObject;
+                if(gameObject is Troop troop && troop.PlayerId == GameObjectId.PlayerId){
+                    army.AddTroop(troop);
+                }
+            }
+        }
+        if(army.Troops.Count > 1)
+            if(dataContext is not null)
+                dataContext.ActiveUnit = army;
     }
 }

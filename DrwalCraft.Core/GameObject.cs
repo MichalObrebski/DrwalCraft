@@ -6,6 +6,7 @@ namespace DrwalCraft.Core;
 public static class GameObjectId{
     private static int _player;
     private static int _objectCount;
+    public static int PlayerId {get => _player;}
     private static bool IsPrime(int n){
         if(n <= 2) return false;
         if(n % 2 == 0) return false;
@@ -39,16 +40,37 @@ public interface IGameObject{
     public (int, int) Position {get;}
 }
 public abstract class GameObject : IGameObject{
+    protected int _hp;
     public int Id {init; get;}
+    public int PlayerId {init; get;}
     public byte[]? ObjectIcon {set; get;}
     public (int, int) Position {set; get;}
     public int Size {set; get;}
-    public int Hp{set; get;}
+    public int Hp{
+        get => _hp;
+        set{
+            _hp = value;
+            if(_hp <= 0){
+                GameMap.Map[Position.Item1, Position.Item2].SetDefault();
+                IsDead = true;
+            }
+        }
+    }
+    public bool IsDead;
     public int MaxHp{set; get;}
     public string Name{init; get;}
-    public GameObject(Uri? IconUri = null){
-        Id = GameObjectId.GetNewId();
-        Size = 1;
+    public virtual bool IsActive{set; get;}
+    public GameObject(Uri? IconUri = null, int? playerId = null, int? objectId = null, int size = 1){
+        if(playerId is null)
+            PlayerId = GameObjectId.PlayerId;
+        else
+            PlayerId = playerId.Value;
+        if(PlayerId == GameObjectId.PlayerId)
+            Id = GameObjectId.GetNewId();
+        else
+            Id = objectId ?? 1;
+        Size = size;
+        IsDead = false;
 
         if(IconUri is not null){
             var sourceImage = new BitmapImage(IconUri);
@@ -69,6 +91,31 @@ public abstract class GameObject : IGameObject{
 
             // // 5. Kopiowanie pikseli z Tree.png do tablicy
             convertedBitmap.CopyPixels(ObjectIcon, stride, 0);
+            if(this is Tree) return;
+
+            int center = height*stride/2 + stride/2;
+            int centerX = center % stride;
+            int centerY = center / stride;
+            for(int i=3; i<height*stride;i+=4)
+                if(ObjectIcon[i]<0xFF && ObjectIcon[i] > 0)
+                    ObjectIcon[i] = 0xFF;
+            for(byte j=(byte)(0x50+Size); j>=0x50; j--){
+                for(int i=7; i<height*stride-4;i+=4){
+                // int pointX = i % stride;
+                // int pointY = i / stride;
+                // int distX = centerX - pointX;
+                // int distY = centerY - pointY;
+                // int dist = distX*distX/16 + distY*distY;
+                // if(ObjectIcon[i] == 0 && dist <= height*height/4){
+                    if(ObjectIcon[i] == 0 && ((ObjectIcon[i-4] > j && (i-4) / stride == i / stride) || (ObjectIcon[i+4] > j && (i+4) / stride == i / stride))){
+                        ObjectIcon[i] = j;
+                        if(PlayerId == GameObjectId.PlayerId)
+                            ObjectIcon[i-3] = 0xFF;
+                        else
+                            ObjectIcon[i-1] = 0xFF;
+                    }
+                }
+            }
         }
     }
 }
