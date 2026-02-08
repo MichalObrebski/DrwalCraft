@@ -45,19 +45,20 @@ public class Game{
     }
     public static void ContentRenderd(){
         DrwalCraft.Engine.GameLoop.GameLoop.UpdateGameLogic = GameLoopLogic;
-        soldier1 = new DrwalCraft.Core.Troops.Soldier();
+        soldier1 = new DrwalCraft.Core.Troops.Knight();
         soldier1.Position = (16,16);
         DrwalCraft.Core.GameMap.Map[16,16].GameObject = soldier1;
-        soldier2 = new DrwalCraft.Core.Troops.Soldier();
-        soldier2.Position = (8,16);
-        DrwalCraft.Core.GameMap.Map[8,16].GameObject = soldier2;
-        soldier3 = new DrwalCraft.Core.Troops.Soldier();
+
+        soldier2 = new Knight(5, 10);
+        DrwalCraft.Core.GameMap.AddObjectToMap(12, 8, soldier2);
+        soldier2.TravelTarget = (20,30);
+
+        soldier3 = new DrwalCraft.Core.Troops.Knight();
         soldier3.Position = (8,8);
-        soldier3.TravelTarget = (20,10);
+        // soldier3.TravelTarget = (20,10);
         DrwalCraft.Core.GameMap.Map[8,8].GameObject = soldier3;
-        DrwalCraft.Core.GameMap.Map[2,2].GameObject = new DrwalCraft.Core.Tree();
-        DrwalCraft.Core.GameMap.AddObjectToMap(24, 8, new DrwalCraft.Core.Buildings.Building());
-        DrwalCraft.Core.GameMap.AddObjectToMap(12, 8, new Soldier(5, 10));
+        DrwalCraft.Core.GameMap.AddObjectToMap(2, 2,  new DrwalCraft.Core.Tree());
+        DrwalCraft.Core.GameMap.AddObjectToMap(24, 48, new DrwalCraft.Core.Buildings.Building());
     }
     public static void GameLoopLogic(){
         if(soldier1 != null)

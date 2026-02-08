@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using DrwalCraft.Core;
 using DrwalCraft.Engine;
 
 namespace DrwalCraft.Engine.Render;
@@ -64,47 +65,56 @@ public class MainMap{
             for(int j=0; j<renderHeight; j++){
                 var mapField = DrwalCraft.Core.GameMap.Map[i+OffsetLeft,j+OffsetTop];
                 var gameObject = mapField.GameObject;
-                if(gameObject == null || !mapField.IsMainObjectPosition) continue;
-                var objectSize = chunkSize * gameObject.Size;
+                if(gameObject == null) continue;
+                var objectSize = chunkSize;// * gameObject.Size;
+                var objectIconPart = gameObject.GetIconPart(i+OffsetLeft, j+OffsetTop);
+                if(objectIconPart is null) continue;
 
                 if(gameObject.IsActive){
-                    var objectIcon = (byte[])gameObject.ObjectIcon.Clone();
-                    Highlight(objectIcon, objectSize);
+                    var objectIcon = (byte[])objectIconPart.Clone();
+                    Highlight(gameObject, objectIcon, objectSize, i+OffsetLeft, j+OffsetTop);
 
                     var rect = new Int32Rect(i*chunkSize, j*chunkSize, objectSize, objectSize);
                     bitmap.WritePixels(rect, objectIcon, objectSize * 4 ,0);
                 }
                 else{
                     var rect = new Int32Rect(i*chunkSize, j*chunkSize, objectSize, objectSize);
-                    bitmap.WritePixels(rect, gameObject.ObjectIcon, objectSize * 4 ,0);
+                    bitmap.WritePixels(rect, objectIconPart, objectSize * 4 ,0);
                 }
             }
         }
 
         return bitmap;
     }
-    private void Highlight(byte[] objectIcon, int objectSize){
-        for(int k=0; k<objectSize; k++){
-            objectIcon[k*4 + 0] = 0x00; // B
-            objectIcon[k*4 + 1] = 0xFF; // G
-            objectIcon[k*4 + 2] = 0x00; // R
-            objectIcon[k*4 + 3] = 0xFF; // A
-        }
-        for(int k=objectSize; k<objectSize*objectSize; k+=objectSize){
-            objectIcon[k*4 + 0] = 0x00; // B
-            objectIcon[k*4 + 1] = 0xFF; // G
-            objectIcon[k*4 + 2] = 0x00; // R
-            objectIcon[k*4 + 3] = 0xFF; // A
-            objectIcon[(k-1)*4 + 0] = 0x00; // B
-            objectIcon[(k-1)*4 + 1] = 0xFF; // G
-            objectIcon[(k-1)*4 + 2] = 0x00; // R
-            objectIcon[(k-1)*4 + 3] = 0xFF; // A
-        }
-        for(int k=objectSize*(objectSize-1); k<objectSize*objectSize; k++){
-            objectIcon[k*4 + 0] = 0x00; // B
-            objectIcon[k*4 + 1] = 0xFF; // G
-            objectIcon[k*4 + 2] = 0x00; // R
-            objectIcon[k*4 + 3] = 0xFF; // A
-        }
+    private void Highlight(GameObject gameObject, byte[] objectIcon, int objectSize, int positionX, int positionY){
+        if(gameObject.Position.Item2 == positionY)
+            for(int k=0; k<objectSize; k++){
+                objectIcon[k*4 + 0] = 0x00; // B
+                objectIcon[k*4 + 1] = 0xFF; // G
+                objectIcon[k*4 + 2] = 0x00; // R
+                objectIcon[k*4 + 3] = 0xFF; // A
+            }
+        
+        if(gameObject.Position.Item1 == positionX)
+            for(int k=0; k<objectSize*objectSize; k+=objectSize){
+                objectIcon[k*4 + 0] = 0x00; // B
+                objectIcon[k*4 + 1] = 0xFF; // G
+                objectIcon[k*4 + 2] = 0x00; // R
+                objectIcon[k*4 + 3] = 0xFF; // A
+            }
+        if(gameObject.Position.Item1 + gameObject.Size - 1 == positionX)
+            for(int k=objectSize-1; k<objectSize*objectSize; k+=objectSize){
+                objectIcon[k*4 + 0] = 0x00; // B
+                objectIcon[k*4 + 1] = 0xFF; // G
+                objectIcon[k*4 + 2] = 0x00; // R
+                objectIcon[k*4 + 3] = 0xFF; // A
+            }
+        if(gameObject.Position.Item2 + gameObject.Size - 1 == positionY)
+            for(int k=objectSize*(objectSize-1); k<objectSize*objectSize; k++){
+                objectIcon[k*4 + 0] = 0x00; // B
+                objectIcon[k*4 + 1] = 0xFF; // G
+                objectIcon[k*4 + 2] = 0x00; // R
+                objectIcon[k*4 + 3] = 0xFF; // A
+            }
     }
 }

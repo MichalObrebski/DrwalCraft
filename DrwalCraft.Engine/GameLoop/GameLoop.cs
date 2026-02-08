@@ -30,7 +30,7 @@ public static class GameLoop{
                 mapLock.EnterWriteLock();
                 try{
                     UpdateGameLogic();
-                    trees.MoveNext();
+                    // trees.MoveNext();
                     accumulator -= TargetDt;
                 }
                 finally{

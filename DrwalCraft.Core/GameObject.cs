@@ -45,6 +45,7 @@ public abstract class GameObject : IGameObject{
     public int Id {init; get;}
     public int PlayerId {init; get;}
     public byte[]? ObjectIcon {set; get;}
+    public byte[][] ObjectIconPart {set; get;}
     public (int, int) Position {set; get;}
     public int Size {set; get;}
     public int Hp{
@@ -73,33 +74,33 @@ public abstract class GameObject : IGameObject{
         Size = size;
         IsDead = false;
 
-        if(Icon is not null){
-            var fullPath = Path.Combine(
-                AppContext.BaseDirectory,
-                "Assets",
-                "Icons",
-                Icon);
-            var uri = new Uri(fullPath);
-            var sourceImage = new BitmapImage(uri);
+        if(Icon is null) return;
+        var fullPath = Path.Combine(
+            AppContext.BaseDirectory,
+            "Assets",
+            "Icons",
+            Icon);
+        var uri = new Uri(fullPath);
+        var sourceImage = new BitmapImage(uri);
 
-            FormatConvertedBitmap convertedBitmap = new FormatConvertedBitmap();
-            convertedBitmap.BeginInit();
-            convertedBitmap.Source = sourceImage;
-            convertedBitmap.DestinationFormat = PixelFormats.Pbgra32;
-            convertedBitmap.EndInit();
+        FormatConvertedBitmap convertedBitmap = new FormatConvertedBitmap();
+        convertedBitmap.BeginInit();
+        convertedBitmap.Source = sourceImage;
+        convertedBitmap.DestinationFormat = PixelFormats.Pbgra32;
+        convertedBitmap.EndInit();
 
-            int width = convertedBitmap.PixelWidth;
-            int height = convertedBitmap.PixelHeight;
-            int bytesPerPixel = (convertedBitmap.Format.BitsPerPixel + 7) / 8; // Dla Pbgra32 to 4
-            int stride = width * bytesPerPixel; // Długość jednego wiersza w bajtach
+        int width = convertedBitmap.PixelWidth;
+        int height = convertedBitmap.PixelHeight;
+        int bytesPerPixel = (convertedBitmap.Format.BitsPerPixel + 7) / 8; // Dla Pbgra32 to 4
+        int stride = width * bytesPerPixel; // Długość jednego wiersza w bajtach
 
-            // // 4. Przygotowanie tablicy bajtów
-            this.ObjectIcon = new byte[height * stride];
+        // // 4. Przygotowanie tablicy bajtów
+        this.ObjectIcon = new byte[height * stride];
 
-            // // 5. Kopiowanie pikseli z Tree.png do tablicy
-            convertedBitmap.CopyPixels(ObjectIcon, stride, 0);
-            if(this is Tree) return;
+        // // 5. Kopiowanie pikseli z Tree.png do tablicy
+        convertedBitmap.CopyPixels(ObjectIcon, stride, 0);
 
+        if(this is not Tree){
             int center = height*stride/2 + stride/2;
             int centerX = center % stride;
             int centerY = center / stride;
@@ -130,6 +131,46 @@ public abstract class GameObject : IGameObject{
                 }
             }
         }
+    
+        var chunkSize = 32;
+        var chunkStride = chunkSize * 4;
+        ObjectIconPart = new byte[Size*Size][];
+        
+        for(int i=0; i<Size; i++){
+            for(int j=0; j<Size; j++){
+                int cropX = i * chunkSize;
+                int cropY = j * chunkSize;
+
+                ObjectIconPart[i*Size + j] = new byte[chunkSize * chunkStride];
+
+                for (int y = 0; y < chunkSize; y++)
+                {
+                    int srcIndex =
+                        ((cropY + y) * stride) +
+                        (cropX * bytesPerPixel);
+
+                    int dstIndex = y * chunkStride;
+
+                    Buffer.BlockCopy(
+                        ObjectIcon,
+                        srcIndex,
+                        ObjectIconPart[i*Size + j],
+                        dstIndex,
+                        chunkStride
+                    );
+                }
+            }
+        }
+    }
+
+    public byte[]? GetIconPart(int positionX, int positionY){
+        if(ObjectIconPart == null) return null;
+        int indexX = positionX - Position.Item1;
+        int indexY = positionY - Position.Item2;
+        int index = indexX * Size + indexY;
+        if(ObjectIconPart.Length>2)
+            return ObjectIconPart[index];
+        return ObjectIconPart[0];
     }
 }
 

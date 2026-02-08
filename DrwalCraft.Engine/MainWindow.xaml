@@ -49,6 +49,14 @@
         <DataTemplate DataType="{x:Type troops:Troop}">
             <StackPanel>
                 <ContentControl Content="{Binding}" ContentTemplate="{StaticResource GameObjectTemplate}" />
+                <TextBlock FontSize="24"
+                    Foreground="White">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat=" Damage: {0}">
+                            <Binding Path="Damage"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
             </StackPanel>
         </DataTemplate>
         <DataTemplate DataType="{x:Type buildings:Building}">
