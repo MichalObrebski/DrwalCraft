@@ -5,7 +5,7 @@ using Messages;
 public static class Program
 {
     private static readonly PriorityQueue<Message,int> InQueue = new PriorityQueue<Message, int>();
-    private static readonly PriorityQueue<string,int> OutQueue = new PriorityQueue<string, int>();
+    private static readonly PriorityQueue<Message,int> OutQueue = new PriorityQueue<Message, int>();
     private static readonly Lock InQueueLock = new Lock();
     private static readonly Lock OutQueueLock = new Lock();
     private static readonly SemaphoreSlim OutSemaphore = new SemaphoreSlim(0);

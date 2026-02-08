@@ -9,13 +9,13 @@ public class Client
 {
     const int Port = 5000;
     private readonly PriorityQueue<Message, int> InQueue;
-    private readonly PriorityQueue<string, int> OutQueue;
+    private readonly PriorityQueue<Message, int> OutQueue;
     private readonly Lock InQueueLock;
     private readonly Lock OutQueueLock;
     private readonly SemaphoreSlim OutSemaphore;
     private readonly SemaphoreSlim InSemaphore;
 
-    public Client(PriorityQueue<Message, int> inQueue, PriorityQueue<string, int> outQueue, Lock inQueueLock,
+    public Client(PriorityQueue<Message, int> inQueue, PriorityQueue<Message, int> outQueue, Lock inQueueLock,
         Lock outQueueLock, SemaphoreSlim inSemaphore, SemaphoreSlim outSemaphore)
     {
         InQueue = inQueue;
@@ -64,13 +64,13 @@ public class Client
         while (true)
         {
             await OutSemaphore.WaitAsync();
-            string msg;
+            Message msg;
             lock (OutQueueLock)
             {
                 msg = OutQueue.Dequeue();
             }
-            //string json = JsonSerializer.Serialize(msg);
-            await writer.WriteLineAsync(msg);
+            string json = JsonSerializer.Serialize(msg);
+            await writer.WriteLineAsync(json);
         }
     }
 
@@ -123,16 +123,17 @@ public class Client
                 }
                 lock (OutQueueLock)
                 {
-                    OutQueue.Enqueue(read, 1);
+                    OutQueue.Enqueue(msg, 1);
                 }
                 OutSemaphore.Release();
                 InSemaphore.Release();
             }
             else
             {
+                msg = new Message(client.Client.LocalEndPoint.ToString(), read);
                 lock (OutQueueLock)
                 {
-                    OutQueue.Enqueue(read, 1);
+                    OutQueue.Enqueue(msg, 1);
                 }
                 OutSemaphore.Release();
             }
