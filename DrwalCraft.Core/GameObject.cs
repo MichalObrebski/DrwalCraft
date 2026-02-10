@@ -55,13 +55,19 @@ public abstract class GameObject : IGameObject{
             if(_hp <= 0){
                 GameMap.Map[Position.Item1, Position.Item2].SetDefault();
                 IsDead = true;
+                ExistingObjects.Remove(this);
             }
+            GameMap.mainAnimationQueue.Enqueue(GameMap.MapAnimation.TakeDamage, Position);
         }
+    }
+    public virtual void GetAttacked(int damage, GameObject attacker){
+        Hp -= damage;
     }
     public bool IsDead;
     public int MaxHp{set; get;}
     public string Name{init; get;}
     public virtual bool IsActive{set; get;}
+    public PriorityQueue<GameMap.MapAnimation, (int, int)> objectAnimations = new ();
     public GameObject(string? Icon = null, int? playerId = null, int? objectId = null, int size = 1){
         if(playerId is null)
             PlayerId = GameObjectId.PlayerId;

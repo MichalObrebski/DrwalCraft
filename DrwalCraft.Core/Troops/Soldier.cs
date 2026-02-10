@@ -20,6 +20,11 @@ public class Soldier: Troop{
             }
         }
     }
+    public override void GetAttacked(int damage, GameObject attacker){
+        base.GetAttacked(damage, attacker);
+        if(AttackTarget is null)
+            AttackTarget = attacker;
+    }
     public Soldier(string Icon, int? playerId = null, int? objectId = null) : base(Icon, playerId, objectId){
         _actionSpeed = 6;
         TravelTarget = null;
@@ -51,7 +56,7 @@ public class Soldier: Troop{
         }
 
         if(_actionProgress == 0){
-            AttackTarget.Hp -= _damage;
+            AttackTarget.GetAttacked(_damage, this);
             _actionProgress = _actionSpeed;
         }
         else{

@@ -46,27 +46,21 @@ public class Game{
     public static void ContentRenderd(){
         DrwalCraft.Engine.GameLoop.GameLoop.UpdateGameLogic = GameLoopLogic;
         soldier1 = new DrwalCraft.Core.Troops.Knight();
-        soldier1.Position = (16,16);
-        DrwalCraft.Core.GameMap.Map[16,16].GameObject = soldier1;
+        DrwalCraft.Core.GameMap.AddObjectToMap(16, 16, soldier1);
 
         soldier2 = new Knight(5, 10);
         DrwalCraft.Core.GameMap.AddObjectToMap(12, 8, soldier2);
         soldier2.TravelTarget = (20,30);
 
         soldier3 = new DrwalCraft.Core.Troops.Knight();
-        soldier3.Position = (8,8);
-        // soldier3.TravelTarget = (20,10);
-        DrwalCraft.Core.GameMap.Map[8,8].GameObject = soldier3;
+
+        DrwalCraft.Core.GameMap.AddObjectToMap(8, 8, soldier3);
         DrwalCraft.Core.GameMap.AddObjectToMap(2, 2,  new DrwalCraft.Core.Tree());
-        DrwalCraft.Core.GameMap.AddObjectToMap(24, 48, new DrwalCraft.Core.Buildings.Building());
+        DrwalCraft.Core.GameMap.AddObjectToMap(24, 48, new DrwalCraft.Core.Buildings.Castle());
+        DrwalCraft.Core.GameMap.AddObjectToMap(16, 20, new DrwalCraft.Core.Buildings.Barrack());
     }
     public static void GameLoopLogic(){
-        if(soldier1 != null)
-            soldier1.MainAction();
-        if(soldier2 != null)
-            soldier2.MainAction();
-        if(soldier3 != null)
-            soldier3.MainAction();
+        ExistingObjects.TickAction();
         //zdejmuj polecenia z kolejki i je wykonuj
     }
 
@@ -101,7 +95,7 @@ public class Game{
             for(int j = start.Item2; j <= end.Item2; j++){
                 var gameObject = GameMap.Map[i, j].GameObject;
                 if(gameObject is Troop troop && troop.PlayerId == GameObjectId.PlayerId){
-                    army.AddTroop(troop);
+                    army.TryAddTroop(troop);
                 }
             }
         }

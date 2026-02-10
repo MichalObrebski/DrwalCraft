@@ -62,6 +62,21 @@
         <DataTemplate DataType="{x:Type buildings:Building}">
             <StackPanel>
                 <ContentControl Content="{Binding}" ContentTemplate="{StaticResource GameObjectTemplate}" />
+                <TextBlock FontSize="24" Foreground="White" Text="Produce:" />
+                <ItemsControl
+                    FontSize="16"
+                    Foreground="White"
+                    Background="#222"
+                    ItemsSource="{Binding Products}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding Name}"
+                                Click="OnProduceClick" 
+                                Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                Margin="5"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </StackPanel>
         </DataTemplate>
         <DataTemplate DataType="{x:Type army:Army}">

@@ -34,7 +34,11 @@ public abstract class Troop : GameObject, ITroop{
     public abstract void MainAction();
     public virtual void Move(){
         if(TravelTarget == null || TravelTarget == Position) return;
-        if(_travelPath.Count == 0) return;
+        if(_travelPath.Count == 0){
+            if(Math.Abs(TravelTarget.Value.Item1 - Position.Item1) > 1 && Math.Abs(TravelTarget.Value.Item2 - Position.Item2) > 1) 
+                TravelTarget = _travelTarget;
+            return;
+        }
 
         if(_moveProgress == 0){
             (int, int) nextPosition = _travelPath.Pop();

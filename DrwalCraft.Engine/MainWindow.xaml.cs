@@ -168,4 +168,14 @@ public partial class MainWindow : Window{
             }
         }
     }
+    protected void OnProduceClick(object sender, RoutedEventArgs e){
+        var button = sender as Button;
+        var product = button.DataContext as Type;
+        var building = button.Tag as DrwalCraft.Core.Buildings.Building;
+
+        if (building != null && product != null){
+            if(building is DrwalCraft.Core.Buildings.Barrack barrack)
+                barrack.Produce(product);
+        }
+}
 }

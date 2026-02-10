@@ -29,6 +29,7 @@ public static class GameLoop{
             while (accumulator >= TargetDt){
                 mapLock.EnterWriteLock();
                 try{
+                    GameMap.mainAnimationQueue = new ();
                     UpdateGameLogic();
                     // trees.MoveNext();
                     accumulator -= TargetDt;

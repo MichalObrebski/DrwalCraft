@@ -27,6 +27,7 @@ public static class GameMap{
     public static int Size{set; get;}
 
     public static int ChunkSize{set; get;}
+    public static PriorityQueue<MapAnimation, (int, int)> mainAnimationQueue = new ();
 
     public static void Init(int size){
         ChunkSize = 32;
@@ -52,6 +53,35 @@ public static class GameMap{
         }
         Map[x,y].IsMainObjectPosition = true;
         gameObject.Position = (x, y);
+
+        if(gameObject is not Tree)
+            ExistingObjects.Add(gameObject);
+    }
+
+    public static (int, int) GetNearestEmptyField(GameObject gameObject){
+        var size = gameObject.Size + 2;
+        var startingX = gameObject.Position.Item1 - 1;
+        var startingY = gameObject.Position.Item2 - 1;
+
+        while(startingX >= 0 && startingY >= 0 && startingX + size < 64 && startingY + size < 64){
+            for(int i = startingY; i< startingY + size; i++){
+                for(int j = startingX; j< startingX + size; j++){
+                    if(Map[j, i].GameObject is null) return (j, i);
+                }            
+            }
+            startingX -= 1;
+            startingY -= 1;
+            size += 2;
+        }
+        return (-1, -1);
+    }
+    public static (int, int) GetNearestEmptyField((int, int) position){
+        int x, y;
+        (x, y) = position;
+        if(x < 0 && y < 0 && x >= 64 && y >= 64) return (-1, -1);
+        var gameObject = Map[x, y].GameObject;
+        if(gameObject == null) return (x, y);
+        return GetNearestEmptyField(gameObject);
     }
 
     public static IEnumerator<int> ModTrees(){
@@ -70,6 +100,9 @@ public static class GameMap{
         XSmallerYGreater,
         XGreaterYSmaller,
         XSmallerYSmaller,
+    }
+    public enum MapAnimation{
+        TakeDamage,
     }
     public static Stack<(int, int)> BFS((int, int) position, (int, int) target){
         var visited = new bool[Size, Size];
