@@ -62,7 +62,7 @@ public static class Program
             while (!token.IsCancellationRequested)
             {
                 var text = await reader.ReadLineAsync(token);
-                var msg = JsonSerializer.Deserialize(text, typeof(Message)) as Message; //???
+                var msg = JsonSerializer.Deserialize(text, typeof(Message)) as Message; 
                 Console.WriteLine($"Received command: {text}");
                 switch (msg.Text)
                 {
@@ -77,7 +77,16 @@ public static class Program
                         }
                         break;
                     default:
-                        await _clientsQueues[client].Writer.WriteAsync(new Message("Serwer", "NIE SLYSZAEALEM!?"));
+                        // await _clientsQueues[client].Writer.WriteAsync(new Message("Serwer", "NIE SLYSZAEALEM!?"));
+                        msg.From = "Serwer";
+                        //msg.Text = "Nie slyszalem";
+                        foreach (var cl in _clients)
+                        {
+                            if (cl != client)
+                            {
+                                await _clientsQueues[cl].Writer.WriteAsync(msg);    
+                            }
+                        }
                         break;
                 }
 
@@ -118,6 +127,8 @@ public static class Program
             {
                 var msg = await channel.Reader.ReadAsync(token);
                 var json = JsonSerializer.Serialize(msg);
+                Console.WriteLine($"Serializing message: json: {json}");
+                
                 await writer.WriteLineAsync(json);
             }
         }

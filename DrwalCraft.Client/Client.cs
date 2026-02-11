@@ -2,29 +2,14 @@
 using System.Net.Sockets;
 using System.Text.Json;
 using Messages;
+using DrwalCraft.Core;
 
 namespace DrwalCraft.Client;
 
 public class Client
 {
     const int Port = 5000;
-    private readonly PriorityQueue<Message, int> InQueue;
-    private readonly PriorityQueue<Message, int> OutQueue;
-    private readonly Lock InQueueLock;
-    private readonly Lock OutQueueLock;
-    private readonly SemaphoreSlim OutSemaphore;
-    private readonly SemaphoreSlim InSemaphore;
-
-    public Client(PriorityQueue<Message, int> inQueue, PriorityQueue<Message, int> outQueue, Lock inQueueLock,
-        Lock outQueueLock, SemaphoreSlim inSemaphore, SemaphoreSlim outSemaphore)
-    {
-        InQueue = inQueue;
-        OutQueue = outQueue;
-        InQueueLock = inQueueLock;
-        OutQueueLock = outQueueLock;
-        OutSemaphore =  outSemaphore;
-        InSemaphore =  inSemaphore;
-    }
+    
     
     public async Task ConnectAsync()
     {
@@ -49,10 +34,10 @@ public class Client
             if (line is null) break;
             Message? msg = JsonSerializer.Deserialize<Message>(line); 
             if (msg == null) break; 
-            lock (InQueueLock) 
+            lock (ExistingObjects.InQueueLock) 
             { 
-                InQueue.Enqueue(msg, i); 
-                InSemaphore.Release();
+                ExistingObjects.InQueue.Enqueue(msg, i); 
+                //ExistingObjects.InSemaphore.Release();
             } 
             i++;
         }
@@ -63,11 +48,14 @@ public class Client
         var writer = new StreamWriter(client.GetStream()) { AutoFlush = true };
         while (true)
         {
-            await OutSemaphore.WaitAsync();
+            await ExistingObjects.OutSemaphore.WaitAsync();
             Message msg;
-            lock (OutQueueLock)
+            lock (ExistingObjects.OutQueueLock)
             {
-                msg = OutQueue.Dequeue();
+                // Console.WriteLine(ExistingObjects.OutQueue.Count);
+                msg = ExistingObjects.OutQueue.Dequeue();
+                // Console.WriteLine(ExistingObjects.OutQueue.Count);
+                
             }
             string json = JsonSerializer.Serialize(msg);
             await writer.WriteLineAsync(json);
@@ -87,12 +75,12 @@ public class Client
     {
         while (true)
         {
-            await InSemaphore.WaitAsync();
-            lock (InQueueLock)
+            await ExistingObjects.InSemaphore.WaitAsync();
+            lock (ExistingObjects.InQueueLock)
             {
-                if (InQueue.Count > 0)
+                if (ExistingObjects.InQueue.Count > 0)
                 {
-                    var msg  = InQueue.Dequeue();
+                    var msg  = ExistingObjects.InQueue.Dequeue();
                     if (msg.From == client.Client.LocalEndPoint.ToString()) 
                         Console.WriteLine("Jebiesz komunizm!");
                     else
@@ -106,6 +94,7 @@ public class Client
         }
     }
 
+    
     public async Task GameLoopEnqueue(TcpClient client)
     {
         while (true)
@@ -117,25 +106,25 @@ public class Client
             if (read == "jebac komunizm")
             {
                 msg = new Message(client.Client.LocalEndPoint.ToString(), "jebac komunizm");
-                lock (InQueueLock)
+                lock (ExistingObjects.InQueueLock)
                 {
-                    InQueue.Enqueue(msg, 1);
+                    ExistingObjects.InQueue.Enqueue(msg, 1);
                 }
-                lock (OutQueueLock)
+                lock (ExistingObjects.OutQueueLock)
                 {
-                    OutQueue.Enqueue(msg, 1);
+                    ExistingObjects.OutQueue.Enqueue(msg, 1);
                 }
-                OutSemaphore.Release();
-                InSemaphore.Release();
+                ExistingObjects.OutSemaphore.Release();
+                ExistingObjects.InSemaphore.Release();
             }
             else
             {
                 msg = new Message(client.Client.LocalEndPoint.ToString(), read);
-                lock (OutQueueLock)
+                lock (ExistingObjects.OutQueueLock)
                 {
-                    OutQueue.Enqueue(msg, 1);
+                    ExistingObjects.OutQueue.Enqueue(msg, 1);
                 }
-                OutSemaphore.Release();
+                ExistingObjects.OutSemaphore.Release();
             }
         }
     }

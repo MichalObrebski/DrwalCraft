@@ -21,8 +21,9 @@ public class Message
     public ActionType ActionType { get; set; } =  ActionType.CreateUnit;
     public UnitType UnitType { get; set; }
     public int Id { get; set; }
-    public (int,int)? Position { get; set; }
-    public int? AttackTargetId;
+    public int? PositionX { get; set; }
+    public int? PositionY { get; set; }
+    public int? AttackTargetId { get; set; }
     public Message()
     {
         
@@ -30,7 +31,7 @@ public class Message
 
     public Message(string from, string text)
     {
-        //konstruktor do testów w terminalu
+        //do testow
         this.From = from;
         this.Text = text;
     }
@@ -46,6 +47,11 @@ public class Message
         this.ActionType = actionType;
         this.UnitType = unitType;
         this.Id = id;
-        this.Position = position;
+        if(position==null)this.PositionX = this.PositionY = null;
+        else
+        {
+            this.PositionX = (((int, int))position).Item1;
+            this.PositionY = (((int,int))position).Item2;
+        }
     }
 }

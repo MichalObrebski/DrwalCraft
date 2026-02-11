@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.ComponentModel;
+using System.Text.Json;
 using DrwalCraft.Core.Troops;
 using Messages;
 
@@ -14,12 +15,12 @@ public static class ExistingObjects{
     private static ConcurrentQueue<GameObject> _removeQueue = new ();
     
     //kolejki i locki do komunikacji między klientami na obiektach - 
-    private static readonly PriorityQueue<Message, int> InQueue = new(); 
-    private static readonly PriorityQueue<Message, int> OutQueue = new();
-    private static readonly Lock InQueueLock = new();
-    private static readonly Lock OutQueueLock = new();
-    private static readonly SemaphoreSlim OutSemaphore = new(0);
-    private static readonly SemaphoreSlim InSemaphore = new(0);
+    public static readonly PriorityQueue<Message, int> InQueue = new(); 
+    public static readonly PriorityQueue<Message, int> OutQueue = new();
+    public static readonly Lock InQueueLock = new();
+    public static readonly Lock OutQueueLock = new();
+    public static readonly SemaphoreSlim OutSemaphore = new(0);
+    public static readonly SemaphoreSlim InSemaphore = new(0);
 
     public static void TickAction(){
         foreach(var gameObject in GameObjects){
@@ -34,7 +35,7 @@ public static class ExistingObjects{
              {
                  //InSemaphore.Wait();
                  DoMessage(InQueue.Dequeue());
-                 Console.WriteLine(InQueue.Count);
+                 //Console.WriteLine(InQueue.Count);
              }
          }
         //dodawanie obiektów również zaimplementuj przez message i kolejkę(maybe)
@@ -54,12 +55,23 @@ public static class ExistingObjects{
 
     public static void DoMessage(Message message)
     {
+        string text = JsonSerializer.Serialize(message);
+        Console.WriteLine($"Doing message: {text}");
+        
         int id = message.Id;
         if (message.ActionType == ActionType.MoveUnit)
         {
             foreach(var gameObject in GameObjects)
                 if (gameObject.Id == id)
-                    (gameObject as Troop).TravelTarget = message.Position;
+                {
+                    if (!(gameObject is Troop)) return;
+                    if (message.PositionX == null ||  message.PositionY == null)
+                        (gameObject as Troop).TravelTarget = null;
+                    else
+                    {
+                        (gameObject as Troop).TravelTarget = ((int, int)?)(message.PositionX, message.PositionY);
+                    }
+                }
         }
     
         if (message.ActionType == ActionType.AttackUnit)
@@ -97,6 +109,8 @@ public static class ExistingObjects{
         lock (InQueueLock)
         {
             InQueue.Enqueue(msg,1);
+            OutQueue.Enqueue(msg,1);
+            OutSemaphore.Release();
             //InSemaphore.Release();
         }
     }
@@ -105,9 +119,12 @@ public static class ExistingObjects{
     {
         if ((sender as GameObject)==null) return;
         var msg = new Message(ActionType.MoveUnit, UnitType.Soldier, (sender as GameObject).Id,  (sender as Troop).TravelTarget);
+        Console.WriteLine($"{(sender as Troop).TravelTarget}");
         lock (InQueueLock)
         {
             InQueue.Enqueue(msg,1);
+            OutQueue.Enqueue(msg,1);
+            OutSemaphore.Release();
             //InSemaphore.Release();
         }
     }
