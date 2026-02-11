@@ -15,6 +15,12 @@ public class Barrack : Building{
         Products.Add(typeof(Archer));
         InProduction = false;
     }
+
+    public void DoMessage(Type troop)
+    {
+        ExistingObjects.BarrackAddMessage(troop); //tworzy wiadomość do przesłania do serwera o tworzeniu jednostki
+    }
+    
     public void Produce(Type troop){
         if(InProduction) return;
         InProduction = true;

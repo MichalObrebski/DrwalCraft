@@ -4,26 +4,30 @@ namespace Messages;
 
 public enum ActionType
 {
-    CreateUnit,
+    CreateUnitBarrack,
+    DeleteUnit,
     MoveUnit,
     AttackUnit
 }
 
 public enum UnitType
 {
-    Soldier
+    Soldier,
+    Knight,
+    Archer
 }
 
 public class Message
 {
     public string From { get; set; } = "default";
     public string Text { get; set; }= "default";
-    public ActionType ActionType { get; set; } =  ActionType.CreateUnit;
+    public ActionType ActionType { get; set; }
     public UnitType UnitType { get; set; }
     public int Id { get; set; }
     public int? PositionX { get; set; }
     public int? PositionY { get; set; }
     public int? AttackTargetId { get; set; }
+    
     public Message()
     {
         
@@ -35,6 +39,8 @@ public class Message
         this.From = from;
         this.Text = text;
     }
+    
+    //konstruktor do atakowania
     public Message(ActionType actionType, UnitType unitType, int id, int? attackTargetId)
     {
         this.ActionType = actionType;
@@ -42,6 +48,8 @@ public class Message
         this.Id = id;
         this.AttackTargetId = attackTargetId;
     }
+    
+    //konstruktor do ruchu
     public Message(ActionType actionType, UnitType unitType, int id, (int,int)? position)
     {
         this.ActionType = actionType;
@@ -53,5 +61,12 @@ public class Message
             this.PositionX = (((int, int))position).Item1;
             this.PositionY = (((int,int))position).Item2;
         }
+    }
+    
+    //konstruktor do tworzenia jednostki w baraku
+    public Message(ActionType actionType, UnitType unitType)
+    {
+        this.ActionType = actionType;
+        this.UnitType = unitType;
     }
 }

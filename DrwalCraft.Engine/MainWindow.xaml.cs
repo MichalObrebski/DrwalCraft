@@ -175,7 +175,7 @@ public partial class MainWindow : Window{
 
         if (building != null && product != null){
             if(building is DrwalCraft.Core.Buildings.Barrack barrack)
-                barrack.Produce(product);
+                barrack.DoMessage(product);
         }
 }
 }

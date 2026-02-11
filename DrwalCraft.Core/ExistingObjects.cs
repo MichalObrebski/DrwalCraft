@@ -1,6 +1,8 @@
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Text.Json;
+using System.Windows.Interop;
+using DrwalCraft.Core.Buildings;
 using DrwalCraft.Core.Troops;
 using Messages;
 
@@ -88,6 +90,17 @@ public static class ExistingObjects{
                     (gameObject as Troop).AttackTarget = Opponent;
                 }
         }
+
+        if (message.ActionType == ActionType.CreateUnitBarrack)
+        {
+            foreach (var gameObject in GameObjects)
+            {
+                if (gameObject is Barrack barrack)
+                {
+                    barrack.Produce(message.UnitType == UnitType.Knight?typeof(Knight):typeof(Archer));
+                }
+            }
+        }
     }
     
     public static void Remove(GameObject gameObject)
@@ -112,9 +125,13 @@ public static class ExistingObjects{
         lock (InQueueLock)
         {
             InQueue.Enqueue(msg,1);
+            //InSemaphore.Release();
+        }
+
+        lock (OutQueueLock)
+        {
             OutQueue.Enqueue(msg,1);
             OutSemaphore.Release();
-            //InSemaphore.Release();
         }
     }
 
@@ -126,10 +143,27 @@ public static class ExistingObjects{
         lock (InQueueLock)
         {
             InQueue.Enqueue(msg,1);
+            //InSemaphore.Release();
+        }
+        lock (OutQueueLock)
+        {
             OutQueue.Enqueue(msg,1);
             OutSemaphore.Release();
-            //InSemaphore.Release();
         }
     }
 
+    public static void BarrackAddMessage(Type Troop)
+    {
+        var msg = new Message(ActionType.CreateUnitBarrack, Troop == typeof(Knight)?UnitType.Knight:UnitType.Archer);
+        lock (InQueueLock)
+        {
+            InQueue.Enqueue(msg,1);
+        }
+
+        lock (OutQueueLock)
+        {
+            OutQueue.Enqueue(msg,1);
+            OutSemaphore.Release();
+        }
+    }
 }
