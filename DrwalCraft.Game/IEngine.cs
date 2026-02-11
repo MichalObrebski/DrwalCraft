@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Runtime.InteropServices.ObjectiveC;
 using System.Windows.Input;
 using DrwalCraft.Game;
@@ -60,12 +61,14 @@ public class Game{
         DrwalCraft.Core.GameMap.AddObjectToMap(16, 20, new DrwalCraft.Core.Buildings.Barrack());
     }
     public static void GameLoopLogic(){
-        ExistingObjects.TickAction();
         //zdejmuj polecenia z kolejki i je wykonuj
+        ExistingObjects.TickAction();
+        
+        //implementacja eventów
+        
     }
-
+    
     public static void MainMapOnClick(MouseButtonEventArgs e, int x, int y, GameUIDataContext? dataContext){
-        //dodaj polecenie do kolejki o nowym zolnierzu
         if(e.LeftButton == MouseButtonState.Pressed){
             var field = DrwalCraft.Core.GameMap.Map[x,y].GameObject;
             if(field is null) return;
