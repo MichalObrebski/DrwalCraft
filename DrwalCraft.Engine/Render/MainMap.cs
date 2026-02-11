@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using DrwalCraft.Core;
+using DrwalCraft.Core.Troops;
 using DrwalCraft.Engine;
 
 namespace DrwalCraft.Engine.Render;
@@ -86,6 +87,10 @@ public class MainMap{
                 else{
                     var rect = new Int32Rect(i*chunkSize, j*chunkSize, objectSize, objectSize);
                     bitmap.WritePixels(rect, objectIconPartClone, objectSize * 4 ,0);
+                }
+                if(gameObject is Troop troop){
+                    if(troop.Position != (i+OffsetLeft,j+OffsetTop))
+                        troop.Position = (i+OffsetLeft,j+OffsetTop);
                 }
             }
         }

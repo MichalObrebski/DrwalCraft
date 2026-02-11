@@ -12,6 +12,9 @@ public static class ExistingObjects{
             if(gameObject is Troops.Troop troop){
                 troop.MainAction();
             }
+            if(gameObject is Buildings.Barrack barrack){
+                barrack.MainAction();
+            }
         }
         while(_addQueue.Count > 0){
             _addQueue.TryDequeue(out var result);

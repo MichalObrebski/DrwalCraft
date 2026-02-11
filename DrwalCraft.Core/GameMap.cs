@@ -205,6 +205,7 @@ public static class GameMap{
             var relativeField = (field.Item1 - blockPosition.Item1, field.Item2 - blockPosition.Item2);
             if(target != (-1, -1))
                 tempStack.Push(field);
+            else if(relativeField.Item1 < 0 || relativeField.Item2 < 0 || relativeField.Item1 > 2*radius || relativeField.Item2 > 2*radius){}
             else if(visited[relativeField.Item1, relativeField.Item2])
                 target = field;
         }

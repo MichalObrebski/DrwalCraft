@@ -46,6 +46,26 @@
                     </TextBlock.Text>
                 </TextBlock>
         </DataTemplate>
+        <DataTemplate x:Key="BarrackProducts">
+            <ItemsControl
+                FontSize="16"
+                Foreground="White"
+                Background="#222"
+                ItemsSource="{Binding Products}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Content="{Binding Name}"
+                            Click="OnProduceClick" 
+                            Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                            Margin="5"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </DataTemplate>
+        <DataTemplate x:Key="BarrackInProduction">
+            <TextBlock Name="Name">InProduction</TextBlock>
+        </DataTemplate>
+
         <DataTemplate DataType="{x:Type troops:Troop}">
             <StackPanel>
                 <ContentControl Content="{Binding}" ContentTemplate="{StaticResource GameObjectTemplate}" />
@@ -63,20 +83,19 @@
             <StackPanel>
                 <ContentControl Content="{Binding}" ContentTemplate="{StaticResource GameObjectTemplate}" />
                 <TextBlock FontSize="24" Foreground="White" Text="Produce:" />
-                <ItemsControl
-                    FontSize="16"
-                    Foreground="White"
-                    Background="#222"
-                    ItemsSource="{Binding Products}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Button Content="{Binding Name}"
-                                Click="OnProduceClick" 
-                                Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                Margin="5"/>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                <ContentControl Content="{Binding}">
+                    <ContentControl.Style>
+                        <Style TargetType="ContentControl">
+                            <Setter Property="ContentTemplate" Value="{StaticResource BarrackProducts}" />
+                            
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding InProduction}" Value="True">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource BarrackInProduction}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ContentControl.Style>
+                </ContentControl>
             </StackPanel>
         </DataTemplate>
         <DataTemplate DataType="{x:Type army:Army}">
