@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.IO;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -68,6 +69,8 @@ public abstract class GameObject : IGameObject{
     public string Name{init; get;}
     public virtual bool IsActive{set; get;}
     public PriorityQueue<GameMap.MapAnimation, (int, int)> objectAnimations = new ();
+
+
     public GameObject(string? Icon = null, int? playerId = null, int? objectId = null, int size = 1){
         if(playerId is null)
             PlayerId = GameObjectId.PlayerId;
@@ -178,6 +181,8 @@ public abstract class GameObject : IGameObject{
             return ObjectIconPart[index];
         return ObjectIconPart[0];
     }
+
+
 }
 
 public class Tree: GameObject{

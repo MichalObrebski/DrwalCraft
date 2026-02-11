@@ -27,6 +27,9 @@ public static class ExistingObjects{
             if(gameObject is Troops.Troop troop){
                 troop.MainAction();
             }
+            if(gameObject is Buildings.Barrack barrack){
+                barrack.MainAction();
+            }
         }
         //dodaj synchronizację tikową
          while (InQueue.Count > 0)

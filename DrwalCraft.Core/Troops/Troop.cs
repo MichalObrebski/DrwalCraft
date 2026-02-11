@@ -93,7 +93,7 @@ public abstract class Troop : GameObject, ITroop{
                 }
             }
 
-            if(nextPosition != (-1, -1)){
+            if(nextPosition != (-1, -1) && GameMap.Map[nextPosition.Item1, nextPosition.Item2].GameObject == null){
                 GameMap.Map[this.Position.Item1, this.Position.Item2].GameObject = null;
                 GameMap.Map[nextPosition.Item1, nextPosition.Item2].GameObject = self;
                 this.Position = nextPosition;

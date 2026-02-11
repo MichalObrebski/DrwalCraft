@@ -5,9 +5,9 @@ public class Knight : Soldier{
         _moveProgress = 0;
         _speed = 6;
         _range = 1;
-        _damage = 16;
-        MaxHp = 50;
-        Hp = 50;
+        _damage = 18;
+        MaxHp = 100;
+        Hp = 100;
         Name = "Knight";
     }
 }
