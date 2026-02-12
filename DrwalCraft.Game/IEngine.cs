@@ -100,7 +100,7 @@ public class Game{
             }
         }
         if(dataContext is null) return;
-
+        
         if(army.Troops.Count > 1)
             dataContext.ActiveUnit = army;
         else if(army.Troops.Count == 1 && army.Troops[0] != dataContext.ActiveUnit)

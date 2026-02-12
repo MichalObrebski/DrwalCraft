@@ -112,6 +112,7 @@ public static class ExistingObjects{
         {
             troop.TravelTargetChanged += HandleTravelTargetChanged;
             troop.AttackTargetChanged += HandleAttackTargetChanged;
+            Console.WriteLine($"Adding object of id: {troop.Id}");
         }
         _addQueue.Enqueue(gameObject);
     }

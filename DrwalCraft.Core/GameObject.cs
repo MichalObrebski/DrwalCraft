@@ -5,6 +5,10 @@ using System.Windows.Media.Imaging;
 
 namespace DrwalCraft.Core;
 
+public enum GameObjectFor
+{
+    Army,
+}
 public static class GameObjectId{
     private static int _player;
     private static int _objectCount;
@@ -33,6 +37,7 @@ public static class GameObjectId{
     }
     public static int GetNewId(){
         _objectCount++;
+        Console.WriteLine($"player:{_player}, count:{_objectCount}");
         return _objectCount * 2 * _player;
     }
 }
@@ -70,7 +75,14 @@ public abstract class GameObject : IGameObject{
     public virtual bool IsActive{set; get;}
     public PriorityQueue<GameMap.MapAnimation, (int, int)> objectAnimations = new ();
 
+    public GameObject(GameObjectFor X)
+    {
+        if (X != GameObjectFor.Army)
+            return;
+        PlayerId = -1;
 
+        Size = 1;
+    }
     public GameObject(string? Icon = null, int? playerId = null, int? objectId = null, int size = 1){
         if(playerId is null)
             PlayerId = GameObjectId.PlayerId;
