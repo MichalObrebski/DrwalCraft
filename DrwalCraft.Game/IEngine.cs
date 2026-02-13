@@ -54,7 +54,7 @@ public class Game{
 
         soldier3 = new DrwalCraft.Core.Troops.Knight();
 
-        DrwalCraft.Core.GameMap.AddObjectToMap(8, 8, soldier3);
+        DrwalCraft.Core.GameMap.AddObjectToMap(8, 8, new Builder());
         DrwalCraft.Core.GameMap.AddObjectToMap(2, 2,  new DrwalCraft.Core.Tree());
         DrwalCraft.Core.GameMap.AddObjectToMap(24, 48, new DrwalCraft.Core.Buildings.Castle());
         DrwalCraft.Core.GameMap.AddObjectToMap(16, 20, new DrwalCraft.Core.Buildings.Barrack());

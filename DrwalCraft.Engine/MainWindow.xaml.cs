@@ -9,6 +9,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using DrwalCraft.Core;
 using DrwalCraft.Engine;
 using DrwalCraft.Engine.Render.GameUIDataContext;
 
@@ -171,11 +172,13 @@ public partial class MainWindow : Window{
     protected void OnProduceClick(object sender, RoutedEventArgs e){
         var button = sender as Button;
         var product = button.DataContext as Type;
-        var building = button.Tag as DrwalCraft.Core.Buildings.Building;
+        var gameObject = button.Tag as DrwalCraft.Core.GameObject;
 
-        if (building != null && product != null){
-            if(building is DrwalCraft.Core.Buildings.Barrack barrack)
-                barrack.Produce(product);
+        if (gameObject != null && product != null){
+            if(gameObject is DrwalCraft.Core.Buildings.Building building)
+                building.Produce(product);
+            if(gameObject is DrwalCraft.Core.Troops.Builder builder)
+                builder.Build(product);
         }
-}
+    }
 }

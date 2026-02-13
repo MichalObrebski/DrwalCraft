@@ -1,3 +1,4 @@
+
 namespace DrwalCraft.Core.Buildings;
 
 public class Castle : Building{
@@ -5,5 +6,13 @@ public class Castle : Building{
         Name = "Castle";
         MaxHp = 1024;
         Hp = 1024;
+    }
+
+    public override void MainAction(){
+        return;
+    }
+
+    public override void Produce(Type item){
+        return;
     }
 }

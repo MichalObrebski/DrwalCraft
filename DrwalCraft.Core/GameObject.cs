@@ -41,7 +41,7 @@ public interface IGameObject{
     public byte[]? ObjectIcon {get;}
     public (int, int) Position {get;}
 }
-public abstract class GameObject : IGameObject{
+public abstract class GameObject : IGameObject, INotifyPropertyChanged{
     protected int _hp;
     public int Id {init; get;}
     public int PlayerId {init; get;}
@@ -49,6 +49,7 @@ public abstract class GameObject : IGameObject{
     public byte[][] ObjectIconPart {set; get;}
     public (int, int) Position {set; get;}
     public int Size {set; get;}
+    public event PropertyChangedEventHandler? HpChanged;
     public int Hp{
         get => _hp;
         set{
@@ -59,6 +60,8 @@ public abstract class GameObject : IGameObject{
                 ExistingObjects.Remove(this);
             }
             GameMap.mainAnimationQueue.Enqueue(GameMap.MapAnimation.TakeDamage, Position);
+            HpChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Hp)));
+            OnPropertyChanged("Hp");
         }
     }
     public virtual void GetAttacked(int damage, GameObject attacker){
@@ -69,8 +72,12 @@ public abstract class GameObject : IGameObject{
     public string Name{init; get;}
     public virtual bool IsActive{set; get;}
     public PriorityQueue<GameMap.MapAnimation, (int, int)> objectAnimations = new ();
-
-
+    
+    public event PropertyChangedEventHandler? PropertyChanged;
+    
+    protected void OnPropertyChanged(string? propertyName){
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
     public GameObject(string? Icon = null, int? playerId = null, int? objectId = null, int size = 1){
         if(playerId is null)
             PlayerId = GameObjectId.PlayerId;
@@ -140,7 +147,10 @@ public abstract class GameObject : IGameObject{
                 }
             }
         }
-    
+
+        if(this is Buildings.Construction)
+            Size = 1;
+
         var chunkSize = 32;
         var chunkStride = chunkSize * 4;
         ObjectIconPart = new byte[Size*Size][];
@@ -170,6 +180,9 @@ public abstract class GameObject : IGameObject{
                 }
             }
         }
+
+        if(this is Buildings.Construction)
+            Size = size;
     }
 
     public byte[]? GetIconPart(int positionX, int positionY){
@@ -181,8 +194,6 @@ public abstract class GameObject : IGameObject{
             return ObjectIconPart[index];
         return ObjectIconPart[0];
     }
-
-
 }
 
 public class Tree: GameObject{

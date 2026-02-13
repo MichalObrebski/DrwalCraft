@@ -40,7 +40,7 @@ public static class GameMap{
         }
     }
     
-    public static void AddObjectToMap(int x, int y, GameObject gameObject){
+    public static void AddObjectToMap(int x, int y, GameObject gameObject, bool addToExistingObjects = true){
         var objectSize = gameObject.Size;
         if(x < 0 || y < 0) return;
         if(x + objectSize > Size || y + objectSize > Size) return;
@@ -54,7 +54,7 @@ public static class GameMap{
         Map[x,y].IsMainObjectPosition = true;
         gameObject.Position = (x, y);
 
-        if(gameObject is not Tree)
+        if(gameObject is not Tree && addToExistingObjects)
             ExistingObjects.Add(gameObject);
     }
 
