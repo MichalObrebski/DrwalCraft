@@ -2,6 +2,7 @@
 
 namespace Messages;
 
+
 public enum ActionType
 {
     CreateUnitBarrack,
@@ -21,6 +22,7 @@ public class Message
 {
     public string From { get; set; } = "default";
     public string Text { get; set; }= "default";
+    public int Tick { get; set; }
     public ActionType ActionType { get; set; }
     public UnitType UnitType { get; set; }
     public int Id { get; set; }
@@ -41,16 +43,17 @@ public class Message
     }
     
     //konstruktor do atakowania
-    public Message(ActionType actionType, UnitType unitType, int id, int? attackTargetId)
+    public Message(ActionType actionType, UnitType unitType, int id, int? attackTargetId, int tick = 0)
     {
         this.ActionType = actionType;
         this.UnitType = unitType;
         this.Id = id;
         this.AttackTargetId = attackTargetId;
+        this.Tick = tick;
     }
     
     //konstruktor do ruchu
-    public Message(ActionType actionType, UnitType unitType, int id, (int,int)? position)
+    public Message(ActionType actionType, UnitType unitType, int id, (int,int)? position, int tick = 0)
     {
         this.ActionType = actionType;
         this.UnitType = unitType;
@@ -61,12 +64,14 @@ public class Message
             this.PositionX = (((int, int))position).Item1;
             this.PositionY = (((int,int))position).Item2;
         }
+        this.Tick = tick;
     }
     
     //konstruktor do tworzenia jednostki w baraku
-    public Message(ActionType actionType, UnitType unitType)
+    public Message(ActionType actionType, UnitType unitType, int tick = 0)
     {
         this.ActionType = actionType;
         this.UnitType = unitType;
+        this.Tick = tick;
     }
 }

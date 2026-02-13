@@ -75,6 +75,7 @@ public abstract class GameObject : IGameObject{
     public virtual bool IsActive{set; get;}
     public PriorityQueue<GameMap.MapAnimation, (int, int)> objectAnimations = new ();
 
+    //konstruktor do armii, zeby nie zwiekszac liczby obiektów dla determinizmu ID jednostek
     public GameObject(GameObjectFor X)
     {
         if (X != GameObjectFor.Army)

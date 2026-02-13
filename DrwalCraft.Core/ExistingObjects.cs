@@ -4,9 +4,11 @@ using System.Text.Json;
 using System.Windows.Interop;
 using DrwalCraft.Core.Buildings;
 using DrwalCraft.Core.Troops;
+using DrwalCraft.DrwalCraftCore.GameLoop;
 using Messages;
 
 namespace DrwalCraft.Core;
+//Podziel sensowniej te funkcje, stwórz plik ClientGame w Client i przenieś część rzeczy do Message
 
 //Fakt, że klasa jest statyczna sprawia, że serwer korzystający z referencji do tego projektu jest ograniczony do 
 //wywoływania jednej gry. Tak - uświadomiliśmy to sobie, ale zrobienie całej gry, będąc debilami, nie jest banalne i jeśli 
@@ -33,17 +35,23 @@ public static class ExistingObjects{
                 barrack.MainAction();
             }
         }
+        
         //dodaj synchronizację tikową
          while (InQueue.Count > 0)
          {
              lock(InQueueLock)
              {
-                 //InSemaphore.Wait();
-                 DoMessage(InQueue.Dequeue());
-                 //Console.WriteLine(InQueue.Count);
+                 var msg =  InQueue.Dequeue();
+                 if (msg.Tick > GameLoop.CurrentTick)
+                 {
+                     InQueue.Enqueue(msg, msg.Tick);
+                     break;
+                 }
+                 
+                 DoMessage(msg);
              }
          }
-        //dodawanie obiektów również zaimplementuj przez message i kolejkę(maybe)
+        
         while(_addQueue.Count > 0){
             _addQueue.TryDequeue(out var result);
             if (result is not null)
@@ -61,7 +69,7 @@ public static class ExistingObjects{
     public static void DoMessage(Message message)
     {
         string text = JsonSerializer.Serialize(message);
-        Console.WriteLine($"Doing message: {text}");
+        Console.WriteLine($"Doing message: {text} on tik {GameLoop.CurrentTick}");
         
         int id = message.Id;
         if (message.ActionType == ActionType.MoveUnit)
@@ -74,7 +82,9 @@ public static class ExistingObjects{
                         (gameObject as Troop).TravelTarget = null;
                     else
                     {
-                        (gameObject as Troop).TravelTarget = ((int, int)?)(message.PositionX, message.PositionY);
+                        Console.WriteLine(message.PositionX + ":" + message.PositionY);
+                        (gameObject as Troop).SetQueuedTravelTarget(((int, int)?)(message.PositionX, message.PositionY));
+                        //Console.WriteLine((gameObject as Troop).);
                     }
                 }
         }
@@ -87,7 +97,7 @@ public static class ExistingObjects{
                     GameObject? Opponent = null;
                     foreach(var troop in GameObjects)
                         if(troop.Id == message.AttackTargetId) Opponent = troop;
-                    (gameObject as Troop).AttackTarget = Opponent;
+                    (gameObject as Troop).SetQueuedAttackTarget(Opponent);
                 }
         }
 
@@ -121,17 +131,19 @@ public static class ExistingObjects{
         if ((sender as GameObject) == null) return;
         int? opponentId = null;
         foreach(var gameObject in GameObjects)
-            if(gameObject == (sender as Troop).AttackTarget) opponentId = gameObject.Id;
-        var msg = new Message(ActionType.AttackUnit, UnitType.Soldier, (sender as GameObject).Id, opponentId);
+            if(gameObject == (sender as Troop)._queuedAttackTarget) opponentId = gameObject.Id;
+        int key = GameLoop.CurrentTick + GameLoop.OffsetTik;
+        var msg = new Message(ActionType.AttackUnit, UnitType.Soldier, (sender as GameObject).Id, opponentId, key);
+        Console.WriteLine($"Enqueing message on tik {GameLoop.CurrentTick}");
         lock (InQueueLock)
         {
-            InQueue.Enqueue(msg,1);
+            InQueue.Enqueue(msg, key);
             //InSemaphore.Release();
         }
 
         lock (OutQueueLock)
         {
-            OutQueue.Enqueue(msg,1);
+            OutQueue.Enqueue(msg, key);
             OutSemaphore.Release();
         }
     }
@@ -139,31 +151,34 @@ public static class ExistingObjects{
     public static void HandleTravelTargetChanged(object? sender, EventArgs e)
     {
         if ((sender as GameObject)==null) return;
-        var msg = new Message(ActionType.MoveUnit, UnitType.Soldier, (sender as GameObject).Id,  (sender as Troop).TravelTarget);
-        Console.WriteLine($"{(sender as Troop).TravelTarget}");
+        int key = GameLoop.CurrentTick + GameLoop.OffsetTik;
+        var msg = new Message(ActionType.MoveUnit, UnitType.Soldier, (sender as GameObject).Id,  (sender as Troop)._queuedTravelTarget, key);
+        Console.WriteLine($"Enqueing message on tik {GameLoop.CurrentTick}");
         lock (InQueueLock)
         {
-            InQueue.Enqueue(msg,1);
+            InQueue.Enqueue(msg,key);
             //InSemaphore.Release();
         }
         lock (OutQueueLock)
         {
-            OutQueue.Enqueue(msg,1);
+            OutQueue.Enqueue(msg,key);
             OutSemaphore.Release();
         }
     }
 
     public static void BarrackAddMessage(Type Troop)
     {
-        var msg = new Message(ActionType.CreateUnitBarrack, Troop == typeof(Knight)?UnitType.Knight:UnitType.Archer);
+        int key = GameLoop.CurrentTick + GameLoop.OffsetTik;
+        var msg = new Message(ActionType.CreateUnitBarrack, Troop == typeof(Knight)?UnitType.Knight:UnitType.Archer, key);
+        Console.WriteLine($"Enqueing message on tik {GameLoop.CurrentTick}");
         lock (InQueueLock)
         {
-            InQueue.Enqueue(msg,1);
+            InQueue.Enqueue(msg, key);
         }
 
         lock (OutQueueLock)
         {
-            OutQueue.Enqueue(msg,1);
+            OutQueue.Enqueue(msg, key);
             OutSemaphore.Release();
         }
     }

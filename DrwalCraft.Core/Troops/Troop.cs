@@ -11,22 +11,31 @@ public interface ITroop : IGameObject{
     public void Move();
 }
 
+// public enum 
+
 public abstract class Troop : GameObject, ITroop{
     protected int _range;
     protected int _speed;
     protected int _actionSpeed;
     protected (int, int)? _travelTarget;
+    public (int, int)? _queuedTravelTarget;
     public GameObject? _attackTarget;
+    public GameObject? _queuedAttackTarget;
     public GameObject? AttackTarget{
         get => _attackTarget;
         set
         {
             if (_attackTarget != value)
             {
-                _attackTarget = value;
+                _queuedAttackTarget = value;
                 AttackTargetChanged?.Invoke(this, EventArgs.Empty);
             }
         }
+    }
+
+    public void SetQueuedAttackTarget(GameObject? attackTarget)
+    {
+        _attackTarget = attackTarget;
     }
     public event EventHandler AttackTargetChanged;
     
@@ -40,13 +49,19 @@ public abstract class Troop : GameObject, ITroop{
         set{
             if (_travelTarget != value)
             {
-                _travelTarget = value;
+                _queuedTravelTarget = value;
                 TravelTargetChanged?.Invoke(this, EventArgs.Empty);
+                //Queues to change travelTarget in Offset number of ticks - neccesery for better clients synchronisation
             }
             if(value == null) return;
             
             _travelPath = GameMap.BFS(Position, value.Value);
         }
+    }
+
+    public void SetQueuedTravelTarget ((int,int)?  travelTarget)
+    {
+        _travelTarget = travelTarget;
     }
     public event EventHandler TravelTargetChanged;
     

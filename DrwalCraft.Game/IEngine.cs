@@ -17,24 +17,6 @@ public class Game{
     public static DrwalCraft.Core.Troops.Soldier? soldier2;
     public static DrwalCraft.Core.Troops.Soldier? soldier3;
     
-    private readonly PriorityQueue<Message, int> InQueue;
-    private readonly PriorityQueue<Message, int> OutQueue;
-    private readonly Lock InQueueLock;
-    private readonly Lock OutQueueLock;
-    private readonly SemaphoreSlim OutSemaphore;
-    private readonly SemaphoreSlim InSemaphore;
-    
-    public Game(PriorityQueue<Message, int> inQueue, PriorityQueue<Message, int> outQueue, Lock inQueueLock,
-        Lock outQueueLock, SemaphoreSlim outSemaphore, SemaphoreSlim inSemaphore)
-    {
-        InQueue = inQueue;
-        OutQueue = outQueue;
-        InQueueLock = inQueueLock;
-        OutQueueLock = outQueueLock;
-        OutSemaphore =  outSemaphore;
-        InSemaphore =  inSemaphore;
-    }
-
     [STAThread]
     public static void Main(){
         var DrwalCraftApp = new DrwalCraft.Engine.App();
@@ -45,7 +27,7 @@ public class Game{
         DrwalCraftApp.Run(DrwalCraftWindow);
     }
     public static void ContentRenderd(){
-        DrwalCraft.Engine.GameLoop.GameLoop.UpdateGameLogic = GameLoopLogic;
+        DrwalCraftCore.GameLoop.GameLoop.UpdateGameLogic = GameLoopLogic;
         soldier1 = new DrwalCraft.Core.Troops.Knight();
         DrwalCraft.Core.GameMap.AddObjectToMap(16, 16, soldier1);
 

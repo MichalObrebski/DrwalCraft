@@ -17,7 +17,6 @@ public class Client
         using var client = new TcpClient();
         await client.ConnectAsync(ipEndPoint);
         Console.WriteLine("Client connected");
-        // Task game = Task.Run(async() => await GameLoop(client));
         Task read = ReadFromServer(client);
         Task write = WriteToServer(client);
         await Task.WhenAll(read, write);
@@ -35,10 +34,9 @@ public class Client
             if (msg == null) break; 
             lock (ExistingObjects.InQueueLock) 
             { 
-                ExistingObjects.InQueue.Enqueue(msg, i); 
+                ExistingObjects.InQueue.Enqueue(msg, msg.Tick); 
                 //ExistingObjects.InSemaphore.Release();
             } 
-            i++;
         }
     }
 

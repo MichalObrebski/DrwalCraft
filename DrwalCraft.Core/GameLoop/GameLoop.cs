@@ -1,18 +1,20 @@
 using System.Diagnostics;
 using DrwalCraft.Core;
-using DrwalCraft.Engine.Render.GameUIDataContext;
 
-namespace DrwalCraft.Engine.GameLoop;
+namespace DrwalCraft.DrwalCraftCore.GameLoop;
 
 public static class GameLoop{
     public static Action UpdateGameLogic = () => {};
-    public static void StartGameLoop(ReaderWriterLockSlim mapLock, GameUIDataContext? dataContext){
-        var gameThread = new Thread(()=>{Loop(mapLock, dataContext);});
+    public static void StartGameLoop(ReaderWriterLockSlim mapLock){
+        var gameThread = new Thread(()=>{Loop(mapLock);});
         gameThread.IsBackground = true;
         gameThread.Start();
     }
 
-    private static void Loop(ReaderWriterLockSlim mapLock, GameUIDataContext? dataContext){
+    public static int CurrentTick = 0;
+    public const int OffsetTik = 3;
+
+    private static void Loop(ReaderWriterLockSlim mapLock){
         const int TickRate = 12;
         const double TargetDt = 1000.0 / TickRate;
         
@@ -33,6 +35,7 @@ public static class GameLoop{
                     GameMap.mainAnimationQueue = new ();
                     UpdateGameLogic();
                     // trees.MoveNext();
+                    CurrentTick++;
                     accumulator -= TargetDt;
                 }
                 finally{

@@ -51,7 +51,7 @@ public partial class MainWindow : Window{
         miniMap = new Render.MiniMap(height, width);
 
         Render.RenderLoop.StartRenderLoop(GameMapImage, MiniMapImage, mainMap, miniMap, mapLock, ct);
-        DrwalCraft.Engine.GameLoop.GameLoop.StartGameLoop(mapLock, this.DataContext as GameUIDataContext);
+        DrwalCraftCore.GameLoop.GameLoop.StartGameLoop(mapLock);
         ContentRenderd();
         
         GameMapImage.MouseDown += MainMapClick;

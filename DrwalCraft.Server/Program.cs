@@ -28,18 +28,14 @@ public static class Program
     
     private static async Task AcceptClients(TcpListener listener, CancellationToken token = default)
     {
-        listener.Start(backlog: 10);
+        listener.Start(backlog: 2);
         var clientsTasks = new List<Task>();
-        
-        while (true)
+        for (int i = 0; i < 2; i++)
         {
-            try
+            try 
             {
                 TcpClient client = await listener.AcceptTcpClientAsync(token);
-                _clients.Add(client);
-                clientsTasks.Add(ReceiveMesFromClient(client, token));
-                _clientsQueues[client] = Channel.CreateUnbounded<Message>();
-                clientsTasks.Add(SendMesToClient(client, _clientsQueues[client], token));
+                _clients.Add(client); 
             }
             catch (OperationCanceledException)
             {
@@ -47,8 +43,16 @@ public static class Program
             }
         }
 
+        foreach(var client in _clients)
+        {
+            clientsTasks.Add(ReceiveMesFromClient(client, token));
+            _clientsQueues[client] = Channel.CreateUnbounded<Message>();
+            clientsTasks.Add(SendMesToClient(client, _clientsQueues[client], token));
+        }
+        
         listener.Stop();
         await Task.WhenAll(clientsTasks);
+        
     }
     
     private static async Task ReceiveMesFromClient(TcpClient client, CancellationToken token = default)
@@ -122,7 +126,12 @@ public static class Program
         try
         {
             var stream = client.GetStream();
+            
             var writer = new StreamWriter(stream) { AutoFlush = true };
+            var startMsg = new Message("Serwer", "Start");
+            var startJson  = JsonSerializer.Serialize(startMsg);
+            await writer.WriteLineAsync(startJson);
+            
             while (!token.IsCancellationRequested)
             {
                 var msg = await channel.Reader.ReadAsync(token);
