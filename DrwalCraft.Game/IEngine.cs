@@ -33,7 +33,7 @@ public class Game{
 
         soldier2 = new Knight(5, 10);
         DrwalCraft.Core.GameMap.AddObjectToMap(12, 8, soldier2);
-        //soldier2.TravelTarget = (20,30);
+        soldier2.TravelTarget = (20,30);
 
         soldier3 = new DrwalCraft.Core.Troops.Knight();
 

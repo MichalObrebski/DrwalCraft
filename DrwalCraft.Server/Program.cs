@@ -21,8 +21,11 @@ public static class Program
         using var listener = new TcpListener(ipEndPoint);
         
         var tasks = new List<Task>();
+        tasks.Add(Task.Run(()=>
+        {
+            ServerGame.Game();
+        }, cts.Token));
         tasks.Add(AcceptClients(listener, cts.Token));
-        tasks.Add(Task.Run(() => ServerGameLoop(_serverQueue)));
         await Task.WhenAll(tasks);
     }
     
@@ -159,16 +162,5 @@ public static class Program
             Console.WriteLine("Client disconnected");
         }
     }
-
-    private static void ServerGameLoop(ConcurrentQueue<TcpClient> myQueue)
-    {
-        //Silnik samemu wykonuje obliczenia i wywołuje wszystkie akcje otrzymane od klientów
-        while (true)
-        {
-            TcpClient client;
-            if(myQueue.TryDequeue(out client))
-                Console.WriteLine($"{client.Client.RemoteEndPoint.ToString()}: jebie komunizm");
-            if (myQueue.IsEmpty) Task.Delay(10).Wait();
-        }
-    }
+    
 }

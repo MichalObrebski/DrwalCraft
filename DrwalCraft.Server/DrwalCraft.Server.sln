@@ -1,0 +1,35 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrwalCraft.Server", "DrwalCraft.Server.csproj", "{6C1A92CD-3524-B6FE-90B4-23FEE8E935DD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DrwalCraft.Engine.Core", "DrwalCraft.Engine.Core", "{AF6DDB45-3E8F-0473-E81B-620A4BE1653C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrwalCraft.Core", "DrwalCraft.Engine.Core\DrwalCraft.Core.csproj", "{D38B948C-4454-2948-1989-FEC7137F80CA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6C1A92CD-3524-B6FE-90B4-23FEE8E935DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C1A92CD-3524-B6FE-90B4-23FEE8E935DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C1A92CD-3524-B6FE-90B4-23FEE8E935DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C1A92CD-3524-B6FE-90B4-23FEE8E935DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D38B948C-4454-2948-1989-FEC7137F80CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D38B948C-4454-2948-1989-FEC7137F80CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D38B948C-4454-2948-1989-FEC7137F80CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D38B948C-4454-2948-1989-FEC7137F80CA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D38B948C-4454-2948-1989-FEC7137F80CA} = {AF6DDB45-3E8F-0473-E81B-620A4BE1653C}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {97BC451B-EFE3-4ED1-A973-B6DD3C0D55F6}
+	EndGlobalSection
+EndGlobal

@@ -1,9 +1,6 @@
 using System.Diagnostics;
 using System.Runtime;
 using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-
 
 namespace DrwalCraft.Core.Troops;
 public interface ITroop : IGameObject{
