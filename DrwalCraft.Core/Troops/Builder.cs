@@ -11,13 +11,15 @@ public class Builder : Troop{
         MaxHp = 50;
         Hp = 50;
         Constructing = false;
+        _speed = 8;
         Products = new();
 
         Products.Add(typeof(Barrack));
     }
 
     public override void MainAction(){
-        
+        if(TravelTarget != null)
+            Move();
     }
     public void Build(Type building){
         if(Constructing) return;
@@ -31,15 +33,23 @@ public class Builder : Troop{
 
         int size = _inConstruction.Size;
         int x = -1, y = -1;
-        for(int i = Position.Item1 - size + 1; i < Position.Item1 + size && x == -1; i++)
-            for(int j = Position.Item2 - size + 1; j < Position.Item2 + size && x == -1; j++)
+        for(int i = Position.Item1 - size + 1; i <= Position.Item1 && x == -1; i++)
+            for(int j = Position.Item2 - size + 1; j <= Position.Item2 && x == -1; j++)
                 if(IsAbleToBuild(i, j, size)){
                     x = i;
                     y = j;
                 }
-        GameMap.AddObjectToMap(x, y, new Construction(_inConstruction, this));
+        if(x != -1){
+            TravelTarget = null;
+            GameMap.AddObjectToMap(x, y, new Construction(_inConstruction, this));
+        }
+        else{
+            Constructing = false;
+        }
     }
     private bool IsAbleToBuild(int x, int y, int size){
+        if(x < 0 || y < 0) return false;
+        if(x + size >= GameMap.Size || y + size >= GameMap.Size) return false;
         for(int i = x; i < x+size; i++){
             for(int j = y; j < y+size; j++){
                 if(GameMap.Map[i,j].GameObject != null && GameMap.Map[i,j].GameObject != this)

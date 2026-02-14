@@ -1,9 +1,11 @@
 
+using DrwalCraft.Core.Troops;
+
 namespace DrwalCraft.Core.Buildings;
 
 public class Construction : Building{
-    private GameObject _builder;
-    public Construction(GameObject building, GameObject builder) : base("Construction.png", building.Size){
+    private Builder _builder;
+    public Construction(GameObject building, Builder builder) : base("Construction.png", building.Size){
         Name = "Construction";
         MaxHp = building.MaxHp;
         Hp = 1;
@@ -21,6 +23,7 @@ public class Construction : Building{
             var builderPosition = GameMap.GetNearestEmptyField(this);
             Hp = -1;
             GameMap.AddObjectToMap(Position.Item1, Position.Item2, _producing);
+            _builder.Constructing = false;
             GameMap.AddObjectToMap(builderPosition.Item1, builderPosition.Item2, _builder);
         }
         else{

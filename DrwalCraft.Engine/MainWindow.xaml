@@ -8,6 +8,7 @@
         xmlns:buildings="clr-namespace:DrwalCraft.Core.Buildings;assembly=DrwalCraft.Core"
         xmlns:army="clr-namespace:DrwalCraft.Core.Army;assembly=DrwalCraft.Core"
         xmlns:core="clr-namespace:DrwalCraft.Core;assembly=DrwalCraft.Core"
+        xmlns:mines="clr-namespace:DrwalCraft.Core.Mines;assembly=DrwalCraft.Core"
         mc:Ignorable="d"
         WindowState="Maximized"
         WindowStyle="None"
@@ -132,6 +133,33 @@
                 </ContentControl>
             </StackPanel>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type mines:Mine}">
+            <StackPanel>
+                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource GameObjectTemplate}" />
+                <StackPanel>
+                    <TextBlock FontSize="24" Foreground="White" Text="Miners:" />
+                    <ItemsControl
+                        FontSize="16"
+                        Foreground="White"
+                        Background="#222"
+                        ItemsSource="{Binding Miners}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Name="Name">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat=" {0}: {1}/{2}">
+                                            <Binding Path="Name"/>
+                                            <Binding Path="Hp"/>
+                                            <Binding Path="MaxHp"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type army:Army}">
             <StackPanel>
                 <ContentControl Content="{Binding}" ContentTemplate="{StaticResource GameObjectTemplate}" />
@@ -190,6 +218,15 @@
             <StackPanel Grid.Row="1"
                         Margin="8"
                         Orientation="Vertical">
+                <TextBlock FontSize="32" Foreground="White" Text="Riches:"/>
+                <TextBlock FontSize="24" Foreground="White" >
+                    <TextBlock.Text>
+                        <Binding StringFormat="Wood: {0}">
+                            <Binding.Path>Wood</Binding.Path>
+                        </Binding>
+                    </TextBlock.Text>
+                </TextBlock>
+                <TextBlock FontSize="32" Foreground="White" Text="Active Object:"/>
                 <ContentControl Content="{Binding ActiveUnit}"/>
             </StackPanel>
         </Grid>

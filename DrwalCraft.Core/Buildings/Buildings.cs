@@ -44,5 +44,4 @@ public abstract class Building : GameObject, IBuilding{
         
     }
     public abstract void Produce(Type item);
-    public abstract void MainAction();
 }

@@ -28,6 +28,14 @@ public class GameUIDataContext : INotifyPropertyChanged{
             OnPropertyChanged();
         }
     }
+    private int _wood;
+    public int Wood{
+        get => _wood;
+        set{
+            _wood = value;
+            OnPropertyChanged();
+        }
+    }
 
     public event PropertyChangedEventHandler? PropertyChanged;
     

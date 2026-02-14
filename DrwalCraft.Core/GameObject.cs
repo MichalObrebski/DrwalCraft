@@ -50,25 +50,33 @@ public abstract class GameObject : IGameObject, INotifyPropertyChanged{
     public (int, int) Position {set; get;}
     public int Size {set; get;}
     public event PropertyChangedEventHandler? HpChanged;
+    protected bool _canDie = true;
     public int Hp{
         get => _hp;
         set{
             _hp = value;
-            if(_hp <= 0){
+            if(_hp <= 0 && _canDie){
                 GameMap.Map[Position.Item1, Position.Item2].SetDefault();
                 IsDead = true;
                 ExistingObjects.Remove(this);
             }
-            GameMap.mainAnimationQueue.Enqueue(GameMap.MapAnimation.TakeDamage, Position);
             HpChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Hp)));
             OnPropertyChanged("Hp");
         }
     }
     public virtual void GetAttacked(int damage, GameObject attacker){
+        GameMap.mainAnimationQueue.Enqueue(GameMap.MapAnimation.TakeDamage, Position);
         Hp -= damage;
     }
     public bool IsDead;
-    public int MaxHp{set; get;}
+    protected int _maxHp;
+    public int MaxHp{
+        set{
+            _maxHp = value;
+            OnPropertyChanged(nameof(MaxHp));
+        }
+        get => _maxHp;
+    }
     public string Name{init; get;}
     public virtual bool IsActive{set; get;}
     public PriorityQueue<GameMap.MapAnimation, (int, int)> objectAnimations = new ();
@@ -78,6 +86,7 @@ public abstract class GameObject : IGameObject, INotifyPropertyChanged{
     protected void OnPropertyChanged(string? propertyName){
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+    public abstract void MainAction();
     public GameObject(string? Icon = null, int? playerId = null, int? objectId = null, int size = 1){
         if(playerId is null)
             PlayerId = GameObjectId.PlayerId;
@@ -199,5 +208,8 @@ public abstract class GameObject : IGameObject, INotifyPropertyChanged{
 public class Tree: GameObject{
     public Tree() : base("Tree.png"){
         Name = "Tree";
+    }
+    public override void MainAction(){
+        ExistingObjects.Remove(this);
     }
 }
