@@ -16,4 +16,8 @@
         <ProjectReference Include="..\Messages\Messages.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\DrwalCraft.Core\DrwalCraft.Core.csproj" />
+    </ItemGroup>
+
 </Project>

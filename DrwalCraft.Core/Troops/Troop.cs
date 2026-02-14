@@ -16,6 +16,20 @@ public abstract class Troop : GameObject, ITroop{
     protected int _speed;
     protected int _actionSpeed;
     protected (int, int)? _travelTarget;
+    public GameObject? _attackTarget;
+    public GameObject? AttackTarget{
+        get => _attackTarget;
+        set
+        {
+            if (_attackTarget != value)
+            {
+                _attackTarget = value;
+                AttackTargetChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+    }
+    public event EventHandler AttackTargetChanged;
+    
     protected int _moveProgress;
     protected int _actionProgress;
     protected Stack<(int, int)> _travelPath = new ();
@@ -24,12 +38,18 @@ public abstract class Troop : GameObject, ITroop{
             return _travelTarget;
         }
         set{
-            _travelTarget = value;
+            if (_travelTarget != value)
+            {
+                _travelTarget = value;
+                TravelTargetChanged?.Invoke(this, EventArgs.Empty);
+            }
             if(value == null) return;
             
             _travelPath = GameMap.BFS(Position, value.Value);
         }
     }
+    public event EventHandler TravelTargetChanged;
+    
     public Troop(string Icon, int? playerId = null, int? objectId = null) : base(Icon, playerId, objectId){}
     public virtual void Move(){
         if(TravelTarget == null || TravelTarget == Position) return;

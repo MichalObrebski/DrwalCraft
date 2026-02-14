@@ -3,7 +3,6 @@ namespace DrwalCraft.Core.Troops;
 public class Soldier: Troop{
     protected int _damage;
     public int Damage{get => _damage;}
-    public GameObject? AttackTarget{get;set;}
     public (int, int) Target{
         set{
             var gameObject = GameMap.Map[value.Item1, value.Item2].GameObject;

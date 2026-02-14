@@ -14,7 +14,7 @@ public static class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        var client = new Client(InQueue, OutQueue, InQueueLock, OutQueueLock, InSemaphore, OutSemaphore);
+        var client = new Client();
         Task network = Task.Run(()=> client.ConnectAsync());
         var game = new Game(InQueue, OutQueue, InQueueLock, OutQueueLock, InSemaphore, OutSemaphore);
         Game.Main();
