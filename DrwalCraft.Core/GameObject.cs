@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using DrwalCraft.Core;
 
 namespace DrwalCraft.Core;
 
@@ -10,43 +11,6 @@ public enum GameObjectFor
     Army,
 }
 
-public static class Players{
-    public static Player you;
-    public static Player enemy;
-    public static Player game;
-}
-public class Player{
-    private int _player;
-    private int _objectCount;
-    public int PlayerId {get => _player;}
-    private bool IsPrime(int n){
-        if(n <= 2) return false;
-        if(n % 2 == 0) return false;
-        for(int i=3; i*i <= n; i+=2){
-            if(n % i == 0) return false;
-        }
-        return true;
-    }
-    private int NthOddPrime(int n){
-        int count = 0;
-        int num = 1;
-        while(count < n){
-            num++;
-            if(IsPrime(num))
-                count ++;
-        }
-        return num;
-    }
-    public Player(int player){
-        _player = NthOddPrime(player);
-        _objectCount = 1;
-    }
-    public int GetNewId(){
-        _objectCount++;
-        Console.WriteLine($"player:{_player}, count:{_objectCount}");
-        return _objectCount * 2 * _player;
-    }
-}
 public interface IGameObject{
     public int Id {get;}
     public byte[]? ObjectIcon {get;}

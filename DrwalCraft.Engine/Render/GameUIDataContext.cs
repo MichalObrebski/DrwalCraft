@@ -33,7 +33,7 @@ public class GameUIDataContext : INotifyPropertyChanged{
         get => _wood;
         set{
             _wood = value;
-            OnPropertyChanged();
+            OnPropertyChanged("Wood");
         }
     }
 
@@ -47,5 +47,9 @@ public class GameUIDataContext : INotifyPropertyChanged{
         if(_activeUnit is null) return;
         if(_activeUnit.Hp > 0) return;
         ActiveUnit = null;
+    }
+
+    public void WoodChangeListener(object? sender, EventArgs e){
+        Wood = Players.you.Wood;
     }
 }

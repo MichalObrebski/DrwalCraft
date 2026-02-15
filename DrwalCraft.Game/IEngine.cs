@@ -46,7 +46,7 @@ public class Game{
         DrwalCraft.Core.GameMap.AddObjectToMap(1, 2, new Builder(Players.enemy));
         DrwalCraft.Core.GameMap.AddObjectToMap(2, 2,  new DrwalCraft.Core.Tree());
         // DrwalCraft.Core.GameMap.AddObjectToMap(28, 24, new DrwalCraft.Core.Buildings.Castle(Players.you));
-        DrwalCraft.Core.GameMap.AddObjectToMap(24, 14, new DrwalCraft.Core.Mines.Mine(Players.you));
+        DrwalCraft.Core.GameMap.AddObjectToMap(24, 14, new DrwalCraft.Core.Troops.Miner(Players.you));
         DrwalCraft.Core.GameMap.AddObjectToMap(20, 14, new DrwalCraft.Core.Troops.Miner(Players.you));
         DrwalCraft.Core.GameMap.AddObjectToMap(16, 20, new DrwalCraft.Core.Buildings.Barrack(Players.you));
         }

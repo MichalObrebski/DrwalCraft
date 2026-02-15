@@ -14,12 +14,7 @@ public static class ExistingObjects{
     
     public static void TickAction(){
         foreach(var gameObject in GameObjects){
-            if(gameObject is Troops.Troop troop){
-                troop.MainAction();
-            }
-            if(gameObject is Buildings.Building building){
-                building.MainAction();
-            }
+            gameObject.MainAction();
         }
         
         while (ObjectsActions.InQueue.Count > 0) 

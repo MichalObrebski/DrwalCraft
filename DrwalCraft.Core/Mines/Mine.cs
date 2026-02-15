@@ -5,7 +5,7 @@ namespace DrwalCraft.Core.Mines;
 
 public class Mine : GameObject{
     public List<Miner> Miners {get; set;}
-    public int Player{get; private set;}
+    public int CurrentPlayer{get; private set;}
 
     private int _progress;
     public int Progress{
@@ -28,13 +28,14 @@ public class Mine : GameObject{
     public Mine(Player player): base(player, "Mine.png", size: 3){
         Name = "Wood Mine";
         Miners = new();
+        MiningTime = 18;
         _canDie = false;
-        Player = Players.game.PlayerId;
+        CurrentPlayer = Players.game.PlayerId;
     }
 
     public override void GetAttacked(int damage, GameObject attacker){
         base.GetAttacked(0, attacker);
-        if(Player == Players.game.PlayerId) return;
+        if(CurrentPlayer == Players.game.PlayerId) return;
 
         if(Miners.Count > 0){
             var miner = Miners.First();
@@ -51,7 +52,7 @@ public class Mine : GameObject{
         if(Hp <= 0 || Miners.Count == 0){
             Hp = 0;
             MaxHp = 0;
-            Player = Players.game.PlayerId;
+            CurrentPlayer = Players.game.PlayerId;
         }
     }
 
@@ -62,10 +63,10 @@ public class Mine : GameObject{
                 var field = GameMap.TryGet(i, j);
                 if(field is null) continue;
                 if(field.Value.GameObject == miner){
-                    if(Player == Players.game.PlayerId)
-                        Player = miner.PlayerId;
+                    if(CurrentPlayer == Players.game.PlayerId)
+                        CurrentPlayer = miner.PlayerId;
 
-                    if(Player == miner.PlayerId){
+                    if(CurrentPlayer == miner.PlayerId){
                         Miners.Add(miner);
                         Hp += miner.Hp * 2;
                         MaxHp += miner.MaxHp * 2;
@@ -81,7 +82,16 @@ public class Mine : GameObject{
     public override void MainAction(){
         if(Miners.Count == 0) return;
         if(_progress >= _miningTime){
-            Console.WriteLine(Miners.Count);
+            Player? owner = null;
+            if(CurrentPlayer == Players.you.PlayerId)
+                owner = Players.you;
+            else if(CurrentPlayer == Players.enemy.PlayerId){
+                owner = Players.enemy;
+            }
+            if(owner is not null)
+                foreach(var _ in Miners){
+                    owner.Wood += 10; 
+                }
             Progress = 0;
         }
         else{

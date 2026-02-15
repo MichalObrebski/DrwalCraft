@@ -15,7 +15,7 @@ public class Soldier: Troop{
             else if(gameObject.PlayerId == Players.enemy.PlayerId){
                 AttackTarget = gameObject;
             }
-            else if(gameObject is Mine mine && mine.Player == Players.enemy.PlayerId){
+            else if(gameObject is Mine mine && mine.CurrentPlayer == Players.enemy.PlayerId){
                 AttackTarget = gameObject;
             }
             else{
@@ -58,7 +58,7 @@ public class Soldier: Troop{
             AttackTarget = null;
             return;
         }
-        if(AttackTarget is Mine mine && mine.Player == Players.game.PlayerId){
+        if(AttackTarget is Mine mine && mine.CurrentPlayer == Players.game.PlayerId){
             AttackTarget = null;
             return;
         }

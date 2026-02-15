@@ -35,6 +35,9 @@ public partial class MainWindow : Window{
         Players.game = new Player(1);
         Players.you = new Player(2);
         Players.enemy = new(3);
+
+        Players.you.WoodAmmountChanged += (this.DataContext as GameUIDataContext).WoodChangeListener;
+
         const int MapSize = 64;
 
         DrwalCraft.Core.GameMap.Init(MapSize);

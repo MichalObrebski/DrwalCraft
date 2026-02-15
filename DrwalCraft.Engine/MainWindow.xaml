@@ -24,6 +24,12 @@
                         <Binding Path="Name" />
                     </TextBlock.Text>  
                 </TextBlock>
+                <TextBlock FontSize="16"
+                    Foreground="White">
+                    <TextBlock.Text>
+                        <Binding Path="Id" />
+                    </TextBlock.Text>  
+                </TextBlock>
                 <TextBlock FontSize="24"
                     Foreground="White">
                     <TextBlock.Text>
@@ -221,9 +227,7 @@
                 <TextBlock FontSize="32" Foreground="White" Text="Riches:"/>
                 <TextBlock FontSize="24" Foreground="White" >
                     <TextBlock.Text>
-                        <Binding StringFormat="Wood: {0}">
-                            <Binding.Path>Wood</Binding.Path>
-                        </Binding>
+                        <Binding StringFormat="Wood: {0}" Path="Wood"/>
                     </TextBlock.Text>
                 </TextBlock>
                 <TextBlock FontSize="32" Foreground="White" Text="Active Object:"/>
