@@ -15,7 +15,7 @@ public class Army : GameObject{
         }
     }
     
-    public Army(Player player) : base(player){
+    public Army(Player player) : base(GameObjectFor.Army){
         Troops = new List<Troop>();
         Name = "Army";
     }
