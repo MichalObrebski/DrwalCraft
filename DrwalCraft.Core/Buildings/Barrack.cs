@@ -8,9 +8,13 @@ public class Barrack : Building{
         MaxHp = 500;
         Hp = 500;
         Products = new ();
+        Pricing = new ();
         Products.Add(typeof(Knight));
+        Pricing.Add("Knight: 500");
         Products.Add(typeof(Archer));
+        Pricing.Add("Archer: 600");
         InProduction = false;
+        Price = 2000;
         Console.WriteLine("Id barracka" + this.Id);
     }
 
@@ -22,16 +26,24 @@ public class Barrack : Building{
 
     public override void Produce(Type troop){
         if(InProduction) return;
-        InProduction = true;
 
         if(troop == typeof(Knight)){
-            _producing = new Knight(_player);
-            ProductionTime = 120;
+            if(_player.Wood >= 500){
+                _player.Wood -= 500;
+                _producing = new Knight(_player);
+                ProductionTime = 120;
+            }
         }
         if(troop == typeof(Archer)){
-            ProductionTime = 180;
-            _producing = new Archer(_player);
+            if(_player.Wood >= 600){
+                _player.Wood -= 600;
+                ProductionTime = 180;
+                _producing = new Archer(_player);
+            }
         }
+
+        if(_producing != null)
+            InProduction = true;
     }
     public override void MainAction(){
         if(_producing == null) return;

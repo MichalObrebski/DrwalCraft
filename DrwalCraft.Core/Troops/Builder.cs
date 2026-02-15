@@ -5,6 +5,7 @@ namespace DrwalCraft.Core.Troops;
 public class Builder : Troop{
     private Player _player;
     public List<Type> Products {get; set;}
+    public List<string> Pricing {get; set;}
     private Building? _inConstruction;
     public bool Constructing {set; get;}
     public Builder(Player player) : base(player, "Builder.png"){
@@ -14,9 +15,12 @@ public class Builder : Troop{
         Constructing = false;
         _speed = 8;
         Products = new();
+        Pricing = new();
         _player = player;
+        Price = 300;
 
         Products.Add(typeof(Barrack));
+        Pricing.Add("Barrack: 2000");
     }
 
     public override void MainAction(){
@@ -33,7 +37,10 @@ public class Builder : Troop{
         Constructing = true;
 
         if(building == typeof(Barrack)){
-            _inConstruction = new Barrack(_player);
+            if(_player.Wood >= 2000){
+                _player.Wood -= 2000;
+                _inConstruction = new Barrack(_player);
+            }
         }
 
         if(_inConstruction is null) return;
@@ -52,6 +59,8 @@ public class Builder : Troop{
         }
         else{
             Constructing = false;
+            _player.Wood += 2000;
+            _inConstruction = null;
         }
     }
     private bool IsAbleToBuild(int x, int y, int size){

@@ -41,6 +41,7 @@ public abstract class Building : GameObject, IBuilding{
         }
     }
     public List<Type> Products {get; set;}
+    public List<string> Pricing{get; set;}
     public Building(Player player, string Icon, int size) : base(player, Icon, size:size){
         _player = player;
     }

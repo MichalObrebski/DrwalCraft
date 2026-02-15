@@ -6,6 +6,9 @@ public static class Players{
     public static Player you;
     public static Player enemy;
     public static Player game;
+
+    public static Player player1;
+    public static Player player2;
 }
 public class Player : INotifyPropertyChanged{
     private int _player;

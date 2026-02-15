@@ -67,17 +67,23 @@ public class Game{
             if(dataContext == null || dataContext.ActiveUnit == null) return;
             
             var activeUnit = dataContext.ActiveUnit;
-            if(activeUnit is Army army)
-                foreach(var troop in army.Troops){
-                    if(troop is Soldier soldier)
-                        soldier.Target = (x, y);
-                }
-            else if(activeUnit is Soldier soldier)
-                soldier.Target = (x, y);
-            else if(activeUnit is Miner miner)
-                miner.Target = (x, y);
-            else if(activeUnit is Troop troop)
-                troop.TravelTarget = (x, y);
+            if(activeUnit.PlayerId == Players.you.PlayerId){
+                if(activeUnit is Army army)
+                    foreach(var troop in army.Troops){
+                        if(troop is Soldier soldier)
+                            soldier.Target = (x, y);
+                        else if(troop is Miner miner)
+                            miner.Target = (x, y);
+                        else if(troop is Builder builder)
+                            builder.TravelTarget = (x, y);
+                    }
+                else if(activeUnit is Soldier soldier)
+                    soldier.Target = (x, y);
+                else if(activeUnit is Miner miner)
+                    miner.Target = (x, y);
+                else if(activeUnit is Troop troop)
+                    troop.TravelTarget = (x, y);
+            }
         }
         else{
 

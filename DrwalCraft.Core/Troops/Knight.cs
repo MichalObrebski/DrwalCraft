@@ -9,5 +9,6 @@ public class Knight : Soldier{
         MaxHp = 100;
         Hp = 100;
         Name = "Knight";
+        Price = 500;
     }
 }

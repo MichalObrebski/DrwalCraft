@@ -10,22 +10,33 @@ public class Castle : Building{
         InProduction = false;
 
         Products = new();
+        Pricing = new();
         Products.Add(typeof(Builder));
+        Pricing.Add("Builder: 300");
         Products.Add(typeof(Miner));
+        Pricing.Add("Miner: 300");
     }
 
         public override void Produce(Type troop){
         if(InProduction) return;
-        InProduction = true;
 
         if(troop == typeof(Builder)){
-            _producing = new Builder(_player);
-            ProductionTime = 120;
+            if(_player.Wood >= 300){
+                _player.Wood -= 300;
+                _producing = new Builder(_player);
+                ProductionTime = 120;
+            }
         }
         if(troop == typeof(Miner)){
-            _producing = new Miner(_player);
-            ProductionTime = 120;
+            if(_player.Wood >= 300){
+                _player.Wood -= 300;
+                _producing = new Miner(_player);
+                ProductionTime = 120;
+            }
         }
+
+        if(_producing != null)
+            InProduction = true;
     }
     public override void MainAction(){
         if(_producing == null) return;

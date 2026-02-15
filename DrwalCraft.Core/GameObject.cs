@@ -53,6 +53,7 @@ public abstract class GameObject : IGameObject, INotifyPropertyChanged{
         get => _maxHp;
     }
     public string Name{init; get;}
+    public static int Price{set; get;}
     public virtual bool IsActive{set; get;}
     public PriorityQueue<GameMap.MapAnimation, (int, int)> objectAnimations = new ();
 

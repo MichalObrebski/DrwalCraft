@@ -35,6 +35,8 @@ public partial class MainWindow : Window{
         Players.game = new Player(1);
         Players.you = new Player(2);
         Players.enemy = new(3);
+        Players.player1 = Players.you;
+        Players.player2 = Players.enemy;
 
         Players.you.WoodAmmountChanged += (this.DataContext as GameUIDataContext).WoodChangeListener;
 
@@ -59,6 +61,9 @@ public partial class MainWindow : Window{
         Render.RenderLoop.StartRenderLoop(GameMapImage, MiniMapImage, mainMap, miniMap, mapLock, ct);
         Core.GameLoop.GameLoop.StartGameLoop(mapLock);
         ContentRenderd();
+
+        if(Players.player2 == Players.you)
+            mainMap.SetToEnd();
         
         GameMapImage.MouseDown += MainMapClick;
         GameMapImage.MouseDown += MainMapMouseDown;
@@ -178,6 +183,8 @@ public partial class MainWindow : Window{
         var button = sender as Button;
         var product = button.DataContext as Type;
         var gameObject = button.Tag as DrwalCraft.Core.GameObject;
+        
+        if(gameObject.PlayerId != Players.you.PlayerId) return;
         
         if (gameObject != null && product != null){
             if (gameObject is DrwalCraft.Core.Buildings.Building building)

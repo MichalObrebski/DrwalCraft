@@ -40,6 +40,11 @@ public class MainMap{
         }
     }
 
+    public void SetToEnd(){
+        OffsetTop = _maxOffsetTop;
+        OffsetLeft = _maxOffsetLeft;
+    }
+
     public MainMap(int height, int width, int chunkSize, int mapSize, GameUIDataContext.GameUIDataContext dataContext){
         _dataContext = dataContext;
         Height = height;
