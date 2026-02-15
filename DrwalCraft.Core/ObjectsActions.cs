@@ -92,7 +92,7 @@ public static class ObjectsActions
     public static void HandleMineTargetChanged(object? sender, EventArgs e)
     {
         if (!(sender is Miner)) return;
-        int? MineId = (sender as Miner)._queuedTargetMine.Id;
+        int? MineId = (sender as Miner)?._queuedTargetMine?.Id;
         int key = GameLoop.CurrentTick + GameLoop.OffsetTik;
         var msg = new Message(ActionType.GoMine, UnitType.TreeMiner, (sender as GameObject).Id, MineId, key);
         Console.WriteLine($"Enqueing message on tik {GameLoop.CurrentTick}");
@@ -111,7 +111,7 @@ public static class ObjectsActions
     {
         if ((sender as GameObject) == null) return;
         int? opponentId = null;
-        opponentId = (sender as Troop)._queuedAttackTarget.Id;
+        opponentId = (sender as Troop)?._queuedAttackTarget?.Id;
         int key = GameLoop.CurrentTick + GameLoop.OffsetTik;
         var msg = new Message(ActionType.AttackUnit, UnitType.Soldier, (sender as GameObject).Id, opponentId, key);
         Console.WriteLine($"Enqueing message on tik {GameLoop.CurrentTick}");
