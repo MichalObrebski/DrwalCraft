@@ -29,19 +29,29 @@ public class Mine : GameObject{
         Name = "Wood Mine";
         Miners = new();
         _canDie = false;
+        Player = Players.game.PlayerId;
     }
 
     public override void GetAttacked(int damage, GameObject attacker){
-        base.GetAttacked(damage, attacker);
-        var miner = Miners.First();
-        miner.Hp -= damage/2;
-        if(miner.IsDead){
-            Miners.RemoveAt(0);
-            MaxHp -= miner.MaxHp;
+        base.GetAttacked(0, attacker);
+        if(Player == Players.game.PlayerId) return;
+
+        if(Miners.Count > 0){
+            var miner = Miners.First();
+            var tempHp = miner.Hp;
+            miner.Hp -= damage/2;
+            var deltaHp = miner.Hp > 0 ? tempHp - miner.Hp : tempHp;
+            Hp -= deltaHp * 2;
+            if(miner.IsDead){
+                Miners.RemoveAt(0);
+                OnPropertyChanged(nameof(Miners));
+                MaxHp -= miner.MaxHp;
+            }
         }
-        if(Hp <= 0){
+        if(Hp <= 0 || Miners.Count == 0){
             Hp = 0;
-            Player = 0;
+            MaxHp = 0;
+            Player = Players.game.PlayerId;
         }
     }
 
@@ -52,7 +62,7 @@ public class Mine : GameObject{
                 var field = GameMap.TryGet(i, j);
                 if(field is null) continue;
                 if(field.Value.GameObject == miner){
-                    if(Player == 0)
+                    if(Player == Players.game.PlayerId)
                         Player = miner.PlayerId;
 
                     if(Player != miner.PlayerId)

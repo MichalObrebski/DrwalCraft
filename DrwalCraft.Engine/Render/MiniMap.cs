@@ -46,7 +46,7 @@ public class MiniMap{
                 }
                 else{
                     if(gameObject is Core.Mines.Mine mine){
-                        if(mine.Player == 0)
+                        if(mine.Player == Players.game.PlayerId)
                             bitmap.WritePixels(rect, mapObject.yellowSquare, ChunkSize*4 ,0);
                         else if(mine.Player == Players.you.PlayerId)
                             bitmap.WritePixels(rect, mapObject.blueSquare, ChunkSize*4 ,0);
