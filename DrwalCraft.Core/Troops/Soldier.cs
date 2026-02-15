@@ -41,7 +41,7 @@ public class Soldier: Troop{
         else{
             int distX = Math.Abs(AttackTarget.Position.Item1 - Position.Item1);
             int distY = Math.Abs(AttackTarget.Position.Item2 - Position.Item2);
-            if(Math.Max(distX, distY) <= _range){
+            if(Math.Max(distX, distY) <= _range && ClearRange(Position, AttackTarget.Position)){
                 Attack();
             }
             else{
@@ -70,5 +70,123 @@ public class Soldier: Troop{
         else{
             _actionProgress--;
         }
+    }
+    private bool ClearRange((int, int) troop, (int, int) target){
+        int x = Math.Abs(troop.Item1 - target.Item1);
+        int y = Math.Abs(troop.Item2 - target.Item2);
+        if(x > y){
+            if(target.Item1 < troop.Item1)
+                (troop, target) = (target, troop);
+
+            if(troop.Item2 < target.Item2){
+                for(int i=0; i<=x-y; i++){
+                    var positionX = troop.Item1 + i;
+                    var positionY = troop.Item2;
+                    while(positionY < target.Item2){
+                        var gameObject = GameMap.TryGet(positionX, positionY)?.GameObject;
+                        if(gameObject is not null && gameObject is not Troop)
+                            return false;
+                        positionX++;
+                        positionY++;
+                    }
+                    while(positionX < target.Item1){
+                        var gameObject = GameMap.TryGet(positionX, positionY)?.GameObject;
+                        if(gameObject is not null && gameObject is not Troop)
+                            return false;
+                        positionX++;
+                    }
+                }
+            }
+            else{
+                for(int i=0; i<=x-y; i++){
+                    var positionX = troop.Item1 + i;
+                    var positionY = troop.Item2;
+                    while(positionY > target.Item2){
+                        var gameObject = GameMap.TryGet(positionX, positionY)?.GameObject;
+                        if(gameObject is not null && gameObject is not Troop)
+                            return false;
+                        positionX++;
+                        positionY--;
+                    }
+                    while(positionX < target.Item1){
+                        var gameObject = GameMap.TryGet(positionX, positionY)?.GameObject;
+                        if(gameObject is not null && gameObject is not Troop)
+                            return false;
+                        positionX++;
+                    }
+                }
+            }
+        }
+        else if(x < y){
+            if(target.Item1 < troop.Item1)
+                (troop, target) = (target, troop);
+
+            if(troop.Item2 < target.Item2){
+                for(int i=0; i<=y-x; i++){
+                    var positionX = troop.Item1;
+                    var positionY = troop.Item2 + i;
+                    while(positionX < target.Item1){
+                        var gameObject = GameMap.TryGet(positionX, positionY)?.GameObject;
+                        if(gameObject is not null && gameObject is not Troop)
+                            return false;
+                        positionX++;
+                        positionY++;
+                    }
+                    while(positionY < target.Item2){
+                        var gameObject = GameMap.TryGet(positionX, positionY)?.GameObject;
+                        if(gameObject is not null && gameObject is not Troop)
+                            return false;
+                        positionY++;
+                    }
+                }
+            }
+            else{
+                for(int i=0; i<=y-x; i++){
+                    var positionX = troop.Item1;
+                    var positionY = troop.Item2 - i;
+                    while(positionX < target.Item1){
+                        var gameObject = GameMap.TryGet(positionX, positionY)?.GameObject;
+                        if(gameObject is not null && gameObject is not Troop)
+                            return false;
+                        positionX++;
+                        positionY--;
+                    }
+                    while(positionY > target.Item2){
+                        var gameObject = GameMap.TryGet(positionX, positionY)?.GameObject;
+                        if(gameObject is not null && gameObject is not Troop)
+                            return false;
+                        positionY--;
+                    }
+                }
+            }
+        }
+        else{            
+            if(target.Item1 < troop.Item1)
+                (troop, target) = (target, troop);
+
+            if(troop.Item2 < target.Item2){
+                var positionX = troop.Item1;
+                var positionY = troop.Item2;
+                while(positionY < target.Item2){
+                    var gameObject = GameMap.TryGet(positionX, positionY)?.GameObject;
+                    if(gameObject is not null && gameObject is not Troop)
+                        return false;
+                    positionX++;
+                    positionY++;
+                }
+            }
+            else{
+                var positionX = troop.Item1;
+                var positionY = troop.Item2;
+                while(positionY > target.Item2){
+                    var gameObject = GameMap.TryGet(positionX, positionY)?.GameObject;
+                    if(gameObject is not null && gameObject is not Troop)
+                        return false;
+                    positionX++;
+                    positionY--;
+                }
+            }
+        }
+        return true;
     }
 }
