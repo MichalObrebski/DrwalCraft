@@ -73,8 +73,20 @@ public static class GameMap{
                     AddObjectToMap(i, j, new Tree());
                 else if(field == 0x88)
                     AddObjectToMap(i, j, new Mine(Players.game));
-                else if(field == 0xAA)
-                    AddObjectToMap(i, j, new Castle(Players.you));
+                else if(field == 0xAA){
+                    if(forest[i*4 + j*stride] == 0xFF){
+                        if(Players.you.PlayerId < Players.enemy.PlayerId)
+                            AddObjectToMap(i, j, new Castle(Players.you));
+                        else
+                            AddObjectToMap(i, j, new Castle(Players.enemy));
+                    }
+                    else{
+                        if(Players.you.PlayerId > Players.enemy.PlayerId)
+                            AddObjectToMap(i, j, new Castle(Players.you));
+                        else
+                            AddObjectToMap(i, j, new Castle(Players.enemy));
+                    }
+                }
             }
         }
     }

@@ -3,7 +3,7 @@ using System.Text.Json;
 using DrwalCraft.Core.Buildings;
 using DrwalCraft.Core.Mines;
 using DrwalCraft.Core.Troops;
-using DrwalCraft.DrwalCraftCore.GameLoop;
+using DrwalCraft.Core.GameLoop;
 
 using Messages;
 
@@ -23,9 +23,9 @@ public static class ObjectsActions
     public static void DoMessage(Message message)
     {
         string text = JsonSerializer.Serialize(message);
-        Console.WriteLine($"Doing message: {text} on tik {GameLoop.CurrentTick}");
+        Console.WriteLine($"Doing message: {text} on tik {GameLoop.GameLoop.CurrentTick}");
         
-        int id = message.Id;
+        int? id = message.Id;
         if (message.ActionType == ActionType.MoveUnit)
         {
             foreach(var gameObject in ExistingObjects.GameObjects)
@@ -62,7 +62,7 @@ public static class ObjectsActions
                 {
                     foreach(var mine in ExistingObjects.GameObjects)
                         if(mine is Mine && mine.Id == message.TargetId)
-                            (gameObject as Miner).setQueuedTargetMine((Mine)mine);
+                            (gameObject as Miner)?.setQueuedTargetMine((Mine)mine);
                 }
         }
 
@@ -93,9 +93,9 @@ public static class ObjectsActions
     {
         if (!(sender is Miner)) return;
         int? MineId = (sender as Miner)?._queuedTargetMine?.Id;
-        int key = GameLoop.CurrentTick + GameLoop.OffsetTik;
+        int key = GameLoop.GameLoop.CurrentTick + GameLoop.GameLoop.OffsetTik;
         var msg = new Message(ActionType.GoMine, UnitType.TreeMiner, (sender as GameObject).Id, MineId, key);
-        Console.WriteLine($"Enqueing message on tik {GameLoop.CurrentTick}");
+        Console.WriteLine($"Enqueing message on tik {GameLoop.GameLoop.CurrentTick}");
         lock (InQueueLock)
         {
             InQueue.Enqueue(msg, key);
@@ -112,9 +112,9 @@ public static class ObjectsActions
         if ((sender as GameObject) == null) return;
         int? opponentId = null;
         opponentId = (sender as Troop)?._queuedAttackTarget?.Id;
-        int key = GameLoop.CurrentTick + GameLoop.OffsetTik;
+        int key = GameLoop.GameLoop.CurrentTick + GameLoop.GameLoop.OffsetTik;
         var msg = new Message(ActionType.AttackUnit, UnitType.Soldier, (sender as GameObject).Id, opponentId, key);
-        Console.WriteLine($"Enqueing message on tik {GameLoop.CurrentTick}");
+        Console.WriteLine($"Enqueing message on tik {GameLoop.GameLoop.CurrentTick}");
         lock (InQueueLock)
         {
             InQueue.Enqueue(msg, key);
@@ -131,9 +131,9 @@ public static class ObjectsActions
     public static void HandleTravelTargetChanged(object? sender, EventArgs e)
     {
         if ((sender as GameObject)==null) return;
-        int key = GameLoop.CurrentTick + GameLoop.OffsetTik;
+        int key = GameLoop.GameLoop.CurrentTick + GameLoop.GameLoop.OffsetTik;
         var msg = new Message(ActionType.MoveUnit, UnitType.Soldier, (sender as GameObject).Id,  (sender as Troop)._queuedTravelTarget, key);
-        Console.WriteLine($"Enqueing message on tik {GameLoop.CurrentTick}");
+        Console.WriteLine($"Enqueing message on tik {GameLoop.GameLoop.CurrentTick}");
         lock (InQueueLock)
         {
             InQueue.Enqueue(msg,key);
@@ -148,9 +148,9 @@ public static class ObjectsActions
 
     public static void BuildAddMessage(int BuilderId, Building? building)
     {
-        int key = GameLoop.CurrentTick + GameLoop.OffsetTik;
+        int key = GameLoop.GameLoop.CurrentTick + GameLoop.GameLoop.OffsetTik;
         var msg = new Message(BuilderId, ActionType.Build, UnitType.Barrack);
-        Console.WriteLine($"Enqueing message on tik {GameLoop.CurrentTick}");
+        Console.WriteLine($"Enqueing message on tik {GameLoop.GameLoop.CurrentTick}");
         lock (InQueueLock)
         {
             InQueue.Enqueue(msg, key);
@@ -164,9 +164,9 @@ public static class ObjectsActions
     }
     public static void BarrackAddMessage(int barrackId, Type Troop)
     {
-        int key = GameLoop.CurrentTick + GameLoop.OffsetTik;
+        int key = GameLoop.GameLoop.CurrentTick + GameLoop.GameLoop.OffsetTik;
         var msg = new Message(barrackId, ActionType.CreateUnitBarrack, Troop == typeof(Knight)?UnitType.Knight:UnitType.Archer, key);
-        Console.WriteLine($"Enqueing message on tik {GameLoop.CurrentTick}");
+        Console.WriteLine($"Enqueing message on tik {GameLoop.GameLoop.CurrentTick}");
         lock (InQueueLock)
         {
             InQueue.Enqueue(msg, key);

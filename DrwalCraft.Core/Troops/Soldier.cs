@@ -58,6 +58,10 @@ public class Soldier: Troop{
             AttackTarget = null;
             return;
         }
+        if(AttackTarget is Mine mine && mine.Player == Players.game.PlayerId){
+            AttackTarget = null;
+            return;
+        }
 
         if(_actionProgress == 0){
             AttackTarget.GetAttacked(_damage, this);

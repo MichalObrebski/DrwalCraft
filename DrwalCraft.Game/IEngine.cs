@@ -27,8 +27,13 @@ public class Game{
         DrwalCraftApp.Run(DrwalCraftWindow);
     }
     public static void ContentRenderd(){
+        Core.GameLoop.GameLoop.UpdateGameLogic = GameLoopLogic;
+        Core.GameMap.AddObjectToMap(8,8,new Miner(Players.enemy));
+        Core.GameMap.AddObjectToMap(8,9,new Miner(Players.enemy));
+        Core.GameMap.AddObjectToMap(8,10,new Miner(Players.enemy));
+        Core.GameMap.AddObjectToMap(8,6,new Knight(Players.you));
+        Core.GameMap.AddObjectToMap(9,6,new Knight(Players.you));
 
-        DrwalCraft.DrwalCraftCore.GameLoop.GameLoop.UpdateGameLogic = GameLoopLogic;
         soldier1 = new DrwalCraft.Core.Troops.Knight(Players.you);
         DrwalCraft.Core.GameMap.AddObjectToMap(16, 16, soldier1);
 
@@ -44,7 +49,7 @@ public class Game{
         DrwalCraft.Core.GameMap.AddObjectToMap(24, 14, new DrwalCraft.Core.Mines.Mine(Players.you));
         DrwalCraft.Core.GameMap.AddObjectToMap(20, 14, new DrwalCraft.Core.Troops.Miner(Players.you));
         DrwalCraft.Core.GameMap.AddObjectToMap(16, 20, new DrwalCraft.Core.Buildings.Barrack(Players.you));
-    }
+        }
     public static void GameLoopLogic(){
         ExistingObjects.TickAction();
         
