@@ -25,7 +25,7 @@ public static class ObjectsActions
         string text = JsonSerializer.Serialize(message);
         Console.WriteLine($"Doing message: {text} on tik {GameLoop.GameLoop.CurrentTick}");
         
-        int id = message.Id;
+        int? id = message.Id;
         if (message.ActionType == ActionType.MoveUnit)
         {
             foreach(var gameObject in ExistingObjects.GameObjects)
@@ -62,7 +62,7 @@ public static class ObjectsActions
                 {
                     foreach(var mine in ExistingObjects.GameObjects)
                         if(mine is Mine && mine.Id == message.TargetId)
-                            (gameObject as Miner).setQueuedTargetMine((Mine)mine);
+                            (gameObject as Miner)?.setQueuedTargetMine((Mine)mine);
                 }
         }
 
@@ -92,7 +92,7 @@ public static class ObjectsActions
     public static void HandleMineTargetChanged(object? sender, EventArgs e)
     {
         if (!(sender is Miner)) return;
-        int? MineId = (sender as Miner)._queuedTargetMine.Id;
+        int? MineId = (sender as Miner)?._queuedTargetMine?.Id;
         int key = GameLoop.GameLoop.CurrentTick + GameLoop.GameLoop.OffsetTik;
         var msg = new Message(ActionType.GoMine, UnitType.TreeMiner, (sender as GameObject).Id, MineId, key);
         Console.WriteLine($"Enqueing message on tik {GameLoop.GameLoop.CurrentTick}");
@@ -111,7 +111,7 @@ public static class ObjectsActions
     {
         if ((sender as GameObject) == null) return;
         int? opponentId = null;
-        opponentId = (sender as Troop)._queuedAttackTarget.Id;
+        opponentId = (sender as Troop)?._queuedAttackTarget?.Id;
         int key = GameLoop.GameLoop.CurrentTick + GameLoop.GameLoop.OffsetTik;
         var msg = new Message(ActionType.AttackUnit, UnitType.Soldier, (sender as GameObject).Id, opponentId, key);
         Console.WriteLine($"Enqueing message on tik {GameLoop.GameLoop.CurrentTick}");

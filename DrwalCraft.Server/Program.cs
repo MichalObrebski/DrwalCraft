@@ -46,18 +46,20 @@ public static class Program
                 break;
             }
         }
-
+        
         Task Game = Task.Run(()=>
         {
             ServerGame.Game();
         }, token);
         Tasks.Add(Game);
-        
+
+        int playerId = 2;
         foreach(var client in _clients)
         {
             Tasks.Add(ReceiveMesFromClient(client, token));
             _clientsQueues[client] = Channel.CreateUnbounded<Message>();
-            Tasks.Add(SendMesToClient(client, _clientsQueues[client], token));
+            Tasks.Add(SendMesToClient(client, _clientsQueues[client], playerId, token));
+            playerId++;
         }
         
         listener.Stop();
@@ -120,14 +122,13 @@ public static class Program
         }
     }
 
-    private static async Task SendMesToClient(TcpClient client, Channel<Message> channel,
-        CancellationToken token = default)
+    private static async Task SendMesToClient(TcpClient client, Channel<Message> channel, int playerId, CancellationToken token = default)
     {
         try
         {
             var stream = client.GetStream();
             
-            var startMsg = new Message("Serwer", "Start");
+            var startMsg = new Message("Serwer", playerId.ToString());
             var startJson = JsonSerializer.Serialize(startMsg);
             var startPayload = Encoding.UTF8.GetBytes(startJson);
             byte[] startLengthHeader = new byte[sizeof(Int32)];
