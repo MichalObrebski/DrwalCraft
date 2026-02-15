@@ -1,5 +1,4 @@
 using DrwalCraft.Core.Troops;
-using DrwalCraft.Core;
 
 namespace DrwalCraft.Core.Army;
 
@@ -14,8 +13,8 @@ public class Army : GameObject{
             _isActive = value;
         }
     }
-    
-    public Army(Player player) : base(player){
+
+    public Army() : base(GameObjectFor.Army){
         Troops = new List<Troop>();
         Name = "Army";
     }

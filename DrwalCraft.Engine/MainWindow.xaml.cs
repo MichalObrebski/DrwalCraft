@@ -54,7 +54,7 @@ public partial class MainWindow : Window{
         miniMap = new Render.MiniMap(height, width);
 
         Render.RenderLoop.StartRenderLoop(GameMapImage, MiniMapImage, mainMap, miniMap, mapLock, ct);
-        DrwalCraft.Engine.GameLoop.GameLoop.StartGameLoop(mapLock, this.DataContext as GameUIDataContext);
+        Core.GameLoop.GameLoop.StartGameLoop(mapLock);
         ContentRenderd();
         
         GameMapImage.MouseDown += MainMapClick;
@@ -175,12 +175,19 @@ public partial class MainWindow : Window{
         var button = sender as Button;
         var product = button.DataContext as Type;
         var gameObject = button.Tag as DrwalCraft.Core.GameObject;
-
+        
         if (gameObject != null && product != null){
-            if(gameObject is DrwalCraft.Core.Buildings.Building building)
-                building.Produce(product);
+            if (gameObject is DrwalCraft.Core.Buildings.Building building)
+            {
+                if(building is DrwalCraft.Core.Buildings.Barrack barrack)
+                    barrack.DoMessage(product);
+                else
+                {
+                    building.Produce(product);
+                }
+            }
             if(gameObject is DrwalCraft.Core.Troops.Builder builder)
-                builder.Build(product);
+                builder.DoMessage(product);
         }
     }
 }

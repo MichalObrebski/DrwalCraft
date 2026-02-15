@@ -5,6 +5,11 @@ using System.Windows.Media.Imaging;
 
 namespace DrwalCraft.Core;
 
+public enum GameObjectFor
+{
+    Army,
+}
+
 public static class Players{
     public static Player you;
     public static Player enemy;
@@ -38,6 +43,7 @@ public class Player{
     }
     public int GetNewId(){
         _objectCount++;
+        Console.WriteLine($"player:{_player}, count:{_objectCount}");
         return _objectCount * 2 * _player;
     }
 }
@@ -85,6 +91,16 @@ public abstract class GameObject : IGameObject, INotifyPropertyChanged{
     public string Name{init; get;}
     public virtual bool IsActive{set; get;}
     public PriorityQueue<GameMap.MapAnimation, (int, int)> objectAnimations = new ();
+
+    //konstruktor do armii, zeby nie zwiekszac liczby obiektów dla determinizmu ID jednostek
+    public GameObject(GameObjectFor X)
+    {
+        if (X != GameObjectFor.Army)
+            return;
+        PlayerId = -1;
+
+        Size = 1;
+    }
     
     public event PropertyChangedEventHandler? PropertyChanged;
     

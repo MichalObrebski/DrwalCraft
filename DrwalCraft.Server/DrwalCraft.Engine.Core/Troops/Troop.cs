@@ -1,8 +1,6 @@
 using System.Diagnostics;
 using System.Runtime;
 using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 
 namespace DrwalCraft.Core.Troops;
@@ -67,7 +65,7 @@ public abstract class Troop : GameObject, ITroop{
     }
     public event EventHandler TravelTargetChanged;
     
-    public Troop(Player player, string Icon) : base(player, Icon){}
+    public Troop(string Icon, int? playerId = null, int? objectId = null) : base(Icon, playerId, objectId){}
     public virtual void Move(){
         if(TravelTarget == null || TravelTarget == Position) return;
         if(_travelPath.Count == 0){

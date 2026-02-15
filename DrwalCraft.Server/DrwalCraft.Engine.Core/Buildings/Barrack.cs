@@ -3,7 +3,7 @@ using DrwalCraft.Core.Troops;
 namespace DrwalCraft.Core.Buildings;
 
 public class Barrack : Building{
-    public Barrack(Player player) : base(player, "Barrack.png", 3){
+    public Barrack() : base("Barrack.png", 3){
         Name = "Barrack";
         MaxHp = 500;
         Hp = 500;
@@ -25,12 +25,12 @@ public class Barrack : Building{
         InProduction = true;
 
         if(troop == typeof(Knight)){
-            _producing = new Knight(_player);
+            _producing = new Knight();
             ProductionTime = 120;
         }
         if(troop == typeof(Archer)){
             ProductionTime = 180;
-            _producing = new Archer(_player);
+            _producing = new Archer();
         }
     }
     public override void MainAction(){

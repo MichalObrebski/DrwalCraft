@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 using System.Text.Json;
 using DrwalCraft.Core.Buildings;
 using DrwalCraft.Core.Troops;
-using DrwalCraft.Core.GameLoop;
+using DrwalCraft.DrwalCraftCore.GameLoop;
 using Messages;
 
 namespace DrwalCraft.Core;
@@ -22,20 +22,20 @@ public static class ExistingObjects{
             }
         }
         
-        while (ObjectsActions.InQueue.Count > 0) 
-        {
-            lock(ObjectsActions.InQueueLock)
-            {
-                var msg =  ObjectsActions.InQueue.Dequeue();
-                if (msg.Tick > GameLoop.GameLoop.CurrentTick)
-                {
-                    ObjectsActions.InQueue.Enqueue(msg, msg.Tick);
-                    break;
-                }
+         while (ObjectsActions.InQueue.Count > 0) 
+         {
+             lock(ObjectsActions.InQueueLock)
+             {
+                 var msg =  ObjectsActions.InQueue.Dequeue();
+                 if (msg.Tick > GameLoop.CurrentTick)
+                 {
+                     ObjectsActions.InQueue.Enqueue(msg, msg.Tick);
+                     break;
+                 }
                  
-                ObjectsActions.DoMessage(msg);
-            }
-        }
+                 ObjectsActions.DoMessage(msg);
+             }
+         }
         
         while(_addQueue.Count > 0){
             _addQueue.TryDequeue(out var result);

@@ -3,18 +3,16 @@ using DrwalCraft.Core.Buildings;
 namespace DrwalCraft.Core.Troops;
 
 public class Builder : Troop{
-    private Player _player;
     public List<Type> Products {get; set;}
     private Building? _inConstruction;
     public bool Constructing {set; get;}
-    public Builder(Player player) : base(player, "Builder.png"){
+    public Builder(int? playerId = null, int? objectId = null) : base("Builder.png", playerId, objectId){
         Name = "Builder";
         MaxHp = 50;
         Hp = 50;
         Constructing = false;
         _speed = 8;
         Products = new();
-        _player = player;
 
         Products.Add(typeof(Barrack));
     }
@@ -23,17 +21,18 @@ public class Builder : Troop{
         if(TravelTarget != null)
             Move();
     }
-
+    
     public void DoMessage(Type building)
     {
         ObjectsActions.BuildAddMessage(this.Id, _inConstruction);
     }
+    
     public void Build(Type building){
         if(Constructing) return;
         Constructing = true;
 
         if(building == typeof(Barrack)){
-            _inConstruction = new Barrack(_player);
+            _inConstruction = new Barrack();
         }
 
         if(_inConstruction is null) return;
@@ -48,7 +47,7 @@ public class Builder : Troop{
                 }
         if(x != -1){
             TravelTarget = null;
-            GameMap.AddObjectToMap(x, y, new Construction(_player, _inConstruction, this));
+            GameMap.AddObjectToMap(x, y, new Construction(_inConstruction, this));
         }
         else{
             Constructing = false;
@@ -56,7 +55,7 @@ public class Builder : Troop{
     }
     private bool IsAbleToBuild(int x, int y, int size){
         if(x < 0 || y < 0) return false;
-        if(x + size > GameMap.Size || y + size > GameMap.Size) return false;
+        if(x + size >= GameMap.Size || y + size >= GameMap.Size) return false;
         for(int i = x; i < x+size; i++){
             for(int j = y; j < y+size; j++){
                 if(GameMap.Map[i,j].GameObject != null && GameMap.Map[i,j].GameObject != this)
