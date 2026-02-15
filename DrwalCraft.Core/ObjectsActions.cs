@@ -85,6 +85,10 @@ public static class ObjectsActions
                 {
                     barrack.Produce(message.UnitType == UnitType.Knight?typeof(Knight):typeof(Archer));
                 }
+                else if (gameObject is Castle castle && castle.Id == message.Id)
+                {
+                    castle.Produce(message.UnitType == UnitType.TreeMiner?typeof(Miner):typeof(Builder));
+                }
             }
         }
     }
@@ -166,6 +170,22 @@ public static class ObjectsActions
     {
         int key = GameLoop.GameLoop.CurrentTick + GameLoop.GameLoop.OffsetTik;
         var msg = new Message(barrackId, ActionType.CreateUnitBarrack, Troop == typeof(Knight)?UnitType.Knight:UnitType.Archer, key);
+        Console.WriteLine($"Enqueing message on tik {GameLoop.GameLoop.CurrentTick}");
+        lock (InQueueLock)
+        {
+            InQueue.Enqueue(msg, key);
+        }
+
+        lock (OutQueueLock)
+        {
+            OutQueue.Enqueue(msg, key);
+            OutSemaphore.Release();
+        }
+    }
+    public static void CastleAddMessage(int barrackId, Type Troop)
+    {
+        int key = GameLoop.GameLoop.CurrentTick + GameLoop.GameLoop.OffsetTik;
+        var msg = new Message(barrackId, ActionType.CreateUnitBarrack, Troop == typeof(Core.Troops.Miner)?UnitType.TreeMiner:UnitType.Builder, key);
         Console.WriteLine($"Enqueing message on tik {GameLoop.GameLoop.CurrentTick}");
         lock (InQueueLock)
         {

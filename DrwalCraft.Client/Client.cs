@@ -47,18 +47,22 @@ internal class Client
         if (startMsg is null) return;
         Console.WriteLine(startJson);
         
-        // string playerId = startMsg.Text;
-        // Players.game = new Player(1);
-        // if (playerId == 3.ToString())
-        // {
-        //     Players.you = new Player(3);
-        //     Players.enemy = new Player(2);
-        // }
-        // if(playerId == 2.ToString())
-        // {
-        //     Players.you = new Player(2);
-        //     Players.enemy = new Player(3);
-        // }
+        string playerId = startMsg.Text;
+        Players.game = new Player(1);
+        if (playerId == 3.ToString())
+        {
+            Players.you = new Player(3);
+            Players.enemy = new Player(2);
+            Players.player1 = Players.enemy;
+            Players.player2 = Players.you;
+        }
+        if(playerId == 2.ToString())
+        {
+            Players.you = new Player(2);
+            Players.enemy = new Player(3);
+            Players.player2 = Players.enemy;
+            Players.player1 = Players.you;
+        }
         
         tcs.SetResult(true); // sygnał o rozpoczęciu gry (drugi klient podłączył się)
         

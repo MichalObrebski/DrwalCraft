@@ -28,27 +28,27 @@ public class Game{
     }
     public static void ContentRenderd(){
         Core.GameLoop.GameLoop.UpdateGameLogic = GameLoopLogic;
-        Core.GameMap.AddObjectToMap(8,8,new Miner(Players.enemy));
-        Core.GameMap.AddObjectToMap(8,9,new Miner(Players.enemy));
-        Core.GameMap.AddObjectToMap(8,10,new Miner(Players.enemy));
-        Core.GameMap.AddObjectToMap(8,6,new Knight(Players.you));
-        Core.GameMap.AddObjectToMap(9,6,new Knight(Players.you));
+        // Core.GameMap.AddObjectToMap(8,8,new Miner(Players.enemy));
+        // Core.GameMap.AddObjectToMap(8,9,new Miner(Players.enemy));
+        // Core.GameMap.AddObjectToMap(8,10,new Miner(Players.enemy));
+        // Core.GameMap.AddObjectToMap(8,6,new Knight(Players.you));
+        // Core.GameMap.AddObjectToMap(9,6,new Knight(Players.you));
 
-        soldier1 = new DrwalCraft.Core.Troops.Knight(Players.you);
-        DrwalCraft.Core.GameMap.AddObjectToMap(16, 16, soldier1);
+        // soldier1 = new DrwalCraft.Core.Troops.Knight(Players.you);
+        // DrwalCraft.Core.GameMap.AddObjectToMap(16, 16, soldier1);
 
-        soldier2 = new Knight(Players.enemy);
-        DrwalCraft.Core.GameMap.AddObjectToMap(12, 8, soldier2);
-        // soldier2.TravelTarget = (20,30);
+        // soldier2 = new Knight(Players.enemy);
+        // DrwalCraft.Core.GameMap.AddObjectToMap(12, 8, soldier2);
+        // // soldier2.TravelTarget = (20,30);
 
-        soldier3 = new DrwalCraft.Core.Troops.Knight(Players.you);
+        // soldier3 = new DrwalCraft.Core.Troops.Knight(Players.you);
 
-        DrwalCraft.Core.GameMap.AddObjectToMap(1, 2, new Builder(Players.enemy));
-        DrwalCraft.Core.GameMap.AddObjectToMap(2, 2,  new DrwalCraft.Core.Tree());
-        // DrwalCraft.Core.GameMap.AddObjectToMap(28, 24, new DrwalCraft.Core.Buildings.Castle(Players.you));
-        DrwalCraft.Core.GameMap.AddObjectToMap(24, 14, new DrwalCraft.Core.Troops.Miner(Players.you));
-        DrwalCraft.Core.GameMap.AddObjectToMap(20, 14, new DrwalCraft.Core.Troops.Miner(Players.you));
-        DrwalCraft.Core.GameMap.AddObjectToMap(16, 20, new DrwalCraft.Core.Buildings.Barrack(Players.you));
+        // DrwalCraft.Core.GameMap.AddObjectToMap(1, 2, new Builder(Players.enemy));
+        // DrwalCraft.Core.GameMap.AddObjectToMap(2, 2,  new DrwalCraft.Core.Tree());
+        // // DrwalCraft.Core.GameMap.AddObjectToMap(28, 24, new DrwalCraft.Core.Buildings.Castle(Players.you));
+        // DrwalCraft.Core.GameMap.AddObjectToMap(24, 14, new DrwalCraft.Core.Troops.Miner(Players.you));
+        // DrwalCraft.Core.GameMap.AddObjectToMap(20, 14, new DrwalCraft.Core.Troops.Miner(Players.you));
+        // DrwalCraft.Core.GameMap.AddObjectToMap(16, 20, new DrwalCraft.Core.Buildings.Barrack(Players.you));
         }
     public static void GameLoopLogic(){
         ExistingObjects.TickAction();

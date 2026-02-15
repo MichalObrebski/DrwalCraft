@@ -32,11 +32,11 @@ public partial class MainWindow : Window{
     }
     protected override void OnContentRendered(EventArgs e){
         base.OnContentRendered(e);
-        Players.game = new Player(1);
-        Players.you = new Player(2);
-        Players.enemy = new(3);
-        Players.player1 = Players.you;
-        Players.player2 = Players.enemy;
+        // Players.game = new Player(1);
+        // Players.you = new Player(2);
+        // Players.enemy = new(3);
+        // Players.player1 = Players.you;
+        // Players.player2 = Players.enemy;
 
         Players.you.WoodAmmountChanged += (this.DataContext as GameUIDataContext).WoodChangeListener;
 
@@ -191,6 +191,9 @@ public partial class MainWindow : Window{
             {
                 if(building is DrwalCraft.Core.Buildings.Barrack barrack)
                     barrack.DoMessage(product);
+                else if(building is Core.Buildings.Castle castle){
+                    castle.DoMessage(product);
+                }
                 else
                 {
                     building.Produce(product);

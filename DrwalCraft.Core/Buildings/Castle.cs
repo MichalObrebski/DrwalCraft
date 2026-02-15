@@ -17,6 +17,10 @@ public class Castle : Building{
         Pricing.Add("Miner: 300");
     }
 
+    public void DoMessage(Type troop)
+    {
+        ObjectsActions.CastleAddMessage(this.Id, troop); //tworzy wiadomość do przesłania do serwera o tworzeniu jednostki
+    }
         public override void Produce(Type troop){
         if(InProduction) return;
 
