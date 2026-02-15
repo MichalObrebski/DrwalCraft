@@ -1,3 +1,5 @@
+using DrwalCraft.Core.Mines;
+
 namespace DrwalCraft.Core.Troops;
 
 public class Soldier: Troop{
@@ -10,7 +12,10 @@ public class Soldier: Troop{
                 TravelTarget = value;
                 AttackTarget = null;
             }
-            else if(gameObject.PlayerId != GameObjectId.PlayerId && gameObject.PlayerId != 0){
+            else if(gameObject.PlayerId == Players.enemy.PlayerId){
+                AttackTarget = gameObject;
+            }
+            else if(gameObject is Mine mine && mine.Player == Players.enemy.PlayerId){
                 AttackTarget = gameObject;
             }
             else{
@@ -24,7 +29,7 @@ public class Soldier: Troop{
         if(AttackTarget is null)
             AttackTarget = attacker;
     }
-    public Soldier(string Icon, int? playerId = null, int? objectId = null) : base(Icon, playerId, objectId){
+    public Soldier(Player player, string Icon) : base(player, Icon){
         _actionSpeed = 6;
         TravelTarget = null;
         AttackTarget = null;

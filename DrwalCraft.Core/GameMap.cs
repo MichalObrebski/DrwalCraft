@@ -1,4 +1,9 @@
+using System.IO;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using DrwalCraft.Core;
+using DrwalCraft.Core.Buildings;
+using DrwalCraft.Core.Mines;
 
 namespace DrwalCraft.Core;
 
@@ -33,9 +38,43 @@ public static class GameMap{
         ChunkSize = 32;
         Size = size;
         Map = new ObjectId[size, size];
+
+        var fullPath = Path.Combine(
+            AppContext.BaseDirectory,
+            "Assets",
+            "Map",
+            "Trees.png");
+        var uri = new Uri(fullPath);
+        var sourceImage = new BitmapImage(uri);
+
+        FormatConvertedBitmap convertedBitmap = new FormatConvertedBitmap();
+        convertedBitmap.BeginInit();
+        convertedBitmap.Source = sourceImage;
+        convertedBitmap.DestinationFormat = PixelFormats.Pbgra32;
+        convertedBitmap.EndInit();
+
+        int width = convertedBitmap.PixelWidth;
+        int height = convertedBitmap.PixelHeight;
+        int bytesPerPixel = (convertedBitmap.Format.BitsPerPixel + 7) / 8;
+        int stride = width * bytesPerPixel;
+
+        var forest = new byte[height * stride];
+        convertedBitmap.CopyPixels(forest, stride, 0);
+
         for(int i=0; i<size; i++){
             for(int j=0; j<size; j++){
                 Map[i,j] = new ObjectId(0, 0, null);
+            }
+        }
+        for(int i=0; i<size; i++){
+            for(int j=0; j<size; j++){
+                var field = forest[i*4 + j*stride + 2];
+                if(field == 0x00)
+                    AddObjectToMap(i, j, new Tree());
+                else if(field == 0x88)
+                    AddObjectToMap(i, j, new Mine(Players.game));
+                else if(field == 0xAA)
+                    AddObjectToMap(i, j, new Castle(Players.you));
             }
         }
     }
@@ -67,10 +106,12 @@ public static class GameMap{
         var startingX = gameObject.Position.Item1 - 1;
         var startingY = gameObject.Position.Item2 - 1;
 
-        while(startingX >= 0 && startingY >= 0 && startingX + size < 64 && startingY + size < 64){
+        while(startingX >= 0 || startingY >= 0 || startingX + size <= 64 || startingY + size <= 64){
             for(int i = startingY; i< startingY + size; i++){
                 for(int j = startingX; j< startingX + size; j++){
-                    if(Map[j, i].GameObject is null) return (j, i);
+                    var field = TryGet(j, i);
+                    if(field is not null && field.Value.GameObject is null)
+                        return (j, i);
                 }            
             }
             startingX -= 1;

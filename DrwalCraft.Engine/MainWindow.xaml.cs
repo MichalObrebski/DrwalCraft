@@ -32,8 +32,10 @@ public partial class MainWindow : Window{
     }
     protected override void OnContentRendered(EventArgs e){
         base.OnContentRendered(e);
+        Players.game = new Player(1);
+        Players.you = new Player(2);
+        Players.enemy = new(3);
         const int MapSize = 64;
-        DrwalCraft.Core.GameObjectId.Init(1);
 
         DrwalCraft.Core.GameMap.Init(MapSize);
         var mapLock = new ReaderWriterLockSlim();

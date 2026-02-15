@@ -5,7 +5,7 @@ namespace DrwalCraft.Core.Buildings;
 
 public class Construction : Building{
     private Builder _builder;
-    public Construction(GameObject building, Builder builder) : base("Construction.png", building.Size){
+    public Construction(Player player, GameObject building, Builder builder) : base(player, "Construction.png", building.Size){
         Name = "Construction";
         MaxHp = building.MaxHp;
         Hp = 1;

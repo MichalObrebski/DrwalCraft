@@ -3,7 +3,7 @@ using DrwalCraft.Core.Troops;
 namespace DrwalCraft.Core.Buildings;
 
 public class Castle : Building{
-    public Castle() : base("Castle.png", 4){
+    public Castle(Player player) : base(player, "Castle.png", 4){
         Name = "Castle";
         MaxHp = 1024;
         Hp = 1024;
@@ -11,6 +11,7 @@ public class Castle : Building{
 
         Products = new();
         Products.Add(typeof(Builder));
+        Products.Add(typeof(Miner));
     }
 
         public override void Produce(Type troop){
@@ -18,7 +19,11 @@ public class Castle : Building{
         InProduction = true;
 
         if(troop == typeof(Builder)){
-            _producing = new Builder();
+            _producing = new Builder(_player);
+            ProductionTime = 120;
+        }
+        if(troop == typeof(Miner)){
+            _producing = new Miner(_player);
             ProductionTime = 120;
         }
     }

@@ -67,7 +67,7 @@ public abstract class Troop : GameObject, ITroop{
     }
     public event EventHandler TravelTargetChanged;
     
-    public Troop(string Icon, int? playerId = null, int? objectId = null) : base(Icon, playerId, objectId){}
+    public Troop(Player player, string Icon) : base(player, Icon){}
     public virtual void Move(){
         if(TravelTarget == null || TravelTarget == Position) return;
         if(_travelPath.Count == 0){
