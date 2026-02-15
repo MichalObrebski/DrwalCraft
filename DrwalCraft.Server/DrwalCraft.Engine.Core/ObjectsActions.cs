@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Text.Json;
 using DrwalCraft.Core.Buildings;
+using DrwalCraft.Core.Mines;
 using DrwalCraft.Core.Troops;
 using DrwalCraft.DrwalCraftCore.GameLoop;
 
@@ -49,29 +50,68 @@ public static class ObjectsActions
                 {
                     GameObject? Opponent = null;
                     foreach(var troop in ExistingObjects.GameObjects)
-                        if(troop.Id == message.AttackTargetId) Opponent = troop;
+                        if(troop.Id == message.TargetId) Opponent = troop;
                     (gameObject as Troop).SetQueuedAttackTarget(Opponent);
                 }
         }
 
+        if (message.ActionType == ActionType.GoMine)
+        {
+            foreach(var gameObject in ExistingObjects.GameObjects)
+                if (gameObject.Id == id)
+                {
+                    foreach(var mine in ExistingObjects.GameObjects)
+                        if(mine is Mine && mine.Id == message.TargetId)
+                            (gameObject as Miner).setQueuedTargetMine((Mine)mine);
+                }
+        }
+        
+        if (message.ActionType == ActionType.Build)
+        {
+            foreach (var gameObject in ExistingObjects.GameObjects)
+            {
+                if (gameObject is Builder builder && gameObject.Id == id)
+                {
+                    builder.Build(typeof(Barrack));
+                }
+            }
+        }
+        
         if (message.ActionType == ActionType.CreateUnitBarrack)
         {
             foreach (var gameObject in ExistingObjects.GameObjects)
             {
-                if (gameObject is Barrack barrack)
+                if (gameObject is Barrack barrack && barrack.Id == message.Id)
                 {
                     barrack.Produce(message.UnitType == UnitType.Knight?typeof(Knight):typeof(Archer));
                 }
             }
         }
     }
-    
+
+    public static void HandleMineTargetChanged(object? sender, EventArgs e)
+    {
+        if (!(sender is Miner)) return;
+        int? MineId = (sender as Miner)._queuedTargetMine.Id;
+        int key = GameLoop.CurrentTick + GameLoop.OffsetTik;
+        var msg = new Message(ActionType.GoMine, UnitType.TreeMiner, (sender as GameObject).Id, MineId, key);
+        Console.WriteLine($"Enqueing message on tik {GameLoop.CurrentTick}");
+        lock (InQueueLock)
+        {
+            InQueue.Enqueue(msg, key);
+        }
+
+        lock (OutQueueLock)
+        {
+            OutQueue.Enqueue(msg, key);
+            OutSemaphore.Release();
+        }
+    }
      public static void HandleAttackTargetChanged(object? sender, EventArgs e)
     {
         if ((sender as GameObject) == null) return;
         int? opponentId = null;
-        foreach(var gameObject in ExistingObjects.GameObjects)
-            if(gameObject == (sender as Troop)._queuedAttackTarget) opponentId = gameObject.Id;
+        opponentId = (sender as Troop)._queuedAttackTarget.Id;
         int key = GameLoop.CurrentTick + GameLoop.OffsetTik;
         var msg = new Message(ActionType.AttackUnit, UnitType.Soldier, (sender as GameObject).Id, opponentId, key);
         Console.WriteLine($"Enqueing message on tik {GameLoop.CurrentTick}");
@@ -105,11 +145,27 @@ public static class ObjectsActions
             OutSemaphore.Release();
         }
     }
-
-    public static void BarrackAddMessage(Type Troop)
+    public static void BuildAddMessage(int BuilderId, Building? building)
     {
         int key = GameLoop.CurrentTick + GameLoop.OffsetTik;
-        var msg = new Message(ActionType.CreateUnitBarrack, Troop == typeof(Knight)?UnitType.Knight:UnitType.Archer, key);
+        var msg = new Message(BuilderId, ActionType.Build, UnitType.Barrack);
+        Console.WriteLine($"Enqueing message on tik {GameLoop.CurrentTick}");
+        lock (InQueueLock)
+        {
+            InQueue.Enqueue(msg, key);
+        }
+
+        lock (OutQueueLock)
+        {
+            OutQueue.Enqueue(msg, key);
+            OutSemaphore.Release();
+        }
+    }
+
+    public static void BarrackAddMessage(int barrackId, Type Troop)
+    {
+        int key = GameLoop.CurrentTick + GameLoop.OffsetTik;
+        var msg = new Message(barrackId, ActionType.CreateUnitBarrack, Troop == typeof(Knight)?UnitType.Knight:UnitType.Archer, key);
         Console.WriteLine($"Enqueing message on tik {GameLoop.CurrentTick}");
         lock (InQueueLock)
         {

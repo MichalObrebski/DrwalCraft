@@ -22,8 +22,13 @@ public class Army : GameObject{
         if(Troops.Count >= 12) return false;
 
         Troops.Add(troop);
-        MaxHp += troop.MaxHp;
+        _maxHp += troop.MaxHp;
         Hp += troop.Hp;
         return true;
+    }
+    public override void MainAction(){
+        foreach(var troop in Troops){
+            troop.MainAction();
+        }
     }
 }

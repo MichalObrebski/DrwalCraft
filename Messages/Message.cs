@@ -2,20 +2,29 @@
 
 namespace Messages;
 
+public enum MessageType
+{
+    PlayerAction,
+    ServerSnapshot
+}
 
 public enum ActionType
 {
     CreateUnitBarrack,
-    DeleteUnit,
     MoveUnit,
-    AttackUnit
+    AttackUnit,
+    GoMine,
+    Build
 }
 
 public enum UnitType
 {
     Soldier,
     Knight,
-    Archer
+    Archer,
+    TreeMiner,
+    Builder,
+    Barrack
 }
 
 public class Message
@@ -28,7 +37,7 @@ public class Message
     public int Id { get; set; }
     public int? PositionX { get; set; }
     public int? PositionY { get; set; }
-    public int? AttackTargetId { get; set; }
+    public int? TargetId { get; set; }
     
     public Message()
     {
@@ -42,13 +51,13 @@ public class Message
         this.Text = text;
     }
     
-    //konstruktor do atakowania
-    public Message(ActionType actionType, UnitType unitType, int id, int? attackTargetId, int tick = 0)
+    //konstruktor do wszelkich czynności gdzie targetem jest obiekt: atak, pójście do kopalni
+    public Message(ActionType actionType, UnitType unitType, int id, int? targetId, int tick = 0)
     {
         this.ActionType = actionType;
         this.UnitType = unitType;
         this.Id = id;
-        this.AttackTargetId = attackTargetId;
+        this.TargetId = targetId;
         this.Tick = tick;
     }
     
@@ -67,11 +76,13 @@ public class Message
         this.Tick = tick;
     }
     
-    //konstruktor do tworzenia jednostki w baraku
-    public Message(ActionType actionType, UnitType unitType, int tick = 0)
+    //konstruktor do tworzenia jednostki w baraku i tworzenia budowli przez buildera 
+    public Message(int id, ActionType actionType, UnitType unitType, int tick = 0)
     {
+        this.Id = id;
         this.ActionType = actionType;
         this.UnitType = unitType;
         this.Tick = tick;
     }
+    
 }

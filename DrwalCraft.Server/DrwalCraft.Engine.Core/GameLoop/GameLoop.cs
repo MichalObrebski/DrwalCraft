@@ -12,7 +12,7 @@ public static class GameLoop{
     }
 
     public static int CurrentTick = 0;
-    public const int OffsetTik = 3;
+    public const int OffsetTik = 2;
 
     private static void Loop(ReaderWriterLockSlim mapLock){
         const int TickRate = 12;
@@ -32,6 +32,7 @@ public static class GameLoop{
             while (accumulator >= TargetDt){
                 mapLock.EnterWriteLock();
                 try{
+                    GameMap.mainAnimationQueue = new ();
                     UpdateGameLogic();
                     // trees.MoveNext();
                     CurrentTick++;

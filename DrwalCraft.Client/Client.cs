@@ -1,5 +1,7 @@
-﻿using System.Net;
+﻿using System.Buffers.Binary;
+using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Text.Json;
 using Messages;
 using DrwalCraft.Core;
@@ -27,19 +29,52 @@ internal class Client
 
     public async Task ReadFromServer(TcpClient client)
     {
-        var reader = new StreamReader(client.GetStream());
+        var stream =  client.GetStream();    
+        
+        var startLengthBuffer = new byte[sizeof(Int32)];
+        var startBytesRead = await ReadToBuffer(stream, startLengthBuffer);
+        if (startBytesRead < sizeof(Int32)) // Disconnection from the server
+            return;
+        var startlength = BinaryPrimitives.ReadInt32LittleEndian(startLengthBuffer);
+            
+        var startPayloadBuffer = new byte[startlength];
+        startBytesRead = await ReadToBuffer(stream, startPayloadBuffer);
+        if (startBytesRead < startlength)
+            return;
+        
+        string startJson = Encoding.UTF8.GetString(startPayloadBuffer);
+        var startMsg = JsonSerializer.Deserialize<Message>(startJson);
+        if (startMsg is null) return;
+        Console.WriteLine(startJson);
+        if(startMsg.Text == "Start")
+            tcs.SetResult(true); // sygnał o rozpoczęciu gry (drugi klient podłączył się)
         
         while (true)
         {
-            var line = await reader.ReadLineAsync();
-            if (line is null) break;
-            Console.WriteLine(line);
-            Message? msg = JsonSerializer.Deserialize<Message>(line); 
-            if (msg == null) break; 
-            if(msg.Text == "Start")
-                tcs.SetResult(true);
-            else
+            var typeBuffer = new byte[1];
+            int bytesRead = await ReadToBuffer(stream, typeBuffer);
+            if (bytesRead < 1) // Disconnection from the server
+                return;
+            var type = (Messages.MessageType)typeBuffer[0];
+
+            var lengthBuffer = new byte[sizeof(Int32)];
+            bytesRead = await ReadToBuffer(stream, lengthBuffer);
+            if (bytesRead < sizeof(Int32)) // Disconnection from the server
+                return;
+            var length = BinaryPrimitives.ReadInt32LittleEndian(lengthBuffer);
+            
+            var payloadBuffer = new byte[length];
+            bytesRead = await ReadToBuffer(stream, payloadBuffer);
+            if (bytesRead < length)
+                return;
+                        
+            if (type == MessageType.PlayerAction)
             {
+                string json = Encoding.UTF8.GetString(payloadBuffer);
+                var msg = JsonSerializer.Deserialize<Message>(json);
+                if (msg is null) break;
+                Console.WriteLine(json);
+                
                 lock (ObjectsActions.InQueueLock) 
                 { 
                     ObjectsActions.InQueue.Enqueue(msg, msg.Tick); 
@@ -49,6 +84,19 @@ internal class Client
         }
     }
 
+    private async Task<int> ReadToBuffer(Stream stream, byte[] buffer)
+    {
+        int bytesRead = 0; int chunkSize = 1;
+
+        while (bytesRead < buffer.Length && chunkSize > 0)
+        {
+            chunkSize = await stream.ReadAsync(buffer, bytesRead, buffer.Length - bytesRead);
+            bytesRead += chunkSize;
+        }
+
+        return bytesRead;
+    }
+    
     public async Task WriteToServer(TcpClient client)
     {
         var writer = new StreamWriter(client.GetStream()) { AutoFlush = true };
@@ -68,16 +116,4 @@ internal class Client
         }
     }
     
-    static string CheckMessage(string msg)
-    {
-        try
-        {
-            var obj = JsonSerializer.Deserialize<object>(msg);
-            return "JSON";
-        }
-        catch (JsonException)
-        {
-            return "String";
-        }
-    }
 }

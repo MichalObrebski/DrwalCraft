@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Runtime;
 using System.Windows;
 
+
 namespace DrwalCraft.Core.Troops;
 public interface ITroop : IGameObject{
     public void MainAction();
@@ -65,7 +66,6 @@ public abstract class Troop : GameObject, ITroop{
     public event EventHandler TravelTargetChanged;
     
     public Troop(string Icon, int? playerId = null, int? objectId = null) : base(Icon, playerId, objectId){}
-    public abstract void MainAction();
     public virtual void Move(){
         if(TravelTarget == null || TravelTarget == Position) return;
         if(_travelPath.Count == 0){

@@ -23,14 +23,17 @@ public class ServerGame
 
         soldier2 = new Knight(5, 10);
         DrwalCraft.Core.GameMap.AddObjectToMap(12, 8, soldier2);
-        soldier2.TravelTarget = (20,30);
+
+        // soldier2.TravelTarget = (20,30);
 
         soldier3 = new DrwalCraft.Core.Troops.Knight();
-        
-        GameMap.AddObjectToMap(8, 8, soldier3);
-        GameMap.AddObjectToMap(2, 2,  new DrwalCraft.Core.Tree());
-        GameMap.AddObjectToMap(24, 48, new DrwalCraft.Core.Buildings.Castle());
-        GameMap.AddObjectToMap(16, 20, new DrwalCraft.Core.Buildings.Barrack());
+
+        DrwalCraft.Core.GameMap.AddObjectToMap(1, 2, new Builder());
+        DrwalCraft.Core.GameMap.AddObjectToMap(2, 2,  new DrwalCraft.Core.Tree());
+        DrwalCraft.Core.GameMap.AddObjectToMap(28, 24, new DrwalCraft.Core.Buildings.Castle());
+        DrwalCraft.Core.GameMap.AddObjectToMap(24, 14, new DrwalCraft.Core.Mines.Mine());
+        DrwalCraft.Core.GameMap.AddObjectToMap(20, 14, new DrwalCraft.Core.Troops.Miner());
+        DrwalCraft.Core.GameMap.AddObjectToMap(16, 20, new DrwalCraft.Core.Buildings.Barrack());
         GameLoop.StartGameLoop(mapLock);
 
         Task.Delay(100).Wait();
@@ -40,8 +43,15 @@ public class ServerGame
             Console.WriteLine(gameObject.Name + gameObject.Id + gameObject.Position);
         }
         
-        Task.Delay(TimeSpan.FromSeconds(15)).Wait();
-        //Console.WriteLine(ExistingObjects.GameObjects.Count);
+        Task.Delay(TimeSpan.FromSeconds(30)).Wait();
+        Console.WriteLine(ExistingObjects.GameObjects.Count);
+        foreach(var gameObject in ExistingObjects.GameObjects)
+        {
+            Console.WriteLine(gameObject.Name + gameObject.Id + gameObject.Position);
+        }
+        
+        Task.Delay(TimeSpan.FromSeconds(30)).Wait();
+        Console.WriteLine(ExistingObjects.GameObjects.Count);
         foreach(var gameObject in ExistingObjects.GameObjects)
         {
             Console.WriteLine(gameObject.Name + gameObject.Id + gameObject.Position);

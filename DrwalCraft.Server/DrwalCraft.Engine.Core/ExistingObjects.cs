@@ -17,8 +17,8 @@ public static class ExistingObjects{
             if(gameObject is Troops.Troop troop){
                 troop.MainAction();
             }
-            if(gameObject is Buildings.Barrack barrack){
-                barrack.MainAction();
+            if(gameObject is Buildings.Building building){
+                building.MainAction();
             }
         }
         
@@ -57,12 +57,22 @@ public static class ExistingObjects{
     }
     
     public static void Add(GameObject gameObject){
+        Console.WriteLine($"Adding object of id: {gameObject.Id}");
         if (gameObject is Troop troop)
         {
             troop.TravelTargetChanged += ObjectsActions.HandleTravelTargetChanged;
-            troop.AttackTargetChanged += ObjectsActions.HandleAttackTargetChanged;
-            Console.WriteLine($"Adding object of id: {troop.Id}");
         }
+
+        if (gameObject is Soldier soldier)
+        {
+            soldier.AttackTargetChanged += ObjectsActions.HandleAttackTargetChanged;
+        }
+
+        if (gameObject is Miner miner)
+        {
+            miner.TargetMineChanged += ObjectsActions.HandleMineTargetChanged;
+        }
+        
         _addQueue.Enqueue(gameObject);
     }
 }

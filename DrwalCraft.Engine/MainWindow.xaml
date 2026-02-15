@@ -8,6 +8,7 @@
         xmlns:buildings="clr-namespace:DrwalCraft.Core.Buildings;assembly=DrwalCraft.Core"
         xmlns:army="clr-namespace:DrwalCraft.Core.Army;assembly=DrwalCraft.Core"
         xmlns:core="clr-namespace:DrwalCraft.Core;assembly=DrwalCraft.Core"
+        xmlns:mines="clr-namespace:DrwalCraft.Core.Mines;assembly=DrwalCraft.Core"
         mc:Ignorable="d"
         WindowState="Maximized"
         WindowStyle="None"
@@ -40,30 +41,47 @@
                     <TextBlock.Text>
                         <MultiBinding StringFormat=" {0}: {1} / {2}">
                             <Binding Path="Name"/>
-                            <Binding Path="Hp" />
+                            <Binding Path="Hp"/>
                             <Binding Path="MaxHp" />
                         </MultiBinding>
                     </TextBlock.Text>
                 </TextBlock>
         </DataTemplate>
-        <DataTemplate x:Key="BarrackProducts">
-            <ItemsControl
-                FontSize="16"
-                Foreground="White"
-                Background="#222"
-                ItemsSource="{Binding Products}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Button Content="{Binding Name}"
+        <DataTemplate x:Key="Products">
+            <StackPanel>
+                <TextBlock FontSize="24" Foreground="White" Text="Produce:" />
+                <ItemsControl
+                    FontSize="16"
+                    Foreground="White"
+                    Background="#222"
+                    ItemsSource="{Binding Products}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding Name}"
                             Click="OnProduceClick" 
                             Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                             Margin="5"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="BarrackInProduction">
-            <TextBlock Name="Name">InProduction</TextBlock>
+            <StackPanel>
+                <TextBlock FontSize="24" Foreground="White" >
+                    <TextBlock.Text>
+                        <Binding StringFormat="Producing: {0}" Path="Producing.Name"/>
+                    </TextBlock.Text>
+                </TextBlock>
+                <TextBlock FontSize="24" Foreground="White" >
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="Progress: {0}/{1}">
+                            <Binding Path="Progress"/>
+                            <Binding Path="ProductionTime"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+            </StackPanel>
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type troops:Troop}">
@@ -79,14 +97,31 @@
                 </TextBlock>
             </StackPanel>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type buildings:Building}">
+        <DataTemplate DataType="{x:Type troops:Builder}">
             <StackPanel>
                 <ContentControl Content="{Binding}" ContentTemplate="{StaticResource GameObjectTemplate}" />
-                <TextBlock FontSize="24" Foreground="White" Text="Produce:" />
                 <ContentControl Content="{Binding}">
                     <ContentControl.Style>
                         <Style TargetType="ContentControl">
-                            <Setter Property="ContentTemplate" Value="{StaticResource BarrackProducts}" />
+                            <Setter Property="ContentTemplate" Value="{StaticResource Products}" />
+                            
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Constructing}" Value="True">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource BarrackInProduction}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ContentControl.Style>
+                </ContentControl>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type buildings:Building}">
+            <StackPanel>
+                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource GameObjectTemplate}" />
+                <ContentControl Content="{Binding}">
+                    <ContentControl.Style>
+                        <Style TargetType="ContentControl">
+                            <Setter Property="ContentTemplate" Value="{StaticResource Products}" />
                             
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding InProduction}" Value="True">
@@ -96,6 +131,33 @@
                         </Style>
                     </ContentControl.Style>
                 </ContentControl>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type mines:Mine}">
+            <StackPanel>
+                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource GameObjectTemplate}" />
+                <StackPanel>
+                    <TextBlock FontSize="24" Foreground="White" Text="Miners:" />
+                    <ItemsControl
+                        FontSize="16"
+                        Foreground="White"
+                        Background="#222"
+                        ItemsSource="{Binding Miners}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Name="Name">
+                                    <TextBlock.Text>
+                                        <MultiBinding StringFormat=" {0}: {1}/{2}">
+                                            <Binding Path="Name"/>
+                                            <Binding Path="Hp"/>
+                                            <Binding Path="MaxHp"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
             </StackPanel>
         </DataTemplate>
         <DataTemplate DataType="{x:Type army:Army}">
@@ -156,6 +218,15 @@
             <StackPanel Grid.Row="1"
                         Margin="8"
                         Orientation="Vertical">
+                <TextBlock FontSize="32" Foreground="White" Text="Riches:"/>
+                <TextBlock FontSize="24" Foreground="White" >
+                    <TextBlock.Text>
+                        <Binding StringFormat="Wood: {0}">
+                            <Binding.Path>Wood</Binding.Path>
+                        </Binding>
+                    </TextBlock.Text>
+                </TextBlock>
+                <TextBlock FontSize="32" Foreground="White" Text="Active Object:"/>
                 <ContentControl Content="{Binding ActiveUnit}"/>
             </StackPanel>
         </Grid>

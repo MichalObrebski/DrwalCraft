@@ -1,9 +1,13 @@
-﻿using System.Collections.Concurrent;
+﻿using System.Buffers.Binary;
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Channels;
+using DrwalCraft.Core;
 using Messages;
+using System.Diagnostics;
 
 namespace DrwalCraft.Server;
 
@@ -21,10 +25,6 @@ public static class Program
         using var listener = new TcpListener(ipEndPoint);
         
         var tasks = new List<Task>();
-        tasks.Add(Task.Run(()=>
-        {
-            ServerGame.Game();
-        }, cts.Token));
         tasks.Add(AcceptClients(listener, cts.Token));
         await Task.WhenAll(tasks);
     }
@@ -32,7 +32,8 @@ public static class Program
     private static async Task AcceptClients(TcpListener listener, CancellationToken token = default)
     {
         listener.Start(backlog: 2);
-        var clientsTasks = new List<Task>();
+        Console.WriteLine($"Listening on port {Port}");
+        var Tasks = new List<Task>();
         for (int i = 0; i < 2; i++)
         {
             try 
@@ -46,15 +47,21 @@ public static class Program
             }
         }
 
+        Task Game = Task.Run(()=>
+        {
+            ServerGame.Game();
+        }, token);
+        Tasks.Add(Game);
+        
         foreach(var client in _clients)
         {
-            clientsTasks.Add(ReceiveMesFromClient(client, token));
+            Tasks.Add(ReceiveMesFromClient(client, token));
             _clientsQueues[client] = Channel.CreateUnbounded<Message>();
-            clientsTasks.Add(SendMesToClient(client, _clientsQueues[client], token));
+            Tasks.Add(SendMesToClient(client, _clientsQueues[client], token));
         }
         
         listener.Stop();
-        await Task.WhenAll(clientsTasks);
+        await Task.WhenAll(Tasks);
         
     }
     
@@ -71,30 +78,20 @@ public static class Program
                 var text = await reader.ReadLineAsync(token);
                 var msg = JsonSerializer.Deserialize(text, typeof(Message)) as Message; 
                 Console.WriteLine($"Received command: {text}");
-                switch (msg.Text)
+                
+                lock (ObjectsActions.InQueueLock)
                 {
-                    case "jebac komunizm":
-                        _serverQueue.Enqueue(client);
-                        foreach (var cl in _clients)
-                        {
-                            if (cl != client)
-                            {
-                                await _clientsQueues[cl].Writer.WriteAsync(msg);    
-                            }
-                        }
-                        break;
-                    default:
-                        // await _clientsQueues[client].Writer.WriteAsync(new Message("Serwer", "NIE SLYSZAEALEM!?"));
-                        msg.From = "Serwer";
-                        //msg.Text = "Nie slyszalem";
-                        foreach (var cl in _clients)
-                        {
-                            if (cl != client)
-                            {
-                                await _clientsQueues[cl].Writer.WriteAsync(msg);    
-                            }
-                        }
-                        break;
+                    ObjectsActions.InQueue.Enqueue(msg, msg.Tick);
+                }
+                
+                msg.From = "Serwer";
+                
+                foreach (var cl in _clients) 
+                {
+                    if (cl != client)
+                    {
+                        await _clientsQueues[cl].Writer.WriteAsync(msg);    
+                    }
                 }
 
                 if (text == null)
@@ -130,18 +127,46 @@ public static class Program
         {
             var stream = client.GetStream();
             
-            var writer = new StreamWriter(stream) { AutoFlush = true };
             var startMsg = new Message("Serwer", "Start");
-            var startJson  = JsonSerializer.Serialize(startMsg);
-            await writer.WriteLineAsync(startJson);
+            var startJson = JsonSerializer.Serialize(startMsg);
+            var startPayload = Encoding.UTF8.GetBytes(startJson);
+            byte[] startLengthHeader = new byte[sizeof(Int32)];
+            BinaryPrimitives.WriteInt32LittleEndian(startLengthHeader,startPayload.Length); 
+            
+            await stream.WriteAsync(startLengthHeader, token);
+            await stream.WriteAsync(startPayload, token);
+            
+            await stream.FlushAsync(token);
+            
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
             
             while (!token.IsCancellationRequested)
             {
+                
+                if (stopwatch.ElapsedMilliseconds > 500)
+                {
+                    //sending snapshot of a map
+                    
+                    
+                    
+                    
+                    stopwatch.Restart();
+                }
                 var msg = await channel.Reader.ReadAsync(token);
                 var json = JsonSerializer.Serialize(msg);
+                byte[] payload = Encoding.UTF8.GetBytes(json);
+                
+                byte headerType = (byte)(Messages.MessageType.PlayerAction);
+                var length = payload.Length;
+                byte[] headerLength = new byte[sizeof(Int32)];
+                BinaryPrimitives.WriteInt32LittleEndian(headerLength, length);
                 Console.WriteLine($"Serializing message: json: {json}");
                 
-                await writer.WriteLineAsync(json);
+                await stream.WriteAsync(new[]{headerType}, token);
+                await stream.WriteAsync(headerLength, token);
+                await stream.WriteAsync(payload, token);
+                await stream.FlushAsync(token);
             }
         }
         catch (OperationCanceledException)

@@ -40,7 +40,7 @@ public static class GameMap{
         }
     }
     
-    public static void AddObjectToMap(int x, int y, GameObject gameObject){
+    public static void AddObjectToMap(int x, int y, GameObject gameObject, bool addToExistingObjects = true){
         var objectSize = gameObject.Size;
         if(x < 0 || y < 0) return;
         if(x + objectSize > Size || y + objectSize > Size) return;
@@ -54,10 +54,14 @@ public static class GameMap{
         Map[x,y].IsMainObjectPosition = true;
         gameObject.Position = (x, y);
 
-        if(gameObject is not Tree)
+        if(gameObject is not Tree && addToExistingObjects)
             ExistingObjects.Add(gameObject);
     }
-
+    public static ObjectId? TryGet(int x, int y){
+        if(x < 0 || y < 0) return null;
+        if(x >= Size || y >= Size) return null;
+        return Map[x, y];
+    }
     public static (int, int) GetNearestEmptyField(GameObject gameObject){
         var size = gameObject.Size + 2;
         var startingX = gameObject.Position.Item1 - 1;
@@ -104,7 +108,19 @@ public static class GameMap{
     public enum MapAnimation{
         TakeDamage,
     }
-    public static Stack<(int, int)> BFS((int, int) position, (int, int) target){
+    public static Stack<(int, int)> BFS((int, int) position, (int, int) target, int checkSurrounding = 2){
+        if(checkSurrounding == 0) return new();
+
+        bool isSurrounded = true;
+        ForEachNeighbourghingField(target, (field)=>{if(field.GameObject is null) isSurrounded = false;});
+        
+        if(isSurrounded){
+            int x = Math.Sign(target.Item1 - position.Item1);
+            int y = Math.Sign(target.Item2 - position.Item2);
+            return BFS(position, (target.Item1 - x, target.Item2 - y), checkSurrounding-1);
+        }
+
+        
         var visited = new bool[Size, Size];
         var path = new (int, int)[Size, Size];
         var queue = new Queue<((int, int), (int, int))>();
@@ -239,6 +255,14 @@ public static class GameMap{
             FieldPosition.XSmallerYSmaller => (field.Item1 - 1, field.Item2 - 1),
             _ => (-1, -1)
         };
+    }
+    public static void ForEachNeighbourghingField((int, int)field, Action<ObjectId> action){
+        for(int i=0; i<8; i++){
+            var temp = NeigbourghingField(field, (FieldPosition)i);
+            var neighbourgh = TryGet(temp.Item1, temp.Item2);
+            if(neighbourgh is not null)
+                action(neighbourgh.Value);
+        }
     }
     public static IEnumerator<int> Trees(){
         // while(true){
