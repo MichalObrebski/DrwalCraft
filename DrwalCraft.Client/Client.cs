@@ -46,8 +46,21 @@ internal class Client
         var startMsg = JsonSerializer.Deserialize<Message>(startJson);
         if (startMsg is null) return;
         Console.WriteLine(startJson);
-        if(startMsg.Text == "Start")
-            tcs.SetResult(true); // sygnał o rozpoczęciu gry (drugi klient podłączył się)
+        
+        string playerId = startMsg.Text;
+        Players.game = new Player(1);
+        if (playerId == 3.ToString())
+        {
+            Players.you = new Player(3);
+            Players.enemy = new Player(2);
+        }
+        if(playerId == 2.ToString())
+        {
+            Players.you = new Player(2);
+            Players.enemy = new Player(3);
+        }
+        
+        tcs.SetResult(true); // sygnał o rozpoczęciu gry (drugi klient podłączył się)
         
         while (true)
         {
@@ -81,6 +94,7 @@ internal class Client
                     //ExistingObjects.InSemaphore.Release();
                 } 
             }
+            
         }
     }
 
