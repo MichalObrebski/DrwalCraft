@@ -60,10 +60,11 @@ public abstract class GameObject : IGameObject, INotifyPropertyChanged{
     //konstruktor do armii, zeby nie zwiekszac liczby obiektów dla determinizmu ID jednostek
     public GameObject(GameObjectFor X)
     {
+        
         if (X != GameObjectFor.Army)
             return;
         PlayerId = -1;
-
+        IsDead = false;
         Size = 1;
     }
     
