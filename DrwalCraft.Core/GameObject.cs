@@ -5,11 +5,16 @@ using System.Windows.Media.Imaging;
 
 namespace DrwalCraft.Core;
 
-public static class GameObjectId{
-    private static int _player;
-    private static int _objectCount;
-    public static int PlayerId {get => _player;}
-    private static bool IsPrime(int n){
+public static class Players{
+    public static Player you;
+    public static Player enemy;
+    public static Player game;
+}
+public class Player{
+    private int _player;
+    private int _objectCount;
+    public int PlayerId {get => _player;}
+    private bool IsPrime(int n){
         if(n <= 2) return false;
         if(n % 2 == 0) return false;
         for(int i=3; i*i <= n; i+=2){
@@ -17,7 +22,7 @@ public static class GameObjectId{
         }
         return true;
     }
-    private static int NthOddPrime(int n){
+    private int NthOddPrime(int n){
         int count = 0;
         int num = 1;
         while(count < n){
@@ -27,11 +32,11 @@ public static class GameObjectId{
         }
         return num;
     }
-    public static void Init(int player){
+    public Player(int player){
         _player = NthOddPrime(player);
         _objectCount = 1;
     }
-    public static int GetNewId(){
+    public int GetNewId(){
         _objectCount++;
         return _objectCount * 2 * _player;
     }
@@ -87,15 +92,9 @@ public abstract class GameObject : IGameObject, INotifyPropertyChanged{
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
     public abstract void MainAction();
-    public GameObject(string? Icon = null, int? playerId = null, int? objectId = null, int size = 1){
-        if(playerId is null)
-            PlayerId = GameObjectId.PlayerId;
-        else
-            PlayerId = playerId.Value;
-        if(PlayerId == GameObjectId.PlayerId)
-            Id = GameObjectId.GetNewId();
-        else
-            Id = objectId ?? 1;
+    public GameObject(Player player, string? Icon = null, int size = 1){
+        Id = player.GetNewId();
+        PlayerId = player.PlayerId;
         Size = size;
         IsDead = false;
 
@@ -125,7 +124,7 @@ public abstract class GameObject : IGameObject, INotifyPropertyChanged{
         // // 5. Kopiowanie pikseli z Tree.png do tablicy
         convertedBitmap.CopyPixels(ObjectIcon, stride, 0);
 
-        if(this is not Tree){
+        if(this is not Tree && this is not Core.Mines.Mine){
             int center = height*stride/2 + stride/2;
             int centerX = center % stride;
             int centerY = center / stride;
@@ -142,7 +141,7 @@ public abstract class GameObject : IGameObject, INotifyPropertyChanged{
                 // if(ObjectIcon[i] == 0 && dist <= height*height/4){
                     if(ObjectIcon[i] == 0 && ((ObjectIcon[i-4] > j && (i-4) / stride == i / stride) || (ObjectIcon[i+4] > j && (i+4) / stride == i / stride))){
                         ObjectIcon[i] = j;
-                        if(PlayerId == GameObjectId.PlayerId){
+                        if(PlayerId == Players.you.PlayerId){
                             ObjectIcon[i-1] = 0x00;
                             ObjectIcon[i-2] = 0x00;
                             ObjectIcon[i-3] = 0xFF;
@@ -194,7 +193,7 @@ public abstract class GameObject : IGameObject, INotifyPropertyChanged{
             Size = size;
     }
 
-    public byte[]? GetIconPart(int positionX, int positionY){
+    public virtual byte[]? GetIconPart(int positionX, int positionY){
         if(ObjectIconPart == null) return null;
         int indexX = positionX - Position.Item1;
         int indexY = positionY - Position.Item2;
@@ -206,10 +205,42 @@ public abstract class GameObject : IGameObject, INotifyPropertyChanged{
 }
 
 public class Tree: GameObject{
-    public Tree() : base("Tree.png"){
+    public static byte[]? objectStaticIcon;
+    public Tree() : base(Players.game){
+        if(objectStaticIcon is null)
+            SetIcon();
         Name = "Tree";
     }
     public override void MainAction(){
         ExistingObjects.Remove(this);
+    }
+    private static void SetIcon(){
+        var fullPath = Path.Combine(
+            AppContext.BaseDirectory,
+            "Assets",
+            "Icons",
+            "Tree.png");
+        var uri = new Uri(fullPath);
+        var sourceImage = new BitmapImage(uri);
+
+        FormatConvertedBitmap convertedBitmap = new FormatConvertedBitmap();
+        convertedBitmap.BeginInit();
+        convertedBitmap.Source = sourceImage;
+        convertedBitmap.DestinationFormat = PixelFormats.Pbgra32;
+        convertedBitmap.EndInit();
+
+        int width = convertedBitmap.PixelWidth;
+        int height = convertedBitmap.PixelHeight;
+        int bytesPerPixel = (convertedBitmap.Format.BitsPerPixel + 7) / 8; // Dla Pbgra32 to 4
+        int stride = width * bytesPerPixel; // Długość jednego wiersza w bajtach
+
+        // // 4. Przygotowanie tablicy bajtów
+        objectStaticIcon = new byte[height * stride];
+
+        // // 5. Kopiowanie pikseli z Tree.png do tablicy
+        convertedBitmap.CopyPixels(objectStaticIcon, stride, 0);
+    }
+    public override byte[]? GetIconPart(int x, int y){
+        return objectStaticIcon;
     }
 }

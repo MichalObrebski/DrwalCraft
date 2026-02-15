@@ -1,7 +1,7 @@
 namespace DrwalCraft.Core.Troops;
 
 public class Archer : Soldier{
-    public Archer(int? playerId = null, int? objectId = null) : base("Archer.png", playerId, objectId){
+    public Archer(Player player) : base(player, "Archer.png"){
         _moveProgress = 0;
         _speed = 6;
         _range = 4;

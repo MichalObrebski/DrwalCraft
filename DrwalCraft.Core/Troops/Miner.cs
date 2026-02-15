@@ -16,7 +16,7 @@ public class Miner : Troop{
             }
         }
     }
-    public Miner(int? playerId = null, int? objectId = null) : base("Miner.png", playerId, objectId){
+    public Miner(Player player) : base(player, "Miner.png"){
         Name = "Tree miner";
         MaxHp = 64;
         Hp = 64;

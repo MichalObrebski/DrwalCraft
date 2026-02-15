@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using DrwalCraft.Core;
+using DrwalCraft.Core.Mines;
 
 namespace DrwalCraft.Engine.Render;
 
@@ -44,13 +45,21 @@ public class MiniMap{
                     bitmap.WritePixels(rect, mapObject.greenSquare, ChunkSize*4 ,0);
                 }
                 else{
-                    if(gameObject is DrwalCraft.Core.Troops.Troop)
-                        if(gameObject.PlayerId == GameObjectId.PlayerId)
+                    if(gameObject is Core.Mines.Mine mine){
+                        if(mine.Player == 0)
+                            bitmap.WritePixels(rect, mapObject.yellowSquare, ChunkSize*4 ,0);
+                        else if(mine.Player == Players.you.PlayerId)
+                            bitmap.WritePixels(rect, mapObject.blueSquare, ChunkSize*4 ,0);
+                        else
+                            bitmap.WritePixels(rect, mapObject.redSquare, ChunkSize*4 ,0);
+                    }
+                    else if(gameObject is DrwalCraft.Core.Troops.Troop)
+                        if(gameObject.PlayerId == Players.you.PlayerId)
                             bitmap.WritePixels(rect, mapObject.blueCircle, ChunkSize*4 ,0);
                         else
                             bitmap.WritePixels(rect, mapObject.redCircle, ChunkSize*4 ,0);
                     else
-                        if(gameObject.PlayerId == GameObjectId.PlayerId)
+                        if(gameObject.PlayerId == Players.you.PlayerId)
                             bitmap.WritePixels(rect, mapObject.blueSquare, ChunkSize*4 ,0);
                         else
                             bitmap.WritePixels(rect, mapObject.redSquare, ChunkSize*4 ,0);
@@ -65,6 +74,7 @@ public class MiniMap{
         public byte[] blueSquare;
         public byte[] blueCircle;
         public byte[] greenSquare;
+        public byte[] yellowSquare;
         public byte[] redSquare;
         public byte[] redCircle;
         public MapObject(int chunkSize){
@@ -85,6 +95,11 @@ public class MiniMap{
             g = 0x55;
             r = 0x32;
             greenSquare = Square(b, g, r);
+
+            b = 0x32;
+            g = 0x58;
+            r = 0x69;
+            yellowSquare = Square(b, g, r);
         }
         private byte[] Square(byte b, byte g, byte r){
             byte[] square = new byte[_chunkSize * _chunkSize * 4];

@@ -8,6 +8,7 @@ public interface IBuilding : IGameObject{
 
 public abstract class Building : GameObject, IBuilding{
     protected bool _inProduction;
+    protected Player _player;
     public bool InProduction {
         get => _inProduction;
         set{
@@ -40,8 +41,8 @@ public abstract class Building : GameObject, IBuilding{
         }
     }
     public List<Type> Products {get; set;}
-    public Building(string Icon, int size) : base(Icon, size:size){
-        
+    public Building(Player player, string Icon, int size) : base(player, Icon, size:size){
+        _player = player;
     }
     public abstract void Produce(Type item);
 }

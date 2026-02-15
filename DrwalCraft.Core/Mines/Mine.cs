@@ -25,8 +25,8 @@ public class Mine : GameObject{
         }
     }
 
-    public Mine(int? playerId = null, int? objectId = null): base("Mine.png", playerId, objectId, size: 3){
-        Name = "Mine";
+    public Mine(Player player): base(player, "Mine.png", size: 3){
+        Name = "Wood Mine";
         Miners = new();
         _canDie = false;
     }
@@ -62,6 +62,7 @@ public class Mine : GameObject{
                     Hp += miner.Hp * 2;
                     MaxHp += miner.MaxHp * 2;
                     GameMap.Map[i, j].GameObject = null;
+                    OnPropertyChanged(nameof(Miners));
                     return;
                 }
             }

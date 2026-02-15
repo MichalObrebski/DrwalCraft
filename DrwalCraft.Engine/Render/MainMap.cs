@@ -16,22 +16,27 @@ public class MainMap{
     private GameUIDataContext.GameUIDataContext _dataContext;
     public int Height {init; get;}
     public int Width {init; get; }
+    private Lock offsetLock = new();
     public int OffsetTop {
         get => _offsetTop;
         set{
-            if(value < _maxOffsetTop)
-                _offsetTop = value > 0 ? value : 0;
-            else
-                _offsetTop = _maxOffsetTop;
+            lock(offsetLock){
+                if(value < _maxOffsetTop)
+                    _offsetTop = value > 0 ? value : 0;
+                else
+                    _offsetTop = _maxOffsetTop;
+            }
         }
     }
     public int OffsetLeft {
         get => _offsetLeft;
         set{
-            if(value < _maxOffsetLeft)
-                _offsetLeft = value > 0 ? value : 0;
-            else
-                _offsetLeft = _maxOffsetLeft;
+            lock(offsetLock){
+                if(value < _maxOffsetLeft)
+                    _offsetLeft = value > 0 ? value : 0;
+                else
+                    _offsetLeft = _maxOffsetLeft;
+            }
         }
     }
 
@@ -63,20 +68,24 @@ public class MainMap{
         var renderHeight = Height / chunkSize;
         PriorityQueue<GameMap.MapAnimation, (int, int)> animationQueueCopy = new ();
 
+        lock(offsetLock)
         for(int i=0; i<renderWidth; i++){
             for(int j=0; j<renderHeight; j++){
+                // if(i==0&&j==0)continue;
                 var mapField = DrwalCraft.Core.GameMap.Map[i+OffsetLeft,j+OffsetTop];
                 var gameObject = mapField.GameObject;
                 if(gameObject == null) continue;
+                // if(gameObject is Tree) continue;
                 var objectSize = chunkSize;// * gameObject.Size;
                 var objectIconPart = gameObject.GetIconPart(i+OffsetLeft, j+OffsetTop);
                 if(objectIconPart is null) continue;
-                GameMap.mainAnimationQueue.TryPeek(out _, out var nextAnimationPosition);
                 var objectIconPartClone = (byte[])objectIconPart.Clone();
-                if (nextAnimationPosition.Equals((i,j))){
-                    RedStar(objectIconPartClone, chunkSize);
-                    animationQueueCopy.Enqueue(GameMap.mainAnimationQueue.Dequeue(), nextAnimationPosition);
-                }
+                
+                if(GameMap.mainAnimationQueue.TryPeek(out _, out var nextAnimationPosition))
+                    if (nextAnimationPosition.Equals((i,j))){
+                        RedStar(objectIconPartClone, chunkSize);
+                        animationQueueCopy.Enqueue(GameMap.mainAnimationQueue.Dequeue(), nextAnimationPosition);
+                    }
 
                 if(gameObject.IsActive){
                     Highlight(gameObject, objectIconPartClone, objectSize, i+OffsetLeft, j+OffsetTop);
