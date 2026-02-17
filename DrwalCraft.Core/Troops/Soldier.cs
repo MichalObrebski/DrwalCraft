@@ -65,11 +65,15 @@ public class Soldier: Troop{
 
         if(_actionProgress == 0){
             AttackTarget.GetAttacked(_damage, this);
+            AttackAnimation();
             _actionProgress = _actionSpeed;
         }
         else{
             _actionProgress--;
         }
+    }
+    public virtual void AttackAnimation(){
+        return;
     }
     private bool ClearRange((int, int) troop, (int, int) target){
         int x = Math.Abs(troop.Item1 - target.Item1);

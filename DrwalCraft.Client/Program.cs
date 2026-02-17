@@ -16,7 +16,7 @@ public static class Program
         Console.WriteLine("Wiating for another player to join...");
         bool temp = isOtherClientConnected.Result;
         Console.WriteLine(DateTime.Now.ToLongTimeString());
-        Game.Main();
+        Game.Run();
         network.Wait();
     }
     

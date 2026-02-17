@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using DrwalCraft.Core;
+using DrwalCraft.Core.Animations;
 
 namespace DrwalCraft.Core;
 
@@ -18,13 +19,22 @@ public interface IGameObject{
 }
 public abstract class GameObject : IGameObject, INotifyPropertyChanged{
     protected int _hp;
+    protected (int, int) _position;
     public int Id {init; get;}
     public int PlayerId {init; get;}
     public byte[]? ObjectIcon {set; get;}
     public byte[][] ObjectIconPart {set; get;}
-    public (int, int) Position {set; get;}
+    public (int, int) Position {
+        get => _position;
+        set{
+            _position = value;
+            Maneuvering?.Invoke(this, new EventArgs());
+        }
+    }
     public int Size {set; get;}
     public event PropertyChangedEventHandler? HpChanged;
+    public event EventHandler BitingTheDust;
+    public event EventHandler Maneuvering;
     protected bool _canDie = true;
     public int Hp{
         get => _hp;
@@ -33,6 +43,7 @@ public abstract class GameObject : IGameObject, INotifyPropertyChanged{
             if(_hp <= 0 && _canDie){
                 GameMap.Map[Position.Item1, Position.Item2].SetDefault();
                 IsDead = true;
+                BitingTheDust?.Invoke(this, new EventArgs());
                 ExistingObjects.Remove(this);
             }
             HpChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Hp)));
@@ -40,8 +51,9 @@ public abstract class GameObject : IGameObject, INotifyPropertyChanged{
         }
     }
     public virtual void GetAttacked(int damage, GameObject attacker){
-        GameMap.mainAnimationQueue.Enqueue(GameMap.MapAnimation.TakeDamage, Position);
         Hp -= damage;
+        if(Hp > 0)
+            Animations.AnimationList.Add(new TakeDamage(Position));
     }
     public bool IsDead;
     protected int _maxHp;

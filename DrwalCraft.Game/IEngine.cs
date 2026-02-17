@@ -9,6 +9,8 @@ using DrwalCraft.Core;
 using DrwalCraft.Engine.Render.GameUIDataContext;
 using DrwalCraft.Core.Troops;
 using DrwalCraft.Core.Army;
+using DrwalCraft.Core.Animations;
+using System.Windows.Automation.Text;
 
 namespace DrwalCraft.Game;
 public class Game{
@@ -19,20 +21,43 @@ public class Game{
     
     [STAThread]
     public static void Main(){
+        Players.game = new Player(1);
+        Players.you = new Player(2);
+        Players.enemy = new(3);
+        Players.player1 = Players.you;
+        Players.player2 = Players.enemy;
         var DrwalCraftApp = new DrwalCraft.Engine.App();
-        var DrwalCraftWindow = new DrwalCraft.Engine.MainWindow();
-        DrwalCraftWindow.MainMapOnClick = MainMapOnClick;
-        DrwalCraftWindow.ContentRenderd = ContentRenderd;
-        DrwalCraftWindow.MainMapSelection = MainMapSelection;
+        var DrwalCraftWindow = new DrwalCraft.Engine.MainWindow{
+            MainMapOnClick = MainMapOnClick,
+            ContentRenderd = TestContentRendered,
+            MainMapSelection = MainMapSelection
+        };
         DrwalCraftApp.Run(DrwalCraftWindow);
     }
-    public static void ContentRenderd(){
+    public static void TestContentRendered(){
+        ContentRendered();
+        Core.GameMap.AddObjectToMap(8,6,new Knight(Players.you));
+        Core.GameMap.AddObjectToMap(9,6,new Knight(Players.you));
+        Core.GameMap.AddObjectToMap(10,6,new Knight(Players.you));
+        Core.GameMap.AddObjectToMap(9,7,new Knight(Players.enemy));
+        Core.GameMap.AddObjectToMap(8,7,new Knight(Players.enemy));
+    }
+
+    [STAThread]
+    public static void Run(){
+        var DrwalCraftApp = new DrwalCraft.Engine.App();
+        var DrwalCraftWindow = new DrwalCraft.Engine.MainWindow{
+            MainMapOnClick = MainMapOnClick,
+            ContentRenderd = ContentRendered,
+            MainMapSelection = MainMapSelection
+        };
+        DrwalCraftApp.Run(DrwalCraftWindow);
+    }
+    public static void ContentRendered(){
         Core.GameLoop.GameLoop.UpdateGameLogic = GameLoopLogic;
         // Core.GameMap.AddObjectToMap(8,8,new Miner(Players.enemy));
         // Core.GameMap.AddObjectToMap(8,9,new Miner(Players.enemy));
         // Core.GameMap.AddObjectToMap(8,10,new Miner(Players.enemy));
-        // Core.GameMap.AddObjectToMap(8,6,new Knight(Players.you));
-        // Core.GameMap.AddObjectToMap(9,6,new Knight(Players.you));
 
         // soldier1 = new DrwalCraft.Core.Troops.Knight(Players.you);
         // DrwalCraft.Core.GameMap.AddObjectToMap(16, 16, soldier1);
@@ -59,6 +84,7 @@ public class Game{
         if(e.LeftButton == MouseButtonState.Pressed){
             var field = DrwalCraft.Core.GameMap.Map[x,y].GameObject;
             if(field is null) return;
+            // AnimationList.Add(new Core.Animations.Sword((x,y)));
 
             if(dataContext != null)
                 dataContext.ActiveUnit = field;

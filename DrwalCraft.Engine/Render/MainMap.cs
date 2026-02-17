@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using DrwalCraft.Core;
+using DrwalCraft.Core.Animations;
 using DrwalCraft.Core.Troops;
 using DrwalCraft.Engine;
 
@@ -86,11 +87,7 @@ public class MainMap{
                 if(objectIconPart is null) continue;
                 var objectIconPartClone = (byte[])objectIconPart.Clone();
                 
-                if(GameMap.mainAnimationQueue.TryPeek(out _, out var nextAnimationPosition))
-                    if (nextAnimationPosition.Equals((i,j))){
-                        RedStar(objectIconPartClone, chunkSize);
-                        animationQueueCopy.Enqueue(GameMap.mainAnimationQueue.Dequeue(), nextAnimationPosition);
-                    }
+                AnimationList.Draw(i+OffsetLeft, j+OffsetTop, objectIconPartClone);
 
                 if(gameObject.IsActive){
                     Highlight(gameObject, objectIconPartClone, objectSize, i+OffsetLeft, j+OffsetTop);
@@ -142,76 +139,5 @@ public class MainMap{
                 objectIcon[k*4 + 2] = 0x00; // R
                 objectIcon[k*4 + 3] = 0xFF; // A
             }
-    }
-
-    private void RedStar(byte[] objectIcon, int chunkSize){
-        for(int k = 12; k<=chunkSize-12; k++){
-            // \
-            objectIcon[(k)*chunkSize*4 + k*4]=0x00;
-            objectIcon[(k)*chunkSize*4 + k*4 + 1]=0x00;
-            objectIcon[(k)*chunkSize*4 + k*4 + 2]=0xFF;
-            objectIcon[(k)*chunkSize*4 + k*4 + 3]=0xFF;
-
-            objectIcon[(k)*chunkSize*4 + k*4 + 4]=0x00;
-            objectIcon[(k)*chunkSize*4 + k*4 + 4 + 1]=0x00;
-            objectIcon[(k)*chunkSize*4 + k*4 + 4 + 2]=0xFF;
-            objectIcon[(k)*chunkSize*4 + k*4 + 4 + 3]=0xFF;
-
-            // objectIcon[(k)*chunkSize*4 + k*4 - 4]=0x00;
-            // objectIcon[(k)*chunkSize*4 + k*4 - 4 + 1]=0x00;
-            // objectIcon[(k)*chunkSize*4 + k*4 - 4 + 2]=0xFF;
-            // objectIcon[(k)*chunkSize*4 + k*4 - 4 + 3]=0xFF;
-            // objectIcon[(k)*chunkSize*4 + k*4]=0x00;
-
-            // -
-            objectIcon[chunkSize*chunkSize*2 + k*4]=0x00;
-            objectIcon[chunkSize*chunkSize*2 + k*4 + 1]=0x00;
-            objectIcon[chunkSize*chunkSize*2 + k*4 + 2]=0xFF;
-            objectIcon[chunkSize*chunkSize*2 + k*4 + 3]=0xFF;
-
-            // objectIcon[chunkSize*chunkSize*2 + k*4 + 4]=0x00;
-            // objectIcon[chunkSize*chunkSize*2 + k*4 + 4 + 1]=0x00;
-            // objectIcon[chunkSize*chunkSize*2 + k*4 + 4 + 2]=0xFF;
-            // objectIcon[chunkSize*chunkSize*2 + k*4 + 4 + 3]=0xFF;
-
-            // objectIcon[chunkSize*chunkSize*2 + k*4 - 4]=0x00;
-            // objectIcon[chunkSize*chunkSize*2 + k*4 - 4 + 1]=0x00;
-            // objectIcon[chunkSize*chunkSize*2 + k*4 - 4 + 2]=0xFF;
-            // objectIcon[chunkSize*chunkSize*2 + k*4 - 4 + 3]=0xFF;
-            // objectIcon[chunkSize*chunkSize*2 + k*4]=0x00;
-
-            // |
-            objectIcon[(k)*chunkSize*4 + chunkSize*2]=0x00;
-            objectIcon[(k)*chunkSize*4 + chunkSize*2 + 1]=0x00;
-            objectIcon[(k)*chunkSize*4 + chunkSize*2 + 2]=0xFF;
-            objectIcon[(k)*chunkSize*4 + chunkSize*2 + 3]=0xFF;
-
-            // objectIcon[(k)*chunkSize*4 + chunkSize*2 + 4]=0x00;
-            // objectIcon[(k)*chunkSize*4 + chunkSize*2 + 4 + 1]=0x00;
-            // objectIcon[(k)*chunkSize*4 + chunkSize*2 + 4 + 2]=0xFF;
-            // objectIcon[(k)*chunkSize*4 + chunkSize*2 + 4 + 3]=0xFF;
-
-            // objectIcon[(k)*chunkSize*4 + chunkSize*2 - 4]=0x00;
-            // objectIcon[(k)*chunkSize*4 + chunkSize*2 - 4 + 1]=0x00;
-            // objectIcon[(k)*chunkSize*4 + chunkSize*2 - 4 + 2]=0xFF;
-            // objectIcon[(k)*chunkSize*4 + chunkSize*2 - 4 + 3]=0xFF;
-            // objectIcon[(k)*chunkSize*4 + chunkSize*2]=0x00;
-
-            // /
-            objectIcon[(k+1)*chunkSize*4 - k*4]=0x00;
-            objectIcon[(k+1)*chunkSize*4 - k*4 + 1]=0x00;
-            objectIcon[(k+1)*chunkSize*4 - k*4 + 2]=0xFF;
-            objectIcon[(k+1)*chunkSize*4 - k*4 + 3]=0xFF;
-
-            objectIcon[(k+1)*chunkSize*4 - k*4 + 4]=0x00;
-            objectIcon[(k+1)*chunkSize*4 - k*4 + 4 + 1]=0x00;
-            objectIcon[(k+1)*chunkSize*4 - k*4 + 4 + 2]=0xFF;
-            objectIcon[(k+1)*chunkSize*4 - k*4 + 4 + 3]=0xFF;
-
-            // objectIcon[(k+1)*chunkSize*4 - k*4 - 4]=0x00;
-            // objectIcon[(k+1)*chunkSize*4 - k*4 - 4 + 1]=0x00;
-            // objectIcon[(k+1)*chunkSize*4 - k*4 - 4 + 2]=0xFF;
-            // objectIcon[(k+1)*chunkSize*4 - k*4 - 4 + 3]=0xFF;
-        }
     }
 }

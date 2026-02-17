@@ -1,3 +1,5 @@
+using DrwalCraft.Core.Animations;
+
 namespace DrwalCraft.Core.Troops;
 
 public class Knight : Soldier{
@@ -10,5 +12,8 @@ public class Knight : Soldier{
         Hp = 100;
         Name = "Knight";
         Price = 500;
+    }
+    public override void AttackAnimation(){
+        AnimationList.Add(new Animations.Sword(this));
     }
 }

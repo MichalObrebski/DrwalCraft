@@ -32,11 +32,6 @@ public partial class MainWindow : Window{
     }
     protected override void OnContentRendered(EventArgs e){
         base.OnContentRendered(e);
-        // Players.game = new Player(1);
-        // Players.you = new Player(2);
-        // Players.enemy = new(3);
-        // Players.player1 = Players.you;
-        // Players.player2 = Players.enemy;
 
         Players.you.WoodAmmountChanged += (this.DataContext as GameUIDataContext).WoodChangeListener;
 
