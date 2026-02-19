@@ -33,8 +33,8 @@ public abstract class GameObject : IGameObject, INotifyPropertyChanged{
     }
     public int Size {set; get;}
     public event PropertyChangedEventHandler? HpChanged;
-    public event EventHandler BitingTheDust;
-    public event EventHandler Maneuvering;
+    public event EventHandler? BitingTheDust;
+    public event EventHandler? Maneuvering;
     protected bool _canDie = true;
     public int Hp{
         get => _hp;
@@ -53,7 +53,7 @@ public abstract class GameObject : IGameObject, INotifyPropertyChanged{
     public virtual void GetAttacked(int damage, GameObject attacker){
         Hp -= damage;
         if(Hp > 0)
-            Animations.AnimationList.Add(new TakeDamage(Position));
+            Animations.AnimationList.Add(new TakeDamage(Position, attacker.Position));
     }
     public bool IsDead;
     protected int _maxHp;

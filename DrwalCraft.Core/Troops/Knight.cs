@@ -14,6 +14,6 @@ public class Knight : Soldier{
         Price = 500;
     }
     public override void AttackAnimation(){
-        AnimationList.Add(new Animations.Sword(this));
+        AnimationList.Add(new Animations.Sword(this, AttackTarget.Position));
     }
 }

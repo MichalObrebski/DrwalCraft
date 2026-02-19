@@ -11,21 +11,21 @@ public abstract class Animation{
 
     public (int, int) Position{get => _position;}
 
-    public Animation((int, int) position, int duration){
+    private Animation(int duration){
         _stopwatch = Stopwatch.StartNew();
-        _position = position;
         _msDuration = duration;
+    }
+    public Animation((int, int) position, int duration) : this(duration){
+        _position = position;
         AnimationList.Add(this);
     }
-    public Animation(GameObject gameObject, int duration){
-        _stopwatch = Stopwatch.StartNew();
+    public Animation(GameObject gameObject, int duration) : this(duration){
         _gameObject = gameObject;
         _gameObject.Maneuvering += ChangePosition;
         _position = gameObject.Position;
-        _msDuration = duration;
         AnimationList.Add(this);
     }
-    public abstract void Animate(byte[] field);
+    public abstract void Animate(ref byte[] field);
     protected bool CanAnimate(){
         if(_stopwatch.ElapsedMilliseconds < _msDuration)
             return true;
@@ -44,5 +44,31 @@ public abstract class Animation{
 
         AnimationList.ChangePosition(this, _gameObject.Position);
         _position = _gameObject.Position;
+    }
+    protected void Rotate(double rad, ref byte[] bytes){//trzeba to zrobić lepiej
+        byte[] baseBytes = (byte[])bytes.Clone();
+        byte[] rotated = new byte[_chunkSize*_chunkSize*4];
+        int middle = _chunkSize*_chunkSize*2-_chunkSize*2;
+        for(int i=-_chunkSize/2; i<_chunkSize/2; i++){
+            for(int j=-_chunkSize/2; j<_chunkSize/2; j++){
+                double x = i * Math.Cos(rad) - j * Math.Sin(rad);
+                double y = i * Math.Sin(rad) + j * Math.Cos(rad);
+                if(((int)x)*4 + ((int)y)*_chunkSize*4 + middle >= 0 &&
+                    ((int)x+1)*4 + ((int)y+1)*_chunkSize*4 + middle + 3 < _chunkSize*_chunkSize*4 && 
+                    i*4 + j*_chunkSize*4 + middle >= 0 &&
+                    i*4 + j*_chunkSize*4 + middle + 3 <_chunkSize*_chunkSize*4){
+                    rotated[((int)x)*4 + ((int)y)*_chunkSize*4 + middle] = baseBytes[i*4 + j*_chunkSize*4 + middle];
+                    rotated[((int)x)*4 + ((int)y)*_chunkSize*4 + 1 + middle] = baseBytes[i*4 + j*_chunkSize*4 + 1 + middle];
+                    rotated[((int)x)*4 + ((int)y)*_chunkSize*4 + 2 + middle] = baseBytes[i*4 + j*_chunkSize*4 + 2 + middle];
+                    rotated[((int)x)*4 + ((int)y)*_chunkSize*4 + 3 + middle] = baseBytes[i*4 + j*_chunkSize*4 + 3 + middle];
+                    
+                    rotated[((int)Math.Ceiling(x))*4 + ((int)Math.Ceiling(y))*_chunkSize*4 + middle] = baseBytes[i*4 + j*_chunkSize*4 + middle];
+                    rotated[((int)Math.Ceiling(x))*4 + ((int)Math.Ceiling(y))*_chunkSize*4 + 1 + middle] = baseBytes[i*4 + j*_chunkSize*4 + 1 + middle];
+                    rotated[((int)Math.Ceiling(x))*4 + ((int)Math.Ceiling(y))*_chunkSize*4 + 2 + middle] = baseBytes[i*4 + j*_chunkSize*4 + 2 + middle];
+                    rotated[((int)Math.Ceiling(x))*4 + ((int)Math.Ceiling(y))*_chunkSize*4 + 3 + middle] = baseBytes[i*4 + j*_chunkSize*4 + 3 + middle];
+                }
+            }
+        }
+        bytes = rotated;
     }
 }

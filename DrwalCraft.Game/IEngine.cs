@@ -28,7 +28,7 @@ public class Game{
         Players.player2 = Players.enemy;
         var DrwalCraftApp = new DrwalCraft.Engine.App();
         var DrwalCraftWindow = new DrwalCraft.Engine.MainWindow{
-            MainMapOnClick = MainMapOnClick,
+            MainMapOnClick = TestMainMapOnClick,
             ContentRenderd = TestContentRendered,
             MainMapSelection = MainMapSelection
         };
@@ -41,6 +41,10 @@ public class Game{
         Core.GameMap.AddObjectToMap(10,6,new Knight(Players.you));
         Core.GameMap.AddObjectToMap(9,7,new Knight(Players.enemy));
         Core.GameMap.AddObjectToMap(8,7,new Knight(Players.enemy));
+    }
+    public static void TestMainMapOnClick(MouseButtonEventArgs e, int x, int y, GameUIDataContext? dataContext){
+        MainMapOnClick(e, x, y, dataContext);
+        // AnimationList.Add(new Core.Animations.TakeDamage((x,y)));
     }
 
     [STAThread]
@@ -84,7 +88,6 @@ public class Game{
         if(e.LeftButton == MouseButtonState.Pressed){
             var field = DrwalCraft.Core.GameMap.Map[x,y].GameObject;
             if(field is null) return;
-            // AnimationList.Add(new Core.Animations.Sword((x,y)));
 
             if(dataContext != null)
                 dataContext.ActiveUnit = field;

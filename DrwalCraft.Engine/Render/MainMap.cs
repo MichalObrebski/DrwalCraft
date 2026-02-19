@@ -87,7 +87,7 @@ public class MainMap{
                 if(objectIconPart is null) continue;
                 var objectIconPartClone = (byte[])objectIconPart.Clone();
                 
-                AnimationList.Draw(i+OffsetLeft, j+OffsetTop, objectIconPartClone);
+                AnimationList.Draw(i+OffsetLeft, j+OffsetTop, ref objectIconPartClone);
 
                 if(gameObject.IsActive){
                     Highlight(gameObject, objectIconPartClone, objectSize, i+OffsetLeft, j+OffsetTop);

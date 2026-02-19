@@ -27,10 +27,10 @@ public static class AnimationList{
         }
     }
 
-    public static void Draw(int x, int y, byte[] bytes){
+    public static void Draw(int x, int y, ref byte[] bytes){
         if(_animations.TryGetValue((x,y), out var animations)){
             for(int i=animations.Count-1; i>=0; i--){
-                animations[i].Animate(bytes);
+                animations[i].Animate(ref bytes);
             }
         }
     }
