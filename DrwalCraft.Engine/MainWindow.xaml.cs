@@ -179,7 +179,7 @@ public partial class MainWindow : Window{
         var product = button.DataContext as Type;
         var gameObject = button.Tag as DrwalCraft.Core.GameObject;
         
-        if(gameObject.PlayerId != Players.you.PlayerId) return;
+        if(gameObject.Owner.PlayerId != Players.you.PlayerId) return;
         
         if (gameObject != null && product != null){
             if (gameObject is DrwalCraft.Core.Buildings.Building building)

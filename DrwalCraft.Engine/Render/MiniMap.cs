@@ -41,7 +41,7 @@ public class MiniMap{
                 var gameObject = DrwalCraft.Core.GameMap.Map[i,j].GameObject;
                 if(gameObject == null) continue;
                 var rect = new Int32Rect(i*ChunkSize, j*ChunkSize, ChunkSize, ChunkSize);
-                if(gameObject is DrwalCraft.Core.Tree){
+                if(gameObject is DrwalCraft.Core.Trees.Tree){
                     bitmap.WritePixels(rect, mapObject.greenSquare, ChunkSize*4 ,0);
                 }
                 else{
@@ -54,12 +54,12 @@ public class MiniMap{
                             bitmap.WritePixels(rect, mapObject.redSquare, ChunkSize*4 ,0);
                     }
                     else if(gameObject is DrwalCraft.Core.Troops.Troop)
-                        if(gameObject.PlayerId == Players.you.PlayerId)
+                        if(gameObject.Owner.PlayerId == Players.you.PlayerId)
                             bitmap.WritePixels(rect, mapObject.blueCircle, ChunkSize*4 ,0);
                         else
                             bitmap.WritePixels(rect, mapObject.redCircle, ChunkSize*4 ,0);
                     else
-                        if(gameObject.PlayerId == Players.you.PlayerId)
+                        if(gameObject.Owner.PlayerId == Players.you.PlayerId)
                             bitmap.WritePixels(rect, mapObject.blueSquare, ChunkSize*4 ,0);
                         else
                             bitmap.WritePixels(rect, mapObject.redSquare, ChunkSize*4 ,0);

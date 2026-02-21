@@ -6,14 +6,8 @@ using System.Windows.Media.Imaging;
 
 
 namespace DrwalCraft.Core.Troops;
-public interface ITroop : IGameObject{
-    public void MainAction();
-    public void Move();
-}
 
-// public enum 
-
-public abstract class Troop : GameObject, ITroop{
+public abstract class Troop : GameObject{
     protected int _range;
     protected int _speed;
     protected int _actionSpeed;
@@ -25,6 +19,8 @@ public abstract class Troop : GameObject, ITroop{
         get => _attackTarget;
         set
         {
+            if(value != null)
+                value.BitingTheDust += (_, _) => { AttackTarget = null; };
             if (_attackTarget != value)
             {
                 _queuedAttackTarget = value;

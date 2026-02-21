@@ -70,7 +70,7 @@ public static class GameMap{
             for(int j=0; j<size; j++){
                 var field = forest[i*4 + j*stride + 2];
                 if(field == 0x00)
-                    AddObjectToMap(i, j, new Tree());
+                    AddObjectToMap(i, j, new Trees.Tree());
                 else if(field == 0x88)
                     AddObjectToMap(i, j, new Mine(Players.game));
                 else if(field == 0xAA){
@@ -105,7 +105,7 @@ public static class GameMap{
         Map[x,y].IsMainObjectPosition = true;
         gameObject.Position = (x, y);
 
-        if(gameObject is not Tree && addToExistingObjects)
+        if(gameObject is not Core.Trees.Tree && addToExistingObjects)
             ExistingObjects.Add(gameObject);
     }
     public static ObjectId? TryGet(int x, int y){
@@ -144,7 +144,7 @@ public static class GameMap{
     public static IEnumerator<int> ModTrees(){
         for(int i=4;i<16;i++){
             for(int j=4;j<16;j++){
-                Map[i,j] = new GameMap.ObjectId(0, 0, new DrwalCraft.Core.Tree());yield return 0;
+                Map[i,j] = new GameMap.ObjectId(0, 0, new DrwalCraft.Core.Trees.Tree());yield return 0;
             }
         }
     }
@@ -319,42 +319,42 @@ public static class GameMap{
     }
     public static IEnumerator<int> Trees(){
         // while(true){
-        Map[11,12].GameObject = new DrwalCraft.Core.Tree();yield return 0;
-        Map[11,13].GameObject =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[12,12].GameObject =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[12,13].GameObject =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[13,12].GameObject =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[13,13].GameObject =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[14,12].GameObject =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[15,12].GameObject =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[16,12].GameObject =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[16,13].GameObject =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[17,12].GameObject =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[17,13].GameObject =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[18,12].GameObject =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[18,13].GameObject =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[12,11].GameObject =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[17,11].GameObject =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[12,14].GameObject =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[17,14].GameObject =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[14,11].GameObject =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[14,10].GameObject =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[14,9].GameObject  =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[14,8].GameObject  =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[14,7].GameObject  =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[14,6].GameObject  =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[14,5].GameObject  =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[15,11].GameObject =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[15,10].GameObject =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[15,9].GameObject  =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[15,8].GameObject  =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[15,7].GameObject  =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[15,6].GameObject  =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[15,5].GameObject  =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[14,4].GameObject  =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[15,4].GameObject  =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[13,5].GameObject  =  new DrwalCraft.Core.Tree();yield return 0;
-        Map[16,5].GameObject  =  new DrwalCraft.Core.Tree();yield return 0;
+        Map[11,12].GameObject = new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[11,13].GameObject =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[12,12].GameObject =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[12,13].GameObject =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[13,12].GameObject =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[13,13].GameObject =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[14,12].GameObject =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[15,12].GameObject =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[16,12].GameObject =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[16,13].GameObject =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[17,12].GameObject =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[17,13].GameObject =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[18,12].GameObject =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[18,13].GameObject =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[12,11].GameObject =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[17,11].GameObject =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[12,14].GameObject =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[17,14].GameObject =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[14,11].GameObject =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[14,10].GameObject =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[14,9].GameObject  =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[14,8].GameObject  =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[14,7].GameObject  =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[14,6].GameObject  =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[14,5].GameObject  =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[15,11].GameObject =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[15,10].GameObject =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[15,9].GameObject  =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[15,8].GameObject  =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[15,7].GameObject  =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[15,6].GameObject  =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[15,5].GameObject  =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[14,4].GameObject  =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[15,4].GameObject  =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[13,5].GameObject  =  new DrwalCraft.Core.Trees.Tree();yield return 0;
+        Map[16,5].GameObject  =  new DrwalCraft.Core.Trees.Tree();yield return 0;
 
         // for(int i=0;i<24;i++)
         //     yield return 0;

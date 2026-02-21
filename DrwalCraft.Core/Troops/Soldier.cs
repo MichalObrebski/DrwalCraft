@@ -12,7 +12,7 @@ public class Soldier: Troop{
                 TravelTarget = value;
                 AttackTarget = null;
             }
-            else if(gameObject.PlayerId == Players.enemy.PlayerId){
+            else if(gameObject.Owner.PlayerId == Players.enemy.PlayerId){
                 AttackTarget = gameObject;
             }
             else if(gameObject is Mine mine && mine.CurrentPlayer == Players.enemy.PlayerId){
@@ -54,10 +54,7 @@ public class Soldier: Troop{
     
     public virtual void Attack(){
         if(AttackTarget is null) return;
-        if(AttackTarget.IsDead){
-            AttackTarget = null;
-            return;
-        }
+        
         if(AttackTarget is Mine mine && mine.CurrentPlayer == Players.game.PlayerId){
             AttackTarget = null;
             return;

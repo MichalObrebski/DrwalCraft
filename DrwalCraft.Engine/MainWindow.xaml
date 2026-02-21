@@ -9,6 +9,7 @@
         xmlns:army="clr-namespace:DrwalCraft.Core.Army;assembly=DrwalCraft.Core"
         xmlns:core="clr-namespace:DrwalCraft.Core;assembly=DrwalCraft.Core"
         xmlns:mines="clr-namespace:DrwalCraft.Core.Mines;assembly=DrwalCraft.Core"
+        xmlns:trees="clr-namespace:DrwalCraft.Core.Trees;assembly=DrwalCraft.Core"
         mc:Ignorable="d"
         WindowState="Maximized"
         WindowStyle="None"
@@ -181,7 +182,7 @@
                     ItemTemplate="{StaticResource TroopInArmy}" />
             </StackPanel>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type core:Tree}">
+        <DataTemplate DataType="{x:Type trees:Tree}">
             <StackPanel>
                 <TextBlock FontSize="32"
                     Foreground="White"

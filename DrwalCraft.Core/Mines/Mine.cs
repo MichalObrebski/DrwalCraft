@@ -29,7 +29,7 @@ public class Mine : GameObject{
         Name = "Wood Mine";
         Miners = new();
         MiningTime = 18;
-        _canDie = false;
+        _mortal = false;
         CurrentPlayer = Players.game.PlayerId;
     }
 
@@ -43,11 +43,11 @@ public class Mine : GameObject{
             miner.Hp -= damage/2;
             var deltaHp = miner.Hp > 0 ? tempHp - miner.Hp : tempHp;
             Hp -= deltaHp * 2;
-            if(miner.IsDead){
-                Miners.RemoveAt(0);
-                OnPropertyChanged(nameof(Miners));
-                MaxHp -= miner.MaxHp;
-            }
+            // if(miner.IsDead){
+            //     Miners.RemoveAt(0);
+            //     OnPropertyChanged(nameof(Miners));
+            //     MaxHp -= miner.MaxHp;
+            // }
         }
         if(Hp <= 0 || Miners.Count == 0){
             Hp = 0;
@@ -64,9 +64,9 @@ public class Mine : GameObject{
                 if(field is null) continue;
                 if(field.Value.GameObject == miner){
                     if(CurrentPlayer == Players.game.PlayerId)
-                        CurrentPlayer = miner.PlayerId;
+                        CurrentPlayer = miner.Owner.PlayerId;
 
-                    if(CurrentPlayer == miner.PlayerId){
+                    if(CurrentPlayer == miner.Owner.PlayerId){
                         Miners.Add(miner);
                         Hp += miner.Hp * 2;
                         MaxHp += miner.MaxHp * 2;

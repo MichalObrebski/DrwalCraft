@@ -2,11 +2,7 @@ using DrwalCraft.Core;
 
 namespace DrwalCraft.Core.Buildings;
 
-public interface IBuilding : IGameObject{
-
-}
-
-public abstract class Building : GameObject, IBuilding{
+public abstract class Building : GameObject{
     protected bool _inProduction;
     protected Player _player;
     public bool InProduction {
@@ -42,7 +38,7 @@ public abstract class Building : GameObject, IBuilding{
     }
     public List<Type> Products {get; set;}
     public List<string> Pricing{get; set;}
-    public Building(Player player, string Icon, int size) : base(player, Icon, size:size){
+    public Building(Player player, string? Icon = null, int size=1) : base(player, Icon, size:size){
         _player = player;
     }
     public abstract void Produce(Type item);

@@ -41,6 +41,13 @@ public class Game{
         Core.GameMap.AddObjectToMap(10,6,new Knight(Players.you));
         Core.GameMap.AddObjectToMap(9,7,new Knight(Players.enemy));
         Core.GameMap.AddObjectToMap(8,7,new Knight(Players.enemy));
+        Core.GameMap.AddObjectToMap(8,5,new Knight(Players.you));
+        Core.GameMap.AddObjectToMap(9,5,new Knight(Players.you));
+        Core.GameMap.AddObjectToMap(10,5,new Knight(Players.you));
+        Core.GameMap.AddObjectToMap(9,8,new Knight(Players.enemy));
+        Core.GameMap.AddObjectToMap(9,9,new Knight(Players.enemy));
+        Core.GameMap.AddObjectToMap(8,8,new Knight(Players.enemy));
+        Core.GameMap.AddObjectToMap(8,9,new Knight(Players.enemy));
     }
     public static void TestMainMapOnClick(MouseButtonEventArgs e, int x, int y, GameUIDataContext? dataContext){
         MainMapOnClick(e, x, y, dataContext);
@@ -96,7 +103,7 @@ public class Game{
             if(dataContext == null || dataContext.ActiveUnit == null) return;
             
             var activeUnit = dataContext.ActiveUnit;
-            if(activeUnit.PlayerId == Players.you.PlayerId){
+            if(activeUnit.Owner == Players.you){
                 if(activeUnit is Army army)
                     foreach(var troop in army.Troops){
                         if(troop is Soldier soldier)
@@ -123,7 +130,7 @@ public class Game{
         for(int i = start.Item1; i <= end.Item1; i++){
             for(int j = start.Item2; j <= end.Item2; j++){
                 var gameObject = GameMap.Map[i, j].GameObject;
-                if(gameObject is Troop troop && troop.PlayerId == Players.you.PlayerId){
+                if(gameObject is Troop troop && troop.Owner == Players.you){
                     army.TryAddTroop(troop);
                 }
             }

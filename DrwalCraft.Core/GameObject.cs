@@ -12,18 +12,17 @@ public enum GameObjectFor
     Army,
 }
 
-public interface IGameObject{
-    public int Id {get;}
-    public byte[]? ObjectIcon {get;}
-    public (int, int) Position {get;}
-}
-public abstract class GameObject : IGameObject, INotifyPropertyChanged{
+public abstract class GameObject : INotifyPropertyChanged{
+    protected static ImageBytes _chunkPlaceholder = SetIconPlaceholder(1);
     protected int _hp;
+    protected int _maxHp;
     protected (int, int) _position;
+    protected bool _mortal = true;
+
     public int Id {init; get;}
-    public int PlayerId {init; get;}
-    public byte[]? ObjectIcon {set; get;}
-    public byte[][] ObjectIconPart {set; get;}
+    public Player Owner {init; get;}
+    public ImageBytes ObjectIcon {private set; get;}
+    public byte[][] ObjectIconPart {private set; get;}
     public (int, int) Position {
         get => _position;
         set{
@@ -31,32 +30,20 @@ public abstract class GameObject : IGameObject, INotifyPropertyChanged{
             Maneuvering?.Invoke(this, new EventArgs());
         }
     }
-    public int Size {set; get;}
-    public event PropertyChangedEventHandler? HpChanged;
-    public event EventHandler? BitingTheDust;
-    public event EventHandler? Maneuvering;
-    protected bool _canDie = true;
+    public int Size {private set; get;}
     public int Hp{
         get => _hp;
         set{
             _hp = value;
-            if(_hp <= 0 && _canDie){
+            if(_hp <= 0 && _mortal){
                 GameMap.Map[Position.Item1, Position.Item2].SetDefault();
-                IsDead = true;
                 BitingTheDust?.Invoke(this, new EventArgs());
                 ExistingObjects.Remove(this);
             }
             HpChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Hp)));
-            OnPropertyChanged("Hp");
+            OnPropertyChanged(nameof(Hp));
         }
     }
-    public virtual void GetAttacked(int damage, GameObject attacker){
-        Hp -= damage;
-        if(Hp > 0)
-            Animations.AnimationList.Add(new TakeDamage(Position, attacker.Position));
-    }
-    public bool IsDead;
-    protected int _maxHp;
     public int MaxHp{
         set{
             _maxHp = value;
@@ -67,17 +54,13 @@ public abstract class GameObject : IGameObject, INotifyPropertyChanged{
     public string Name{init; get;}
     public static int Price{set; get;}
     public virtual bool IsActive{set; get;}
-    public PriorityQueue<GameMap.MapAnimation, (int, int)> objectAnimations = new ();
-
-    //konstruktor do armii, zeby nie zwiekszac liczby obiektów dla determinizmu ID jednostek
-    public GameObject(GameObjectFor X)
-    {
-        
-        if (X != GameObjectFor.Army)
-            return;
-        PlayerId = -1;
-        IsDead = false;
-        Size = 1;
+    public event PropertyChangedEventHandler? HpChanged;
+    public event EventHandler? BitingTheDust;
+    public event EventHandler? Maneuvering;
+    public virtual void GetAttacked(int damage, GameObject attacker){
+        Hp -= damage;
+        if(Hp > 0)
+            Animations.AnimationList.Add(new TakeDamage(Position, attacker.Position));
     }
     
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -86,155 +69,152 @@ public abstract class GameObject : IGameObject, INotifyPropertyChanged{
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
     public abstract void MainAction();
-    public GameObject(Player player, string? Icon = null, int size = 1){
+    public GameObject(Player player, string? icon = null, int size = 1){
         Id = player.GetNewId();
-        PlayerId = player.PlayerId;
+        Owner = player;
         Size = size;
-        IsDead = false;
+        Name = "A man has no name";
 
-        if(Icon is null) return;
-        var fullPath = Path.Combine(
-            AppContext.BaseDirectory,
-            "Assets",
-            "Icons",
-            Icon);
-        var uri = new Uri(fullPath);
-        var sourceImage = new BitmapImage(uri);
-
-        FormatConvertedBitmap convertedBitmap = new FormatConvertedBitmap();
-        convertedBitmap.BeginInit();
-        convertedBitmap.Source = sourceImage;
-        convertedBitmap.DestinationFormat = PixelFormats.Pbgra32;
-        convertedBitmap.EndInit();
-
-        int width = convertedBitmap.PixelWidth;
-        int height = convertedBitmap.PixelHeight;
-        int bytesPerPixel = (convertedBitmap.Format.BitsPerPixel + 7) / 8; // Dla Pbgra32 to 4
-        int stride = width * bytesPerPixel; // Długość jednego wiersza w bajtach
-
-        // // 4. Przygotowanie tablicy bajtów
-        this.ObjectIcon = new byte[height * stride];
-
-        // // 5. Kopiowanie pikseli z Tree.png do tablicy
-        convertedBitmap.CopyPixels(ObjectIcon, stride, 0);
-
-        if(this is not Tree && this is not Core.Mines.Mine){
-            int center = height*stride/2 + stride/2;
-            int centerX = center % stride;
-            int centerY = center / stride;
-            for(int i=3; i<height*stride;i+=4)
-                if(ObjectIcon[i]<0xFF && ObjectIcon[i] > 0)
-                    ObjectIcon[i] = 0xFF;
-            for(byte j=(byte)(0x50+Size); j>=0x50; j--){
-                for(int i=7; i<height*stride-4;i+=4){
-                // int pointX = i % stride;
-                // int pointY = i / stride;
-                // int distX = centerX - pointX;
-                // int distY = centerY - pointY;
-                // int dist = distX*distX/16 + distY*distY;
-                // if(ObjectIcon[i] == 0 && dist <= height*height/4){
-                    if(ObjectIcon[i] == 0 && ((ObjectIcon[i-4] > j && (i-4) / stride == i / stride) || (ObjectIcon[i+4] > j && (i+4) / stride == i / stride))){
-                        ObjectIcon[i] = j;
-                        if(PlayerId == Players.you.PlayerId){
-                            ObjectIcon[i-1] = 0x00;
-                            ObjectIcon[i-2] = 0x00;
-                            ObjectIcon[i-3] = 0xFF;
-                        }
-                        else{
-                            ObjectIcon[i-1] = 0xFF;
-                            ObjectIcon[i-2] = 0x00;
-                            ObjectIcon[i-3] = 0x00;
-                        }
-                    }
-                }
-            }
-        }
-
+        if(icon is null)
+            ObjectIcon = SetIconPlaceholder(size);
+        else
+            this.ObjectIcon = CreateObjectIcon(icon);
+        
         if(this is Buildings.Construction)
             Size = 1;
 
-        var chunkSize = 32;
-        var chunkStride = chunkSize * 4;
-        ObjectIconPart = new byte[Size*Size][];
-        
-        for(int i=0; i<Size; i++){
-            for(int j=0; j<Size; j++){
-                int cropX = i * chunkSize;
-                int cropY = j * chunkSize;
-
-                ObjectIconPart[i*Size + j] = new byte[chunkSize * chunkStride];
-
-                for (int y = 0; y < chunkSize; y++)
-                {
-                    int srcIndex =
-                        ((cropY + y) * stride) +
-                        (cropX * bytesPerPixel);
-
-                    int dstIndex = y * chunkStride;
-
-                    Buffer.BlockCopy(
-                        ObjectIcon,
-                        srcIndex,
-                        ObjectIconPart[i*Size + j],
-                        dstIndex,
-                        chunkStride
-                    );
-                }
-            }
-        }
+        ObjectIconPart = DivideObjectIcon(ObjectIcon);
 
         if(this is Buildings.Construction)
             Size = size;
     }
 
-    public virtual byte[]? GetIconPart(int positionX, int positionY){
-        if(ObjectIconPart == null) return null;
+    public virtual byte[] GetIconPart(int positionX, int positionY){
         int indexX = positionX - Position.Item1;
         int indexY = positionY - Position.Item2;
-        int index = indexX * Size + indexY;
-        if(ObjectIconPart.Length>2)
-            return ObjectIconPart[index];
-        return ObjectIconPart[0];
-    }
-}
+        int index = indexX + indexY * Size;
 
-public class Tree: GameObject{
-    public static byte[]? objectStaticIcon;
-    public Tree() : base(Players.game){
-        if(objectStaticIcon is null)
-            SetIcon();
-        Name = "Tree";
+        if(index < 0 || index >= ObjectIconPart.Length)
+            return _chunkPlaceholder.Bytes;
+        return ObjectIconPart[index];
     }
-    public override void MainAction(){
-        ExistingObjects.Remove(this);
-    }
-    private static void SetIcon(){
+
+    private ImageBytes CreateObjectIcon(string icon){
         var fullPath = Path.Combine(
             AppContext.BaseDirectory,
             "Assets",
             "Icons",
-            "Tree.png");
-        var uri = new Uri(fullPath);
-        var sourceImage = new BitmapImage(uri);
+            icon);
+        var sourceImage = new BitmapImage(new Uri(fullPath));
 
-        FormatConvertedBitmap convertedBitmap = new FormatConvertedBitmap();
+        //przerabianie png na bitmape
+        FormatConvertedBitmap convertedBitmap = new();
         convertedBitmap.BeginInit();
         convertedBitmap.Source = sourceImage;
         convertedBitmap.DestinationFormat = PixelFormats.Pbgra32;
         convertedBitmap.EndInit();
 
-        int width = convertedBitmap.PixelWidth;
-        int height = convertedBitmap.PixelHeight;
-        int bytesPerPixel = (convertedBitmap.Format.BitsPerPixel + 7) / 8; // Dla Pbgra32 to 4
-        int stride = width * bytesPerPixel; // Długość jednego wiersza w bajtach
+        //wymiary
+        int iconWidth = convertedBitmap.PixelWidth;
+        int iconHeight = convertedBitmap.PixelHeight;
+        int iconStride = iconWidth * (PixelFormats.Bgra32.BitsPerPixel / 8); // Długość jednego wiersza w bajtach
 
-        // // 4. Przygotowanie tablicy bajtów
-        objectStaticIcon = new byte[height * stride];
+        // Kopiowanie pikseli do tablicy
+        var objectIcon = new ImageBytes(Size);
+        convertedBitmap.CopyPixels(objectIcon.Bytes, iconStride, 0);
 
-        // // 5. Kopiowanie pikseli z Tree.png do tablicy
-        convertedBitmap.CopyPixels(objectStaticIcon, stride, 0);
+        // dodawanie koloru gracza
+        if(Owner != Players.game)
+            AddPlayerColors(objectIcon);
+
+        return objectIcon;
     }
-    public override byte[]? GetIconPart(int x, int y){
-        return objectStaticIcon;
+    private void AddPlayerColors(ImageBytes objectIcon){
+        //ustawienie przezroczystości na 0 lub 255 (nic pomiędzy)
+        for(int i = 3; i < objectIcon.Height * objectIcon.Stride; i += 4)
+            if(objectIcon.Bytes[i] < 0xFF && objectIcon.Bytes[i] > 0)
+                objectIcon.Bytes[i] = 0xFF;
+
+        //kolorowanie pixeli na kolor gracza
+        for(byte opacity = (byte)(0x50+Size); opacity >= 0x50; opacity--){//grubość obramówki
+            //zaczynamy od drugiego pixela i kończymy na przedostatnim
+            // (bo sprawdzamy sąsiadujące więc potrzebujemy mieć pewność że +-1 nie wyjebie programu)
+            for(int i = 0; i < objectIcon.Width; i++){
+                for(int j = 0; j < objectIcon.Height; j++){
+                    if(objectIcon[i, j, 3] == 0 && (//czy pixel jest "pusty" i czy sąsiaduje z "niepustym" (3 odpowiada opacity)
+                        i > 0 && objectIcon[i-1, j, 3] > opacity || 
+                        i < objectIcon.Width - 1 && objectIcon[i+1, j, 3] > opacity ||
+                        j > 0 && objectIcon[i, j-1, 3] > opacity || 
+                        j < objectIcon.Height - 1 && objectIcon[i, j+1, 3] > opacity
+                    )){
+                        objectIcon[i, j, 3] = opacity;//alpha w bgra
+                        byte b, g, r;
+                        (b, g, r) = Owner.Colors;//barwy gracza
+                        objectIcon[i, j, 0] = b;
+                        objectIcon[i, j, 1] = g;
+                        objectIcon[i, j, 2] = r;
+                    }
+                }
+            }
+        }
+    }
+    private byte[][] DivideObjectIcon(ImageBytes objectIcon){
+        var chunkSize = GameMap.ChunkSize;
+        var chunkStride = chunkSize * (PixelFormats.Bgra32.BitsPerPixel / 8);
+        var iconParts = new byte[Size*Size][];
+        
+        // pętla po chunkach
+        for(int j = 0; j < Size; j++){
+            for(int i = 0; i < Size; i++){
+                int startX = i * chunkSize;
+                int startY = j * chunkSize;
+
+                // alokacja pamięci dla fragmentu
+                iconParts[i + j*Size] = new byte[chunkSize * chunkStride];
+
+                //kopiowanie wiersz po wierszu (te poziome)
+                for(int y = 0; y < chunkSize; y++){
+                    int srcIndex = //początek bloku pamięci w objectIcon
+                        ((startY + y) * objectIcon.Stride) +
+                        (startX * objectIcon.BytesPerPixel);
+
+                    int dstIndex = y * chunkStride; // index w części ikony (podtablicy) w iconParts
+
+                    Buffer.BlockCopy(
+                        ObjectIcon.Bytes,       //src
+                        srcIndex,               //src offset
+                        iconParts[i + j*Size],  //destination
+                        dstIndex,               //dest offset
+                        chunkStride             //count
+                    );
+                }
+            }
+        }
+
+        return iconParts;
+    }
+    private static ImageBytes SetIconPlaceholder(int size){
+        int squareSize = GameMap.ChunkSize / 2;
+        uint color1 = 0xA000A0FF;
+        uint color2 = 0x222222FF;
+        var objectIcon = new ImageBytes(size);
+        //for dla każdego chunka po x
+        for(int k = 0; k < size*GameMap.ChunkSize; k += GameMap.ChunkSize){
+            //for dla każdego chunka po y
+            for(int l = 0; l < size*GameMap.ChunkSize; l += GameMap.ChunkSize){
+                //for dla pixeli po x
+                for(int i = 0; i < squareSize; i++){
+                    //for dla pixeli po y
+                    for(int j = 0; j < squareSize; j++){
+                        //kolorowanie kwadratów
+                        objectIcon[k + i, j + l] = color1;                          //lewy górny
+                        objectIcon[k + i + squareSize, j + l] = color2;             //prawy górny
+                        objectIcon[k + i, j + l + squareSize] = color2;             //lewy dolny
+                        objectIcon[k + i + squareSize, j + l + squareSize] = color1;//prawy dolny
+                    }
+                }
+            }
+        }
+        return objectIcon;
     }
 }
