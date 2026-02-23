@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using DrwalCraft.Core;
-using DrwalCraft.Core.Army;
 using DrwalCraft.Engine;
 
 namespace DrwalCraft.Engine.Render.GameUIDataContext;

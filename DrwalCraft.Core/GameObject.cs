@@ -21,8 +21,8 @@ public abstract class GameObject : INotifyPropertyChanged{
 
     public int Id {init; get;}
     public Player Owner {init; get;}
-    public ImageBytes ObjectIcon {private set; get;}
-    public byte[][] ObjectIconPart {private set; get;}
+    public ImageBytes ObjectIcon {protected set; get;}
+    public byte[][] ObjectIconPart {protected set; get;}
     public (int, int) Position {
         get => _position;
         set{
@@ -30,13 +30,13 @@ public abstract class GameObject : INotifyPropertyChanged{
             Maneuvering?.Invoke(this, new EventArgs());
         }
     }
-    public int Size {private set; get;}
+    public int Size {protected set; get;}
     public int Hp{
         get => _hp;
         set{
             _hp = value;
             if(_hp <= 0 && _mortal){
-                GameMap.Map[Position.Item1, Position.Item2].SetDefault();
+                GameMap.Map[Position.Item1, Position.Item2] = null;
                 BitingTheDust?.Invoke(this, new EventArgs());
                 ExistingObjects.Remove(this);
             }

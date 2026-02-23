@@ -1,0 +1,4 @@
+ObjectMovement{
+    w CorrectPath trzeba zrobić żeby można było chodzić po jednostkach jak się zaszło wystarczająco daleko
+    trzeba zrobić żeby jednostki szły najliżej jak się da do celu a nie rezygnowały odrazu jak nie ma bezpośredniego dojścia
+}

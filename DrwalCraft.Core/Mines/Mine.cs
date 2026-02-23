@@ -60,9 +60,8 @@ public class Mine : GameObject{
         if(Miners.Count >= 5) return;
         for(int i=Position.Item1-1; i<=Position.Item1+Size; i++){
             for(int j=Position.Item2-1; j<=Position.Item2+Size; j++){
-                var field = GameMap.TryGet(i, j);
-                if(field is null) continue;
-                if(field.Value.GameObject == miner){
+                if(!GameMap.IndexBoundSafeGet(i, j, out var field) && field is null) continue;
+                if(field == miner){
                     if(CurrentPlayer == Players.game.PlayerId)
                         CurrentPlayer = miner.Owner.PlayerId;
 
@@ -70,7 +69,7 @@ public class Mine : GameObject{
                         Miners.Add(miner);
                         Hp += miner.Hp * 2;
                         MaxHp += miner.MaxHp * 2;
-                        GameMap.Map[i, j].GameObject = null;
+                        GameMap.Map[i, j] = null;
                         OnPropertyChanged(nameof(Miners));
                     }
                     return;

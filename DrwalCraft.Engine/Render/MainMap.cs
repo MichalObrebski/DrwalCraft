@@ -72,14 +72,12 @@ public class MainMap{
         var chunkSize = DrwalCraft.Core.GameMap.ChunkSize;
         var renderWidth = Width / chunkSize;
         var renderHeight = Height / chunkSize;
-        PriorityQueue<GameMap.MapAnimation, (int, int)> animationQueueCopy = new ();
 
         lock(offsetLock)
         for(int i=0; i<renderWidth; i++){
             for(int j=0; j<renderHeight; j++){
                 // if(i==0&&j==0)continue;
-                var mapField = DrwalCraft.Core.GameMap.Map[i+OffsetLeft,j+OffsetTop];
-                var gameObject = mapField.GameObject;
+                var gameObject = DrwalCraft.Core.GameMap.Map[i+OffsetLeft,j+OffsetTop];
                 if(gameObject == null) continue;
                 // if(gameObject is Tree) continue;
                 var objectSize = chunkSize;// * gameObject.Size;
@@ -105,7 +103,6 @@ public class MainMap{
                 }
             }
         }
-        GameMap.mainAnimationQueue = animationQueueCopy;
 
         return bitmap;
     }

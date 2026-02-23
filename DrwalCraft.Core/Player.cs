@@ -3,12 +3,12 @@ using System.ComponentModel;
 namespace DrwalCraft.Core;
 
 public static class Players{
-    public static Player you;
-    public static Player enemy;
-    public static Player game;
+    public static Player you = null!;
+    public static Player enemy = null!;
+    public static Player game = null!;
 
-    public static Player player1;
-    public static Player player2;
+    public static Player player1 = null!;
+    public static Player player2 = null!;
 }
 public class Player : INotifyPropertyChanged{
     private int _player;
@@ -25,7 +25,7 @@ public class Player : INotifyPropertyChanged{
         get => _wood;
         set{
             _wood = value;
-            OnPropertyChanged("Wood");
+            OnPropertyChanged(nameof(Wood));
             WoodAmmountChanged?.Invoke(this, new EventArgs());
         }
     }

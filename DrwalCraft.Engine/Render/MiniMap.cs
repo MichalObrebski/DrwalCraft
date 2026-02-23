@@ -38,7 +38,7 @@ public class MiniMap{
 
         for(int i=0; i<DrwalCraft.Core.GameMap.Size; i++){
             for(int j=0; j<DrwalCraft.Core.GameMap.Size; j++){
-                var gameObject = DrwalCraft.Core.GameMap.Map[i,j].GameObject;
+                var gameObject = DrwalCraft.Core.GameMap.Map[i,j];
                 if(gameObject == null) continue;
                 var rect = new Int32Rect(i*ChunkSize, j*ChunkSize, ChunkSize, ChunkSize);
                 if(gameObject is DrwalCraft.Core.Trees.Tree){

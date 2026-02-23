@@ -9,7 +9,7 @@ public abstract class Building : GameObject{
         get => _inProduction;
         set{
             _inProduction = value;
-            OnPropertyChanged("InProduction");
+            OnPropertyChanged(nameof(InProduction));
         }
     }
     protected int _productionTime;
@@ -25,7 +25,7 @@ public abstract class Building : GameObject{
         get => _progress;
         set{
             _progress = value;
-            OnPropertyChanged("Progress");
+            OnPropertyChanged(nameof(Progress));
         }
     }
     protected GameObject? _producing;
@@ -33,7 +33,7 @@ public abstract class Building : GameObject{
         get => _producing;
         set{
             _producing = value;
-            OnPropertyChanged("Producing");
+            OnPropertyChanged(nameof(Producing));
         }
     }
     public List<Type> Products {get; set;}

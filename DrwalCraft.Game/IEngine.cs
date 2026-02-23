@@ -8,7 +8,7 @@ using System.Windows.Media;
 using DrwalCraft.Core;
 using DrwalCraft.Engine.Render.GameUIDataContext;
 using DrwalCraft.Core.Troops;
-using DrwalCraft.Core.Army;
+using DrwalCraft.Core.Groups;
 using DrwalCraft.Core.Animations;
 using System.Windows.Automation.Text;
 
@@ -39,11 +39,17 @@ public class Game{
         Core.GameMap.AddObjectToMap(8,6,new Knight(Players.you));
         Core.GameMap.AddObjectToMap(9,6,new Knight(Players.you));
         Core.GameMap.AddObjectToMap(10,6,new Knight(Players.you));
-        Core.GameMap.AddObjectToMap(9,7,new Knight(Players.enemy));
-        Core.GameMap.AddObjectToMap(8,7,new Knight(Players.enemy));
         Core.GameMap.AddObjectToMap(8,5,new Knight(Players.you));
         Core.GameMap.AddObjectToMap(9,5,new Knight(Players.you));
         Core.GameMap.AddObjectToMap(10,5,new Knight(Players.you));
+        Core.GameMap.AddObjectToMap(10,7,new Knight(Players.you));
+        Core.GameMap.AddObjectToMap(10,8,new Knight(Players.you));
+        Core.GameMap.AddObjectToMap(12,7,new Knight(Players.you));
+        Core.GameMap.AddObjectToMap(12,8,new Knight(Players.you));
+        Core.GameMap.AddObjectToMap(11,7,new Knight(Players.you));
+        Core.GameMap.AddObjectToMap(11,8,new Knight(Players.you));
+        Core.GameMap.AddObjectToMap(9,7,new Knight(Players.enemy));
+        Core.GameMap.AddObjectToMap(8,7,new Knight(Players.enemy));
         Core.GameMap.AddObjectToMap(9,8,new Knight(Players.enemy));
         Core.GameMap.AddObjectToMap(9,9,new Knight(Players.enemy));
         Core.GameMap.AddObjectToMap(8,8,new Knight(Players.enemy));
@@ -93,7 +99,7 @@ public class Game{
     
     public static void MainMapOnClick(MouseButtonEventArgs e, int x, int y, GameUIDataContext? dataContext){
         if(e.LeftButton == MouseButtonState.Pressed){
-            var field = DrwalCraft.Core.GameMap.Map[x,y].GameObject;
+            var field = DrwalCraft.Core.GameMap.Map[x,y];
             if(field is null) return;
 
             if(dataContext != null)
@@ -104,21 +110,8 @@ public class Game{
             
             var activeUnit = dataContext.ActiveUnit;
             if(activeUnit.Owner == Players.you){
-                if(activeUnit is Army army)
-                    foreach(var troop in army.Troops){
-                        if(troop is Soldier soldier)
-                            soldier.Target = (x, y);
-                        else if(troop is Miner miner)
-                            miner.Target = (x, y);
-                        else if(troop is Builder builder)
-                            builder.TravelTarget = (x, y);
-                    }
-                else if(activeUnit is Soldier soldier)
-                    soldier.Target = (x, y);
-                else if(activeUnit is Miner miner)
-                    miner.Target = (x, y);
-                else if(activeUnit is Troop troop)
-                    troop.TravelTarget = (x, y);
+                if(activeUnit is ICanMove unit)
+                    unit.Target = (x, y);
             }
         }
         else{
@@ -126,10 +119,10 @@ public class Game{
         }
     }
     public static void MainMapSelection(MouseButtonEventArgs e, (int, int) start, (int, int) end, GameUIDataContext? dataContext){
-        var army = new DrwalCraft.Core.Army.Army(Players.you);
+        var army = new DrwalCraft.Core.Groups.Army(Players.you);
         for(int i = start.Item1; i <= end.Item1; i++){
             for(int j = start.Item2; j <= end.Item2; j++){
-                var gameObject = GameMap.Map[i, j].GameObject;
+                var gameObject = GameMap.Map[i, j];
                 if(gameObject is Troop troop && troop.Owner == Players.you){
                     army.TryAddTroop(troop);
                 }
@@ -137,9 +130,9 @@ public class Game{
         }
         if(dataContext is null) return;
         
-        if(army.Troops.Count > 1)
+        if(army.Count > 1)
             dataContext.ActiveUnit = army;
-        else if(army.Troops.Count == 1 && army.Troops[0] != dataContext.ActiveUnit)
-            dataContext.ActiveUnit = army.Troops[0];
+        else if(army.Count == 1 && army.Units[0] != dataContext.ActiveUnit)
+            dataContext.ActiveUnit = army.Units[0];
     }
 }

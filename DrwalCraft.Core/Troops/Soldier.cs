@@ -5,9 +5,9 @@ namespace DrwalCraft.Core.Troops;
 public class Soldier: Troop{
     protected int _damage;
     public int Damage{get => _damage;}
-    public (int, int) Target{
+    public override (int, int) Target{
         set{
-            var gameObject = GameMap.Map[value.Item1, value.Item2].GameObject;
+            var gameObject = GameMap.Map[value.Item1, value.Item2];
             if(gameObject is null){
                 TravelTarget = value;
                 AttackTarget = null;
@@ -84,15 +84,13 @@ public class Soldier: Troop{
                     var positionX = troop.Item1 + i;
                     var positionY = troop.Item2;
                     while(positionY < target.Item2){
-                        var gameObject = GameMap.TryGet(positionX, positionY)?.GameObject;
-                        if(gameObject is not null && gameObject is not Troop)
+                        if(GameMap.IndexBoundSafeGet(positionX, positionY, out var gameObject) && gameObject is not null && gameObject is not Troop)
                             return false;
                         positionX++;
                         positionY++;
                     }
                     while(positionX < target.Item1){
-                        var gameObject = GameMap.TryGet(positionX, positionY)?.GameObject;
-                        if(gameObject is not null && gameObject is not Troop)
+                        if(GameMap.IndexBoundSafeGet(positionX, positionY, out var gameObject) && gameObject is not null && gameObject is not Troop)
                             return false;
                         positionX++;
                     }
@@ -103,15 +101,13 @@ public class Soldier: Troop{
                     var positionX = troop.Item1 + i;
                     var positionY = troop.Item2;
                     while(positionY > target.Item2){
-                        var gameObject = GameMap.TryGet(positionX, positionY)?.GameObject;
-                        if(gameObject is not null && gameObject is not Troop)
+                        if(GameMap.IndexBoundSafeGet(positionX, positionY, out var gameObject) && gameObject is not null && gameObject is not Troop)
                             return false;
                         positionX++;
                         positionY--;
                     }
                     while(positionX < target.Item1){
-                        var gameObject = GameMap.TryGet(positionX, positionY)?.GameObject;
-                        if(gameObject is not null && gameObject is not Troop)
+                        if(GameMap.IndexBoundSafeGet(positionX, positionY, out var gameObject) && gameObject is not null && gameObject is not Troop)
                             return false;
                         positionX++;
                     }
@@ -127,15 +123,13 @@ public class Soldier: Troop{
                     var positionX = troop.Item1;
                     var positionY = troop.Item2 + i;
                     while(positionX < target.Item1){
-                        var gameObject = GameMap.TryGet(positionX, positionY)?.GameObject;
-                        if(gameObject is not null && gameObject is not Troop)
+                        if(GameMap.IndexBoundSafeGet(positionX, positionY, out var gameObject) && gameObject is not null && gameObject is not Troop)
                             return false;
                         positionX++;
                         positionY++;
                     }
                     while(positionY < target.Item2){
-                        var gameObject = GameMap.TryGet(positionX, positionY)?.GameObject;
-                        if(gameObject is not null && gameObject is not Troop)
+                        if(GameMap.IndexBoundSafeGet(positionX, positionY, out var gameObject) && gameObject is not null && gameObject is not Troop)
                             return false;
                         positionY++;
                     }
@@ -146,15 +140,13 @@ public class Soldier: Troop{
                     var positionX = troop.Item1;
                     var positionY = troop.Item2 - i;
                     while(positionX < target.Item1){
-                        var gameObject = GameMap.TryGet(positionX, positionY)?.GameObject;
-                        if(gameObject is not null && gameObject is not Troop)
+                        if(GameMap.IndexBoundSafeGet(positionX, positionY, out var gameObject) && gameObject is not null && gameObject is not Troop)
                             return false;
                         positionX++;
                         positionY--;
                     }
                     while(positionY > target.Item2){
-                        var gameObject = GameMap.TryGet(positionX, positionY)?.GameObject;
-                        if(gameObject is not null && gameObject is not Troop)
+                        if(GameMap.IndexBoundSafeGet(positionX, positionY, out var gameObject) && gameObject is not null && gameObject is not Troop)
                             return false;
                         positionY--;
                     }
@@ -169,8 +161,7 @@ public class Soldier: Troop{
                 var positionX = troop.Item1;
                 var positionY = troop.Item2;
                 while(positionY < target.Item2){
-                    var gameObject = GameMap.TryGet(positionX, positionY)?.GameObject;
-                    if(gameObject is not null && gameObject is not Troop)
+                    if(GameMap.IndexBoundSafeGet(positionX, positionY, out var gameObject) && gameObject is not null && gameObject is not Troop)
                         return false;
                     positionX++;
                     positionY++;
@@ -180,8 +171,7 @@ public class Soldier: Troop{
                 var positionX = troop.Item1;
                 var positionY = troop.Item2;
                 while(positionY > target.Item2){
-                    var gameObject = GameMap.TryGet(positionX, positionY)?.GameObject;
-                    if(gameObject is not null && gameObject is not Troop)
+                    if(GameMap.IndexBoundSafeGet(positionX, positionY, out var gameObject) && gameObject is not null && gameObject is not Troop)
                         return false;
                     positionX++;
                     positionY--;

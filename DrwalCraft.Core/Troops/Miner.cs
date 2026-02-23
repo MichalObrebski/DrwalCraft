@@ -25,9 +25,9 @@ public class Miner : Troop
     }
     public event EventHandler TargetMineChanged;
     
-    public (int, int) Target{
+    public override (int, int) Target{
         set{
-            var gameObject = GameMap.Map[value.Item1, value.Item2].GameObject;
+            var gameObject = GameMap.Map[value.Item1, value.Item2];
             TravelTarget = value;
 
             if(gameObject is Mines.Mine mine){
@@ -51,8 +51,8 @@ public class Miner : Troop
             Move();
         if(TargetMine is not null){
             bool flag = false;
-            GameMap.ForEachNeighbourghingField(Position, (field) => {
-                if(field.GameObject == TargetMine)
+            GameMap.ForEachNeighbouringField(Position, (_, field) => {
+                if(field == TargetMine)
                     flag = true;
             });
             if(flag){

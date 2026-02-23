@@ -8,7 +8,7 @@ using DrwalCraft.Core.Animations;
 namespace DrwalCraft.Core.Trees;
 public class Tree: GameObject{
     public Tree() : base(Players.game, "Tree.png"){
-        Name = "Tree";
+        Name = "Fake Tree";
     }
     public override void MainAction(){
         ExistingObjects.Remove(this);

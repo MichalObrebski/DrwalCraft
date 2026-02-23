@@ -44,12 +44,11 @@ public class Castle : Building{
     }
     public override void MainAction(){
         if(_producing == null) return;
-        if(_progress >= _productionTime){
-            var (x, y) = GameMap.GetNearestEmptyField(this);
-            if(x == -1){
+        if(_progress >= _productionTime){        
+            if(!GameMap.TryGetNearestEmptyField(this, out var field)){
                 return;
             }
-            GameMap.AddObjectToMap(x, y, _producing);
+            GameMap.AddObjectToMap(field.Item1, field.Item2, _producing);
             _producing = null;
             InProduction = false;
         }

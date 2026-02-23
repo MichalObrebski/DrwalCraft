@@ -7,7 +7,7 @@ using System.Windows.Media.Imaging;
 
 namespace DrwalCraft.Core.Troops;
 
-public abstract class Troop : GameObject{
+public abstract class Troop : GameObject, ICanMove{
     protected int _range;
     protected int _speed;
     protected int _actionSpeed;
@@ -38,7 +38,7 @@ public abstract class Troop : GameObject{
     
     protected int _moveProgress;
     protected int _actionProgress;
-    protected Stack<(int, int)> _travelPath = new ();
+    protected ObjectMovement _travelPath;
     public (int, int)? TravelTarget{
         get{
             return _travelTarget;
@@ -54,62 +54,31 @@ public abstract class Troop : GameObject{
             //_travelPath = GameMap.BFS(Position, value.Value); => is now in SetQueuedTravelTarget
         }
     }
+    public abstract (int, int) Target{set;}
 
     public void SetQueuedTravelTarget ((int,int)?  travelTarget)
     {
         _travelTarget = travelTarget;
         if(travelTarget == null) return;
-        _travelPath = GameMap.BFS(Position, travelTarget.Value);
+        _travelPath = new(this, travelTarget.Value);
     }
     public event EventHandler TravelTargetChanged;
     
     public Troop(Player player, string Icon) : base(player, Icon){}
     public virtual void Move(){
         if(TravelTarget == null || TravelTarget == Position) return;
-        if(_travelPath.Count == 0){
-            if(Math.Abs(TravelTarget.Value.Item1 - Position.Item1) > 1 && Math.Abs(TravelTarget.Value.Item2 - Position.Item2) > 1) 
-                TravelTarget = _travelTarget;
-            return;
-        }
+        // if(_travelPath.Count == 0){
+        //     if(Math.Abs(TravelTarget.Value.Item1 - Position.Item1) > 1 && Math.Abs(TravelTarget.Value.Item2 - Position.Item2) > 1) 
+        //         TravelTarget = _travelTarget;
+        //     return;
+        // }
 
         if(_moveProgress == 0){
-            (int, int) nextPosition = _travelPath.Pop();
-            if(nextPosition == Position) return;
-            GameObject? self = GameMap.Map[this.Position.Item1, this.Position.Item2].GameObject;
-            
-            if(GameMap.Map[nextPosition.Item1, nextPosition.Item2].GameObject != null){
-                List<(int, int)> currentPath = new ();
-                int maxRadius;
-                if(GameMap.Map[nextPosition.Item1, nextPosition.Item2].GameObject is Troop)
-                    maxRadius = 2;
-                else
-                    maxRadius = 4;
-
-                int radius = 0;
-                for(; radius < maxRadius - 1 && _travelPath.Count != 0; radius++)
-                    currentPath.Add(_travelPath.Pop());
-                var correctedPath = GameMap.CorrectPath(Position, currentPath, radius+1);
-
-                if(correctedPath.Count == 0){
-                    currentPath.Reverse();
-                    foreach(var field in currentPath)
-                        _travelPath.Push(field);
-                    _moveProgress = _speed;
-                    _travelPath.Push(nextPosition);
-                    return;
-                }
-                else{
-                    foreach(var field in correctedPath)
-                        _travelPath.Push(field);
-                    nextPosition = _travelPath.Pop();
-                }
-            }
-
-            if(nextPosition != (-1, -1) && GameMap.Map[nextPosition.Item1, nextPosition.Item2].GameObject == null){
-                GameMap.Map[this.Position.Item1, this.Position.Item2].GameObject = null;
-                GameMap.Map[nextPosition.Item1, nextPosition.Item2].GameObject = self;
-                this.Position = nextPosition;
+            if(_travelPath.Move()){
                 _moveProgress = _speed;
+            }
+            else{
+                TravelTarget = null;
             }
         }
 

@@ -20,11 +20,11 @@ public class Construction : Building{
         if(_producing is null) return;
 
         if(_progress >= _productionTime){
-            var builderPosition = GameMap.GetNearestEmptyField(this);
             Hp = -1;
             GameMap.AddObjectToMap(Position.Item1, Position.Item2, _producing);
             _builder.Constructing = false;
-            GameMap.AddObjectToMap(builderPosition.Item1, builderPosition.Item2, _builder);
+            if(GameMap.TryGetNearestEmptyField(this, out var builderPosition))
+                GameMap.AddObjectToMap(builderPosition.Item1, builderPosition.Item2, _builder);
         }
         else{
             Hp++;
