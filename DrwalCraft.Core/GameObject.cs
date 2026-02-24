@@ -36,7 +36,9 @@ public abstract class GameObject : INotifyPropertyChanged{
         set{
             _hp = value;
             if(_hp <= 0 && _mortal){
-                GameMap.Map[Position.Item1, Position.Item2] = null;
+                for(int i=0; i<Size; i++)
+                    for(int j=0; j<Size; j++)
+                        GameMap.Map[Position.Item1+i, Position.Item2+j] = null;
                 BitingTheDust?.Invoke(this, new EventArgs());
                 ExistingObjects.Remove(this);
             }
