@@ -19,7 +19,7 @@ public class Miner : Troop
         }
     }
 
-    public void setQueuedTargetMine(Mines.Mine? value)
+    public void SetQueuedTargetMine(Mines.Mine? value)
     {
         _targetMine = value;
     }

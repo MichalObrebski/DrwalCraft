@@ -62,7 +62,7 @@ public static class ObjectsActions
                 {
                     foreach(var mine in ExistingObjects.GameObjects)
                         if(mine is Mine && mine.Id == message.TargetId)
-                            (gameObject as Miner).setQueuedTargetMine((Mine)mine);
+                            (gameObject as Miner).SetQueuedTargetMine((Mine)mine);
                 }
         }
         

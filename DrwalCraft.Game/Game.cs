@@ -23,7 +23,7 @@ public class Game{
     public static DrwalCraft.Core.Troops.Soldier? soldier3;
     
     [STAThread]
-    public static async Task Main(){
+    public static void Main(){
         Players.game = new Player(1);
         Players.you = new Player(2);
         Players.enemy = new(3);
@@ -82,6 +82,9 @@ public class Game{
         };
         DrwalCraftApp.Run(DrwalCraftWindow);
     }
+    /// <summary>
+    /// mapLock = null wtw gdy nie ma innego wątku czytającego/piszącego na GameMap
+    /// </summary>
     public static void RunEngine(ReaderWriterLockSlim? mapLock){
         GameMap.Init(64);
         GameLoop.StartGameLoop(mapLock);

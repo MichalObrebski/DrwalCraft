@@ -32,10 +32,12 @@ public class Player : INotifyPropertyChanged{
     public int PlayerId {get => _player;}
     public (byte, byte, byte) Colors{
         get{
-            if(this == Players.player1)
+            if(this == Players.you)
                 return (0xFF, 0x00, 0x00); //bgr
-            else
+            else if(this == Players.enemy)
                 return (0x00, 0x00, 0xFF); //bgr
+            else
+                return (0x3A, 0x7F, 0x3A);
         }
     }
     public Player(int player){

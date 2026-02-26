@@ -36,7 +36,6 @@ public static class GameLoop{
                     // trees.MoveNext();
                     CurrentTick++;
                     accumulator -= TargetDt;
-                    Console.WriteLine(CurrentTick);
                 }
                 finally{
                     mapLock?.ExitWriteLock();

@@ -14,16 +14,16 @@ public class Miner : Troop
             if (_targetMine != value)
             {
                 _queuedTargetMine = value;
-                TargetMineChanged.Invoke(this, EventArgs.Empty);
+                TargetMineChanged?.Invoke(this, EventArgs.Empty);
             }
         }
     }
 
-    public void setQueuedTargetMine(Mines.Mine? value)
+    public void SetQueuedTargetMine(Mines.Mine? value)
     {
         _targetMine = value;
     }
-    public event EventHandler TargetMineChanged;
+    public event EventHandler? TargetMineChanged;
     
     public override (int, int) Target{
         set{
