@@ -54,7 +54,6 @@ public abstract class GameObject : INotifyPropertyChanged{
         get => _maxHp;
     }
     public string Name{init; get;}
-    public static int Price{set; get;}
     public virtual bool IsActive{set; get;}
     public event PropertyChangedEventHandler? HpChanged;
     public event EventHandler? BitingTheDust;

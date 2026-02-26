@@ -4,7 +4,7 @@ using System.Windows.Media.Imaging;
 using DrwalCraft.Core;
 using DrwalCraft.Core.Mines;
 
-namespace DrwalCraft.Engine.Render;
+namespace DrwalCraft.UI.Render;
 
 public class MiniMap{
     private WriteableBitmap _baseBitmap;

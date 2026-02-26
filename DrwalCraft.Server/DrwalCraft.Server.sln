@@ -4,9 +4,9 @@ VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrwalCraft.Server", "DrwalCraft.Server.csproj", "{6C1A92CD-3524-B6FE-90B4-23FEE8E935DD}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DrwalCraft.Engine.Core", "DrwalCraft.Engine.Core", "{AF6DDB45-3E8F-0473-E81B-620A4BE1653C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DrwalCraft.UI.Core", "DrwalCraft.UI.Core", "{AF6DDB45-3E8F-0473-E81B-620A4BE1653C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrwalCraft.Core", "DrwalCraft.Engine.Core\DrwalCraft.Core.csproj", "{D38B948C-4454-2948-1989-FEC7137F80CA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrwalCraft.Core", "DrwalCraft.UI.Core\DrwalCraft.Core.csproj", "{D38B948C-4454-2948-1989-FEC7137F80CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

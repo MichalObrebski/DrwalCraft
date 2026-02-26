@@ -9,7 +9,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\DrwalCraft.Game\DrwalCraft.Game.csproj" />
-        <ProjectReference Include="..\DrwalCraft.Engine\DrwalCraft.Engine.csproj" />
+        <ProjectReference Include="..\DrwalCraft.UI\DrwalCraft.UI.csproj" />
     </ItemGroup>
     
     <ItemGroup>

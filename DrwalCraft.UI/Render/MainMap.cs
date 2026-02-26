@@ -4,9 +4,9 @@ using System.Windows.Media.Imaging;
 using DrwalCraft.Core;
 using DrwalCraft.Core.Animations;
 using DrwalCraft.Core.Troops;
-using DrwalCraft.Engine;
+using DrwalCraft.UI;
 
-namespace DrwalCraft.Engine.Render;
+namespace DrwalCraft.UI.Render;
 
 public class MainMap{
     private WriteableBitmap _baseBitmap;

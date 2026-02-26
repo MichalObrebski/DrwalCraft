@@ -43,7 +43,6 @@ public class Miner : Troop
         MaxHp = 64;
         Hp = 64;
         _speed = 8;
-        Price = 300;
     }
 
     public override void MainAction(){

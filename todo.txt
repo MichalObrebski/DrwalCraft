@@ -1,4 +1,20 @@
-ObjectMovement{
-    w CorrectPath trzeba zrobić żeby można było chodzić po jednostkach jak się zaszło wystarczająco daleko
-    trzeba zrobić żeby jednostki szły najliżej jak się da do celu a nie rezygnowały odrazu jak nie ma bezpośredniego dojścia
+Core{
+    ObjectMovement{
+        w CorrectPath trzeba zrobić żeby można było chodzić po jednostkach jak się zaszło wystarczająco daleko
+        trzeba zrobić żeby jednostki szły najliżej jak się da do celu a nie rezygnowały odrazu jak nie ma bezpośredniego dojścia
+            trzeba wyznaczyć najbliższe pola (List<(int, int>) {x in N^2 : Map[x]==null && dist(x, field) == min}) i wtedy iść i aktualizować ścieżkę do momentu aż nie będzie się dało podejść bliżej 
+    }
+    Groups{
+        trzeba dodać statyczną klasę w stylu GroupCreator której celem będzie utworzenie różnych klas w zależności od należących do nich jednostek
+    }
+    Buildings{
+        rozróżnić budynki na te co coś produkują i na ObjectInCreation
+        te produkujące będą implementować ICanCreate
+    }
+    ICanCreate{
+        trzeba w jakiś sposób zrobić bardziej elegancko działające ceny
+    }
+}
+Engine{
+    rozdzielić ui od reszty
 }

@@ -2,7 +2,7 @@
 using System.Data;
 using System.Windows;
 
-namespace DrwalCraft.Engine;
+namespace DrwalCraft.UI;
 
 /// <summary>
 /// Interaction logic for App.xaml

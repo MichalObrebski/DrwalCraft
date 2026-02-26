@@ -14,7 +14,6 @@ public class Barrack : Building{
         Products.Add(typeof(Archer));
         Pricing.Add("Archer: 600");
         InProduction = false;
-        Price = 2000;
         Console.WriteLine("Id barracka" + this.Id);
     }
 

@@ -19,7 +19,6 @@ public class Builder : Troop{
         _speed = 8;
         Products = new();
         Pricing = new();
-        Price = 300;
 
         Products.Add(typeof(Barrack));
         Pricing.Add("Barrack: 2000");

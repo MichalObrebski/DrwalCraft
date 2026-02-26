@@ -6,11 +6,14 @@ using Messages;
 using Microsoft.VisualBasic;
 using System.Windows.Media;
 using DrwalCraft.Core;
-using DrwalCraft.Engine.Render.GameUIDataContext;
+using DrwalCraft.UI.Render.GameUIDataContext;
 using DrwalCraft.Core.Troops;
 using DrwalCraft.Core.Groups;
 using DrwalCraft.Core.Animations;
 using System.Windows.Automation.Text;
+using DrwalCraft.Core.GameLoop;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace DrwalCraft.Game;
 public class Game{
@@ -20,17 +23,22 @@ public class Game{
     public static DrwalCraft.Core.Troops.Soldier? soldier3;
     
     [STAThread]
-    public static void Main(){
+    public static async Task Main(){
         Players.game = new Player(1);
         Players.you = new Player(2);
         Players.enemy = new(3);
         Players.player1 = Players.you;
         Players.player2 = Players.enemy;
-        var DrwalCraftApp = new DrwalCraft.Engine.App();
-        var DrwalCraftWindow = new DrwalCraft.Engine.MainWindow{
+
+        var mapLock = new ReaderWriterLockSlim();
+        RunEngine(mapLock);
+
+        var DrwalCraftApp = new DrwalCraft.UI.App();
+        var DrwalCraftWindow = new DrwalCraft.UI.MainWindow{
             MainMapOnClick = TestMainMapOnClick,
             ContentRenderd = TestContentRendered,
-            MainMapSelection = MainMapSelection
+            MainMapSelection = MainMapSelection,
+            mapLock = mapLock
         };
         DrwalCraftApp.Run(DrwalCraftWindow);
     }
@@ -62,16 +70,24 @@ public class Game{
 
     [STAThread]
     public static void Run(){
-        var DrwalCraftApp = new DrwalCraft.Engine.App();
-        var DrwalCraftWindow = new DrwalCraft.Engine.MainWindow{
+        var mapLock = new ReaderWriterLockSlim();
+        RunEngine(mapLock);
+
+        var DrwalCraftApp = new DrwalCraft.UI.App();
+        var DrwalCraftWindow = new DrwalCraft.UI.MainWindow{
             MainMapOnClick = MainMapOnClick,
             ContentRenderd = ContentRendered,
-            MainMapSelection = MainMapSelection
+            MainMapSelection = MainMapSelection,
+            mapLock = mapLock
         };
         DrwalCraftApp.Run(DrwalCraftWindow);
     }
+    public static void RunEngine(ReaderWriterLockSlim? mapLock){
+        GameMap.Init(64);
+        GameLoop.StartGameLoop(mapLock);
+        GameLoop.UpdateGameLogic = GameLoopLogic;
+    }
     public static void ContentRendered(){
-        Core.GameLoop.GameLoop.UpdateGameLogic = GameLoopLogic;
         // Core.GameMap.AddObjectToMap(8,8,new Miner(Players.enemy));
         // Core.GameMap.AddObjectToMap(8,9,new Miner(Players.enemy));
         // Core.GameMap.AddObjectToMap(8,10,new Miner(Players.enemy));
@@ -94,7 +110,6 @@ public class Game{
         }
     public static void GameLoopLogic(){
         ExistingObjects.TickAction();
-        
     }
     
     public static void MainMapOnClick(MouseButtonEventArgs e, int x, int y, GameUIDataContext? dataContext){

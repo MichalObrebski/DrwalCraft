@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 using Messages;
 using DrwalCraft.Core;
+using System.Net.NetworkInformation;
 
 namespace DrwalCraft.Client;
 
@@ -17,7 +18,7 @@ internal class Client
     public async Task ConnectAsync()
     {
         Task<bool> isOtherClientConnected = tcs.Task;
-        var ipEndPoint = new IPEndPoint(IPAddress.Loopback, Port);
+        var ipEndPoint = new IPEndPoint(IPAddress.Parse("10.145.138.125"), Port);
         using var client = new TcpClient();
         await client.ConnectAsync(ipEndPoint);
         Console.WriteLine("Im connected");

@@ -11,7 +11,6 @@ public class Knight : Soldier{
         MaxHp = 100;
         Hp = 100;
         Name = "Knight";
-        Price = 500;
     }
     public override void AttackAnimation(){
         if(AttackTarget is not null)

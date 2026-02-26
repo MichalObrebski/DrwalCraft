@@ -5,7 +5,7 @@ namespace DrwalCraft.Core.GameLoop;
 
 public static class GameLoop{
     public static Action UpdateGameLogic = () => {};
-    public static void StartGameLoop(ReaderWriterLockSlim mapLock){
+    public static void StartGameLoop(ReaderWriterLockSlim? mapLock){
         var gameThread = new Thread(()=>{Loop(mapLock);});
         gameThread.IsBackground = true;
         gameThread.Start();
@@ -14,7 +14,7 @@ public static class GameLoop{
     public static int CurrentTick = 0;
     public const int OffsetTik = 2;
 
-    private static void Loop(ReaderWriterLockSlim mapLock){
+    private static void Loop(ReaderWriterLockSlim? mapLock){
         const int TickRate = 12;
         const double TargetDt = 1000.0 / TickRate;
         
@@ -30,15 +30,16 @@ public static class GameLoop{
             accumulator += deltaTime;
 
             while (accumulator >= TargetDt){
-                mapLock.EnterWriteLock();
+                mapLock?.EnterWriteLock();
                 try{
                     UpdateGameLogic();
                     // trees.MoveNext();
                     CurrentTick++;
                     accumulator -= TargetDt;
+                    Console.WriteLine(CurrentTick);
                 }
                 finally{
-                    mapLock.ExitWriteLock();
+                    mapLock?.ExitWriteLock();
                 }
             }
 

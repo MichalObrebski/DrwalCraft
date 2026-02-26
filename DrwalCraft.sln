@@ -4,7 +4,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrwalCraft.Engine", "DrwalCraft.Engine\DrwalCraft.Engine.csproj", "{F7969D6F-32C6-4B9D-85A4-48183F63054C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrwalCraft.UI", "DrwalCraft.UI\DrwalCraft.UI.csproj", "{F7969D6F-32C6-4B9D-85A4-48183F63054C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrwalCraft.Game", "DrwalCraft.Game\DrwalCraft.Game.csproj", "{57EE392E-E4BD-4C0F-AF31-3F675FF0A37D}"
 EndProject
