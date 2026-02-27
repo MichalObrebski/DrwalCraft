@@ -2,25 +2,34 @@ using DrwalCraft.Core.Buildings;
 
 namespace DrwalCraft.Core.Troops;
 
-public class Builder : Troop{
-    public List<Type> Products {get; set;}
+public class Builder : Troop, ICanCreate{
+    public List<ItemToCreate> Products {get; set;}
     public List<string> Pricing {get; set;}
-    private Building? _inConstruction;
-    public bool Constructing {set; get;}
+    private Building? _objectInProduction;
+    public bool InProduction {set; get;}
     public override (int, int) Target {
         set => TravelTarget = value;
     }
+    public GameObject? ObjectInProduction {
+        get => _objectInProduction;
+        set{
+            if(value is Building building)
+                _objectInProduction = building;
+        }
+    }
+    public int ProductionTime {get => 0;}
+    public int ProductionProgress {get => 0;}
 
     public Builder(Player player) : base(player, "Builder.png"){
         Name = "Builder";
         MaxHp = 50;
         Hp = 50;
-        Constructing = false;
+        InProduction = false;
         _speed = 8;
         Products = new();
         Pricing = new();
 
-        Products.Add(typeof(Barrack));
+        Products.Add(new ItemToCreate(typeof(Barrack), 2000, 0));
         Pricing.Add("Barrack: 2000");
     }
 
@@ -31,22 +40,18 @@ public class Builder : Troop{
 
     public void DoMessage(Type building)
     {
-        ObjectsActions.BuildAddMessage(this.Id, _inConstruction);
+        ObjectsActions.BuildAddMessage(this.Id, _objectInProduction);
     }
-    public void Build(Type building){
-        if(Constructing) return;
-        Constructing = true;
+    //z metodą create jest taki problem że jest wywoływana z wątku UI przez co nie jest zsynchronizowana z tickiem i moze wystąpić taki problem że zostanie wywołana podczas chodzenia co skutkuje tym że builder stoi obok podczas budowy a po zbudowaniu budynku jest w dwóch miejscach. dodatkowo zaczyna zapierdalać zamiast chodzić po zbudowaniu baraku trzeba zrobić tak żebyśmy mieli pewność że Create i MainAction będą zsynchronizowane nie tylko w builderze ale we wszystkich ICanCreate. teraz idę spać. ez
+    public void Create(ItemToCreate item){
+        if(InProduction) return;
+        InProduction = true;
 
-        if(building == typeof(Barrack)){
-            if(Owner.Wood >= 2000){
-                Owner.Wood -= 2000;
-                _inConstruction = new Barrack(Owner);
-            }
-        }
+        ObjectInProduction = item.Make(Owner);
 
-        if(_inConstruction is null) return;
+        if(_objectInProduction is null) return;
 
-        int size = _inConstruction.Size;
+        int size = _objectInProduction.Size;
         int x = -1, y = -1;
         for(int i = Position.Item1 - size + 1; i <= Position.Item1 && x == -1; i++)
             for(int j = Position.Item2 - size + 1; j <= Position.Item2 && x == -1; j++)
@@ -56,12 +61,12 @@ public class Builder : Troop{
                 }
         if(x != -1){
             TravelTarget = null;
-            GameMap.AddObjectToMap(x, y, new Construction(Owner, _inConstruction, this));
+            GameMap.AddObjectToMap(x, y, new Construction(Owner, _objectInProduction, this));
         }
         else{
-            Constructing = false;
-            Owner.Wood += 2000;
-            _inConstruction = null;
+            InProduction = false;
+            Owner.Wood += item.PriceWood;
+            _objectInProduction = null;
         }
     }
     private bool IsAbleToBuild(int x, int y, int size){

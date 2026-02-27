@@ -9,7 +9,7 @@ public class Construction : Building{
         Name = "Construction";
         MaxHp = building.MaxHp;
         Hp = 1;
-        Producing = building;
+        ObjectInProduction = building;
         _builder = builder;
         InProduction = true;
         
@@ -17,22 +17,22 @@ public class Construction : Building{
     }
 
     public override void MainAction(){
-        if(_producing is null) return;
+        if(_objectInProduction is null) return;
 
-        if(_progress >= _productionTime){
+        if(_productionProgress >= _productionTime){
             Hp = -1;
-            GameMap.AddObjectToMap(Position.Item1, Position.Item2, _producing);
-            _builder.Constructing = false;
+            GameMap.AddObjectToMap(Position.Item1, Position.Item2, _objectInProduction);
+            _builder.InProduction = false;
             if(GameMap.TryGetNearestEmptyField(this, out var builderPosition))
                 GameMap.AddObjectToMap(builderPosition.Item1, builderPosition.Item2, _builder);
         }
         else{
             Hp++;
-            Progress = Hp;
+            ProductionProgress = Hp;
         }
     }
 
-    public override void Produce(Type item){
+    public override void Create(ItemToCreate item){
         return;
     }
 
@@ -40,4 +40,5 @@ public class Construction : Building{
         if(ObjectIconPart == null) return null;
         return ObjectIconPart[0];
     }
+
 }

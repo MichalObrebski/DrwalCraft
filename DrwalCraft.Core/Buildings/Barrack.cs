@@ -7,11 +7,9 @@ public class Barrack : Building{
         Name = "Barrack";
         MaxHp = 500;
         Hp = 500;
-        Products = new ();
-        Pricing = new ();
-        Products.Add(typeof(Knight));
+        Products.Add(new ItemToCreate(typeof(Knight), 500, 120));
         Pricing.Add("Knight: 500");
-        Products.Add(typeof(Archer));
+        Products.Add(new ItemToCreate(typeof(Archer), 600, 180));
         Pricing.Add("Archer: 600");
         InProduction = false;
         Console.WriteLine("Id barracka" + this.Id);
@@ -23,39 +21,28 @@ public class Barrack : Building{
     }
     
 
-    public override void Produce(Type troop){
+    public override void Create(ItemToCreate item){
         if(InProduction) return;
 
-        if(troop == typeof(Knight)){
-            if(_player.Wood >= 500){
-                _player.Wood -= 500;
-                _producing = new Knight(_player);
-                ProductionTime = 120;
-            }
-        }
-        if(troop == typeof(Archer)){
-            if(_player.Wood >= 600){
-                _player.Wood -= 600;
-                ProductionTime = 180;
-                _producing = new Archer(_player);
-            }
-        }
+        _objectInProduction = item.Make(Owner);
 
-        if(_producing != null)
+        if(_objectInProduction != null){
             InProduction = true;
+            ProductionTime = item.ProductionTime;
+        }
     }
     public override void MainAction(){
-        if(_producing == null) return;
-        if(_progress >= _productionTime){        
+        if(_objectInProduction == null) return;
+        if(_productionProgress >= _productionTime){        
             if(!GameMap.TryGetNearestEmptyField(this, out var field)){
                 return;
             }
-            GameMap.AddObjectToMap(field.Item1, field.Item2, _producing);
-            _producing = null;
+            GameMap.AddObjectToMap(field.Item1, field.Item2, _objectInProduction);
+            _objectInProduction = null;
             InProduction = false;
         }
         else{
-            Progress++;
+            ProductionProgress++;
         }
     }
 }

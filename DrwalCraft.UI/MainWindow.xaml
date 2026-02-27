@@ -58,7 +58,7 @@
                     ItemsSource="{Binding Products}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Button Content="{Binding Name}"
+                            <Button Content="{Binding Item.Name}"
                             Click="OnProduceClick" 
                             Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                             Margin="5"/>
@@ -88,7 +88,7 @@
                 <TextBlock FontSize="24" Foreground="White" >
                     <TextBlock.Text>
                         <MultiBinding StringFormat="Progress: {0}/{1}">
-                            <Binding Path="Progress"/>
+                            <Binding Path="ProductionProgress"/>
                             <Binding Path="ProductionTime"/>
                         </MultiBinding>
                     </TextBlock.Text>

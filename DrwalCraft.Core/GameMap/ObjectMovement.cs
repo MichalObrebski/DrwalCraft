@@ -35,6 +35,9 @@ public class ObjectMovement{
         _path.RemoveAt(0);
         return true;
     }
+    public void Clear(){
+        _path.Clear();
+    }
 
     private List<(int, int)> GetNewPath((int, int) position, (int, int) target){        
         bool[,] visited = new bool[GameMap.Size, GameMap.Size];

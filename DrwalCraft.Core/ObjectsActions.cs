@@ -72,7 +72,7 @@ public static class ObjectsActions
             {
                 if (gameObject is Builder builder && gameObject.Id == id)
                 {
-                    builder.Build(typeof(Barrack));
+                    // builder.Create(typeof(Barrack));
                 }
             }
         }
@@ -83,11 +83,11 @@ public static class ObjectsActions
             {
                 if (gameObject is Barrack barrack && barrack.Id == message.Id)
                 {
-                    barrack.Produce(message.UnitType == UnitType.Knight?typeof(Knight):typeof(Archer));
+                    // barrack.Create(message.UnitType == UnitType.Knight?typeof(Knight):typeof(Archer));
                 }
                 else if (gameObject is Castle castle && castle.Id == message.Id)
                 {
-                    castle.Produce(message.UnitType == UnitType.TreeMiner?typeof(Miner):typeof(Builder));
+                    // castle.Create(message.UnitType == UnitType.TreeMiner?typeof(Miner):typeof(Builder));
                 }
             }
         }

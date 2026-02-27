@@ -195,26 +195,26 @@ public partial class MainWindow : Window{
     }
     protected void OnProduceClick(object sender, RoutedEventArgs e){
         var button = sender as Button;
-        var product = button.DataContext as Type;
+        var product = button.DataContext as ItemToCreate;
         var gameObject = button.Tag as DrwalCraft.Core.GameObject;
         
         if(gameObject.Owner.PlayerId != Players.you.PlayerId) return;
         
         if (gameObject != null && product != null){
-            if (gameObject is DrwalCraft.Core.Buildings.Building building)
+            if (gameObject is ICanCreate creator)
             {
-                if(building is DrwalCraft.Core.Buildings.Barrack barrack)
-                    barrack.DoMessage(product);
-                else if(building is Core.Buildings.Castle castle){
-                    castle.DoMessage(product);
-                }
-                else
-                {
-                    building.Produce(product);
-                }
+                // if(building is DrwalCraft.Core.Buildings.Barrack barrack)
+                //     barrack.DoMessage(product);
+                // else if(building is Core.Buildings.Castle castle){
+                //     castle.DoMessage(product);
+                // }
+                // else
+                // {
+                    creator.Create(product);
+                // }
             }
-            if(gameObject is DrwalCraft.Core.Troops.Builder builder)
-                builder.DoMessage(product);
+            // if(gameObject is DrwalCraft.Core.Troops.Builder builder)
+                // builder.DoMessage(product);
         }
     }
 }

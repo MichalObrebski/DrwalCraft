@@ -1,3 +1,4 @@
+using System.Windows.Documents;
 using DrwalCraft.Core.Troops;
 
 namespace DrwalCraft.Core.Buildings;
@@ -9,11 +10,9 @@ public class Castle : Building{
         Hp = 1024;
         InProduction = false;
 
-        Products = new();
-        Pricing = new();
-        Products.Add(typeof(Builder));
+        Products.Add(new ItemToCreate(typeof(Builder), 300, 120));
         Pricing.Add("Builder: 300");
-        Products.Add(typeof(Miner));
+        Products.Add(new ItemToCreate(typeof(Miner), 300, 120));
         Pricing.Add("Miner: 300");
     }
 
@@ -21,39 +20,28 @@ public class Castle : Building{
     {
         ObjectsActions.CastleAddMessage(this.Id, troop); //tworzy wiadomość do przesłania do serwera o tworzeniu jednostki
     }
-        public override void Produce(Type troop){
+    public override void Create(ItemToCreate item){
         if(InProduction) return;
 
-        if(troop == typeof(Builder)){
-            if(_player.Wood >= 300){
-                _player.Wood -= 300;
-                _producing = new Builder(_player);
-                ProductionTime = 120;
-            }
-        }
-        if(troop == typeof(Miner)){
-            if(_player.Wood >= 300){
-                _player.Wood -= 300;
-                _producing = new Miner(_player);
-                ProductionTime = 120;
-            }
-        }
+        _objectInProduction = item.Make(Owner);
 
-        if(_producing != null)
+        if(_objectInProduction != null){
             InProduction = true;
+            ProductionTime = item.ProductionTime;
+        }
     }
     public override void MainAction(){
-        if(_producing == null) return;
-        if(_progress >= _productionTime){        
+        if(_objectInProduction == null) return;
+        if(_productionProgress >= _productionTime){        
             if(!GameMap.TryGetNearestEmptyField(this, out var field)){
                 return;
             }
-            GameMap.AddObjectToMap(field.Item1, field.Item2, _producing);
-            _producing = null;
+            GameMap.AddObjectToMap(field.Item1, field.Item2, _objectInProduction);
+            _objectInProduction = null;
             InProduction = false;
         }
         else{
-            Progress++;
+            ProductionProgress++;
         }
     }
 }

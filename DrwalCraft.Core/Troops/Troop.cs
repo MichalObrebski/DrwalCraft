@@ -59,8 +59,10 @@ public abstract class Troop : GameObject, ICanMove{
     public void SetQueuedTravelTarget ((int,int)?  travelTarget)
     {
         _travelTarget = travelTarget;
-        if(travelTarget == null) return;
-        _travelPath = new(this, travelTarget.Value);
+        if(travelTarget != null)
+            _travelPath = new(this, travelTarget.Value);
+        else
+            _travelPath.Clear();
     }
     public event EventHandler TravelTargetChanged;
     
