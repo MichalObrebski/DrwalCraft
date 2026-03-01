@@ -58,10 +58,17 @@
                     ItemsSource="{Binding Products}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Button Content="{Binding Item.Name}"
-                            Click="OnProduceClick" 
-                            Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                            Margin="5"/>
+                                <Button
+                                Click="OnProduceClick" 
+                                Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                Margin="5">
+                                <TextBlock>
+                                    <Run Text="{Binding Item.Name, Mode=OneWay}"/>
+                                    <Run Text=": "/>
+                                    <Run Text="{Binding PriceWood, Mode=OneWay}"/>
+                                    <Run Text=" Wood"/>
+                                </TextBlock>
+                            </Button>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -82,7 +89,7 @@
             <StackPanel>
                 <TextBlock FontSize="24" Foreground="White" >
                     <TextBlock.Text>
-                        <Binding StringFormat="Producing: {0}" Path="Producing.Name"/>
+                        <Binding StringFormat="Producing: {0}" Path="ObjectInProduction.Name"/>
                     </TextBlock.Text>
                 </TextBlock>
                 <TextBlock FontSize="24" Foreground="White" >
@@ -112,7 +119,6 @@
         <DataTemplate DataType="{x:Type troops:Builder}">
             <StackPanel>
                 <ContentControl Content="{Binding}" ContentTemplate="{StaticResource GameObjectTemplate}" />
-                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource Pricing}" />
                 <ContentControl Content="{Binding}">
                     <ContentControl.Style>
                         <Style TargetType="ContentControl">
@@ -131,7 +137,6 @@
         <DataTemplate DataType="{x:Type buildings:Building}">
             <StackPanel>
                 <ContentControl Content="{Binding}" ContentTemplate="{StaticResource GameObjectTemplate}" />
-                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource Pricing}" />
                 <ContentControl Content="{Binding}">
                     <ContentControl.Style>
                         <Style TargetType="ContentControl">

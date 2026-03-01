@@ -4,6 +4,7 @@ namespace DrwalCraft.Core.Buildings;
 
 public abstract class Building : GameObject, ICanCreate{
     protected bool _inProduction;
+    protected SpinLock _productionLock = new();
     public bool InProduction {
         get => _inProduction;
         set{
@@ -36,10 +37,8 @@ public abstract class Building : GameObject, ICanCreate{
         }
     }
     public List<ItemToCreate> Products {get; set;}
-    public List<string> Pricing{get; set;}
     public Building(Player player, string? Icon = null, int size=1) : base(player, Icon, size:size){
         Products = new();
-        Pricing = new();
     }
     public abstract void Create(ItemToCreate item);
 }

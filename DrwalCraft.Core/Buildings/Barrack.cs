@@ -7,10 +7,10 @@ public class Barrack : Building{
         Name = "Barrack";
         MaxHp = 500;
         Hp = 500;
-        Products.Add(new ItemToCreate(typeof(Knight), 500, 120));
-        Pricing.Add("Knight: 500");
-        Products.Add(new ItemToCreate(typeof(Archer), 600, 180));
-        Pricing.Add("Archer: 600");
+        Products = [
+            new ItemToCreate(typeof(Knight), 500, 120),
+            new ItemToCreate(typeof(Archer), 600, 180),
+        ];
         InProduction = false;
         Console.WriteLine("Id barracka" + this.Id);
     }
@@ -24,25 +24,43 @@ public class Barrack : Building{
     public override void Create(ItemToCreate item){
         if(InProduction) return;
 
-        _objectInProduction = item.Make(Owner);
+        bool lockTaken = false;
+        try{
+            _productionLock.Enter(ref lockTaken);
 
-        if(_objectInProduction != null){
-            InProduction = true;
-            ProductionTime = item.ProductionTime;
+            _objectInProduction = item.Make(Owner);
+            if(_objectInProduction != null){
+                InProduction = true;
+                ProductionTime = item.ProductionTime;
+                Owner.Wood -= item.PriceWood;
+            }
+        }
+        finally{
+            if(lockTaken)
+                _productionLock.Exit();
         }
     }
     public override void MainAction(){
         if(_objectInProduction == null) return;
-        if(_productionProgress >= _productionTime){        
-            if(!GameMap.TryGetNearestEmptyField(this, out var field)){
-                return;
+
+        bool lockTaken = false;
+        try{
+            _productionLock.Enter(ref lockTaken);
+            if(_productionProgress >= _productionTime){        
+                if(!GameMap.TryGetNearestEmptyField(this, out var field)){
+                    return;
+                }
+                GameMap.AddObjectToMap(field.Item1, field.Item2, _objectInProduction);
+                _objectInProduction = null;
+                InProduction = false;
             }
-            GameMap.AddObjectToMap(field.Item1, field.Item2, _objectInProduction);
-            _objectInProduction = null;
-            InProduction = false;
+            else{
+                ProductionProgress++;
+            }
         }
-        else{
-            ProductionProgress++;
+        finally{
+            if(lockTaken)
+                _productionLock.Exit();
         }
     }
 }

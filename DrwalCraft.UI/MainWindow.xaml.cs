@@ -161,6 +161,8 @@ public partial class MainWindow : Window{
     protected void MainMapMouseMove(object sender, MouseEventArgs e){
         if (mouseDown){
             Point mousePos = e.GetPosition(GameMapImage);
+            if(mousePos.X < 0 || mousePos.Y < 0 || mousePos.X >= GameMapImage.Width || mousePos.Y >= GameMapImage.Height)
+                return;
 
             if (mouseDownPosition.X < mousePos.X){
                 Canvas.SetLeft(MainMapSelectionBox, mouseDownPosition.X);

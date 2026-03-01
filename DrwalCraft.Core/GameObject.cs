@@ -80,14 +80,8 @@ public abstract class GameObject : INotifyPropertyChanged{
             ObjectIcon = SetIconPlaceholder(size);
         else
             this.ObjectIcon = CreateObjectIcon(icon);
-        
-        if(this is Buildings.Construction)
-            Size = 1;
-
+            
         ObjectIconPart = DivideObjectIcon(ObjectIcon);
-
-        if(this is Buildings.Construction)
-            Size = size;
     }
 
     public virtual byte[] GetIconPart(int positionX, int positionY){
