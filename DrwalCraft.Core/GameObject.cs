@@ -55,7 +55,7 @@ public abstract class GameObject : INotifyPropertyChanged{
     }
     public string Name{init; get;}
     public virtual bool IsActive{set; get;}
-    public event PropertyChangedEventHandler? HpChanged;
+    public event EventHandler? HpChanged;
     public event EventHandler? BitingTheDust;
     public event EventHandler? Maneuvering;
     public virtual void GetAttacked(int damage, GameObject attacker){
@@ -74,13 +74,13 @@ public abstract class GameObject : INotifyPropertyChanged{
         Id = player.GetNewId();
         Owner = player;
         Size = size;
-        Name = "A man has no name";
-
+        Name = this.GetType().Name;
+        
         if(icon is null)
             ObjectIcon = SetIconPlaceholder(size);
         else
             this.ObjectIcon = CreateObjectIcon(icon);
-            
+
         ObjectIconPart = DivideObjectIcon(ObjectIcon);
     }
 
@@ -100,7 +100,14 @@ public abstract class GameObject : INotifyPropertyChanged{
             "Assets",
             "Icons",
             icon);
-        var sourceImage = new BitmapImage(new Uri(fullPath));
+        BitmapImage sourceImage;
+        try{
+            sourceImage = new BitmapImage(new Uri(fullPath));
+        }
+        catch(FileNotFoundException e){
+            Console.WriteLine(e.Message);
+            return SetIconPlaceholder(Size);
+        }
 
         //przerabianie png na bitmape
         FormatConvertedBitmap convertedBitmap = new();
@@ -132,8 +139,6 @@ public abstract class GameObject : INotifyPropertyChanged{
 
         //kolorowanie pixeli na kolor gracza
         for(byte opacity = (byte)(0x50+Size); opacity >= 0x50; opacity--){//grubość obramówki
-            //zaczynamy od drugiego pixela i kończymy na przedostatnim
-            // (bo sprawdzamy sąsiadujące więc potrzebujemy mieć pewność że +-1 nie wyjebie programu)
             for(int i = 0; i < objectIcon.Width; i++){
                 for(int j = 0; j < objectIcon.Height; j++){
                     if(objectIcon[i, j, 3] == 0 && (//czy pixel jest "pusty" i czy sąsiaduje z "niepustym" (3 odpowiada opacity)

@@ -25,7 +25,7 @@ public class Game{
     [STAThread]
     public static void Main(){
         Players.game = new Player(1);
-        Players.you = new Player(2);
+        Players.you = new Player(2, 50000);
         Players.enemy = new(3);
         Players.player1 = Players.you;
         Players.player2 = Players.enemy;

@@ -8,13 +8,13 @@ using Messages;
 namespace DrwalCraft.Core;
 
 public static class ExistingObjects{
-    public static List<GameObject> GameObjects = new ();
+    private static Dictionary<int, GameObject> GameObjects = new ();
     private static ConcurrentQueue<GameObject> _addQueue = new ();
     private static ConcurrentQueue<GameObject> _removeQueue = new ();
     
     public static void TickAction(){
         foreach(var gameObject in GameObjects){
-            gameObject.MainAction();
+            gameObject.Value.MainAction();
         }
         
         while (ObjectsActions.InQueue.Count > 0) 
@@ -36,13 +36,13 @@ public static class ExistingObjects{
             _addQueue.TryDequeue(out var result);
             if (result is not null)
             {
-                GameObjects.Add(result);
+                GameObjects.Add(result.Id, result);
             }
         }
         while(_removeQueue.Count > 0){
             _removeQueue.TryDequeue(out var result);
             if(result is not null)
-                GameObjects.Remove(result);
+                GameObjects.Remove(result.Id);
         }
     }
     
@@ -69,5 +69,9 @@ public static class ExistingObjects{
         }
         
         _addQueue.Enqueue(gameObject);
+    }
+
+    public static bool TryGet(int id, out GameObject? result){
+        return GameObjects.TryGetValue(id, out result);
     }
 }

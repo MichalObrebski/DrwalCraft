@@ -72,6 +72,7 @@ public class Builder : Troop, ICanCreate{
             int x, y; (x, y) = placeToBuild;
             TravelTarget = null;
             GameMap.AddObjectToMap(x, y, new Construction(Owner, _objectInProduction, this));
+            ExistingObjects.Remove(this);
             Owner.Wood -= item.PriceWood;
         }
         else{

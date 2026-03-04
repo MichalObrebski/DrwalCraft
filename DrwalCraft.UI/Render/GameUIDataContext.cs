@@ -14,14 +14,14 @@ public class GameUIDataContext : INotifyPropertyChanged{
             
             if(_activeUnit is not null){
                 _activeUnit.IsActive = false;
-                _activeUnit.HpChanged -= HpChangeListener;
+                _activeUnit.BitingTheDust -= ObjectDestroyed;
             }
             
             _activeUnit = value;
 
             if(_activeUnit is not null){
                 _activeUnit.IsActive = true;
-                _activeUnit.HpChanged += HpChangeListener;
+                _activeUnit.BitingTheDust += ObjectDestroyed;
             }
 
             OnPropertyChanged();
@@ -32,7 +32,7 @@ public class GameUIDataContext : INotifyPropertyChanged{
         get => _wood;
         set{
             _wood = value;
-            OnPropertyChanged("Wood");
+            OnPropertyChanged(nameof(Wood));
         }
     }
 
@@ -42,9 +42,7 @@ public class GameUIDataContext : INotifyPropertyChanged{
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    public void HpChangeListener(object? sender, PropertyChangedEventArgs e){
-        if(_activeUnit is null) return;
-        if(_activeUnit.Hp > 0) return;
+    public void ObjectDestroyed(object? sender, EventArgs e){
         ActiveUnit = null;
     }
 

@@ -40,10 +40,10 @@ public class Player : INotifyPropertyChanged{
                 return (0x3A, 0x7F, 0x3A);
         }
     }
-    public Player(int player){
+    public Player(int player, int wood = 3000){
         _player = player;
         _objectCount = 0;
-        Wood = 3000;
+        Wood = wood;
     }
     public int GetNewId(){
         _objectCount += 12;

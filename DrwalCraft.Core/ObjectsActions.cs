@@ -28,74 +28,71 @@ public static class ObjectsActions
         int? id = message.Id;
         if (message.ActionType == ActionType.MoveUnit)
         {
-            foreach(var gameObject in ExistingObjects.GameObjects)
-                if (gameObject.Id == id)
+            if (ExistingObjects.TryGet(id.Value, out var gameObject))
+            {
+                if (!(gameObject is Troop)) return;
+                if (message.PositionX == null ||  message.PositionY == null)
+                    (gameObject as Troop).SetQueuedTravelTarget(null);
+                else
                 {
-                    if (!(gameObject is Troop)) return;
-                    if (message.PositionX == null ||  message.PositionY == null)
-                        (gameObject as Troop).SetQueuedTravelTarget(null);
-                    else
-                    {
-                        Console.WriteLine(message.PositionX + ":" + message.PositionY);
-                        (gameObject as Troop).SetQueuedTravelTarget(((int, int)?)(message.PositionX, message.PositionY));
-                        //Console.WriteLine((gameObject as Troop).);
-                    }
+                    Console.WriteLine(message.PositionX + ":" + message.PositionY);
+                    (gameObject as Troop).SetQueuedTravelTarget(((int, int)?)(message.PositionX, message.PositionY));
+                    //Console.WriteLine((gameObject as Troop).);
                 }
+            }
         }
     
         if (message.ActionType == ActionType.AttackUnit)
         {
-            foreach(var gameObject in ExistingObjects.GameObjects)
-                if (gameObject.Id == id)
-                {
-                    GameObject? Opponent = null;
-                    foreach(var troop in ExistingObjects.GameObjects)
-                        if(troop.Id == message.TargetId) Opponent = troop;
-                    (gameObject as Troop).SetQueuedAttackTarget(Opponent);
-                }
+            if (ExistingObjects.TryGet(id.Value, out var gameObject))
+            {
+                GameObject? Opponent = null;
+                if(message.TargetId is not null)
+                    ExistingObjects.TryGet(message.TargetId.Value, out Opponent);
+                (gameObject as Troop).SetQueuedAttackTarget(Opponent);
+            }
         }
 
         if (message.ActionType == ActionType.GoMine)
         {
-            foreach(var gameObject in ExistingObjects.GameObjects)
-                if (gameObject.Id == id)
-                {
-                    foreach(var mine in ExistingObjects.GameObjects)
-                        if(mine is Mine && mine.Id == message.TargetId)
-                            (gameObject as Miner)?.SetQueuedTargetMine((Mine)mine);
-                }
+            if (ExistingObjects.TryGet(id.Value, out var gameObject))
+            {
+                if(message.TargetId is not null &&
+                    ExistingObjects.TryGet(message.TargetId.Value, out var mine))
+                    (gameObject as Miner)?.SetQueuedTargetMine((Mine)mine);
+            }
         }
 
         if (message.ActionType == ActionType.Build)
         {
-            foreach (var gameObject in ExistingObjects.GameObjects)
-            {
-                if (gameObject is Builder builder && gameObject.Id == id)
-                {
-                    // builder.Create(typeof(Barrack));
-                }
-            }
+            // foreach (var gameObject in ExistingObjects.GameObjects)
+            // {
+            //     if (gameObject is Builder builder && gameObject.Id == id)
+            //     {
+            //         builder.Create(typeof(Barrack));
+            //     }
+            // }
         }
         
         if (message.ActionType == ActionType.CreateUnitBarrack)
         {
-            foreach (var gameObject in ExistingObjects.GameObjects)
-            {
-                if (gameObject is Barrack barrack && barrack.Id == message.Id)
-                {
-                    // barrack.Create(message.UnitType == UnitType.Knight?typeof(Knight):typeof(Archer));
-                }
-                else if (gameObject is Castle castle && castle.Id == message.Id)
-                {
-                    // castle.Create(message.UnitType == UnitType.TreeMiner?typeof(Miner):typeof(Builder));
-                }
-            }
+            // foreach (var gameObject in ExistingObjects.GameObjects)
+            // {
+            //     if (gameObject is Barrack barrack && barrack.Id == message.Id)
+            //     {
+            //         barrack.Create(message.UnitType == UnitType.Knight?typeof(Knight):typeof(Archer));
+            //     }
+            //     else if (gameObject is Castle castle && castle.Id == message.Id)
+            //     {
+            //         castle.Create(message.UnitType == UnitType.TreeMiner?typeof(Miner):typeof(Builder));
+            //     }
+            // }
         }
     }
 
     public static void HandleMineTargetChanged(object? sender, EventArgs e)
     {
-        if (!(sender is Miner)) return;
+        if (sender is not Miner) return;
         int? MineId = (sender as Miner)?._queuedTargetMine?.Id;
         int key = GameLoop.GameLoop.CurrentTick + GameLoop.GameLoop.OffsetTik;
         var msg = new Message(ActionType.GoMine, UnitType.TreeMiner, (sender as GameObject).Id, MineId, key);

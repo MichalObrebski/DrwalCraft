@@ -2,7 +2,7 @@ using DrwalCraft.Core.Troops;
 
 namespace DrwalCraft.Core.Buildings;
 
-public class Barrack : Building{
+public class Barrack : Factory{
     public Barrack(Player player) : base(player, "Barrack.png", 3){
         Name = "Barrack";
         MaxHp = 500;
@@ -20,47 +20,17 @@ public class Barrack : Building{
         ObjectsActions.BarrackAddMessage(this.Id, troop); //tworzy wiadomość do przesłania do serwera o tworzeniu jednostki
     }
     
-
-    public override void Create(ItemToCreate item){
-        if(InProduction) return;
-
-        bool lockTaken = false;
-        try{
-            _productionLock.Enter(ref lockTaken);
-
-            _objectInProduction = item.Make(Owner);
-            if(_objectInProduction != null){
-                InProduction = true;
-                ProductionTime = item.ProductionTime;
-                Owner.Wood -= item.PriceWood;
-            }
-        }
-        finally{
-            if(lockTaken)
-                _productionLock.Exit();
-        }
-    }
     public override void MainAction(){
-        if(_objectInProduction == null) return;
-
-        bool lockTaken = false;
-        try{
-            _productionLock.Enter(ref lockTaken);
-            if(_productionProgress >= _productionTime){        
-                if(!GameMap.TryGetNearestEmptyField(this, out var field)){
-                    return;
-                }
-                GameMap.AddObjectToMap(field.Item1, field.Item2, _objectInProduction);
-                _objectInProduction = null;
-                InProduction = false;
-            }
-            else{
-                ProductionProgress++;
-            }
-        }
-        finally{
-            if(lockTaken)
-                _productionLock.Exit();
-        }
+        if(_objectInProduction is not null)
+            Production();
+    }
+    
+    protected override void ProductionCompleted(){
+        //znajduje najbliższe dostępne pole od baraka w którym się tworzy jednostka
+        if(!GameMap.TryGetNearestEmptyField(this, out var field)) return;
+        //dodawanie jednostki do mapy
+        GameMap.AddObjectToMap(field.Item1, field.Item2, _objectInProduction!);
+        _objectInProduction = null;
+        InProduction = false;
     }
 }
