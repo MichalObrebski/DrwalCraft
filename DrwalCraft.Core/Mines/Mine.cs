@@ -43,14 +43,15 @@ public class Mine : GameObject{
             miner.Hp -= damage/2;
             var deltaHp = miner.Hp > 0 ? tempHp - miner.Hp : tempHp;
             Hp -= deltaHp * 2;
-            // if(miner.IsDead){
-            //     Miners.RemoveAt(0);
-            //     OnPropertyChanged(nameof(Miners));
-            //     MaxHp -= miner.MaxHp;
-            // }
+            if(miner.Hp <= 0){
+                Miners.RemoveAt(0);
+                OnPropertyChanged(nameof(Miners));
+                MaxHp -= miner.MaxHp * 2;
+            }
         }
         if(Hp <= 0 || Miners.Count == 0){
             Hp = 0;
+            Miners.Clear();
             MaxHp = 0;
             CurrentPlayer = Players.game.PlayerId;
         }

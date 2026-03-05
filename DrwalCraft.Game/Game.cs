@@ -62,6 +62,12 @@ public class Game{
         Core.GameMap.AddObjectToMap(9,9,new Knight(Players.enemy));
         Core.GameMap.AddObjectToMap(8,8,new Knight(Players.enemy));
         Core.GameMap.AddObjectToMap(8,9,new Knight(Players.enemy));
+        var miner = new Miner(Players.enemy);
+        Core.GameMap.AddObjectToMap(14,20,miner);
+        miner.Target = (14,24);
+        var miner2 = new Miner(Players.enemy);
+        Core.GameMap.AddObjectToMap(15,20,miner2);
+        miner2.Target = (14,24);
     }
     public static void TestMainMapOnClick(MouseButtonEventArgs e, int x, int y, GameUIDataContext? dataContext){
         MainMapOnClick(e, x, y, dataContext);

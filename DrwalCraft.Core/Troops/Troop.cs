@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Runtime;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -34,7 +35,7 @@ public abstract class Troop : GameObject, ICanMove{
         _attackTarget = attackTarget;
         
     }
-    public event EventHandler AttackTargetChanged;
+    public event EventHandler? AttackTargetChanged;
     
     protected int _moveProgress;
     protected int _actionProgress;
@@ -50,8 +51,6 @@ public abstract class Troop : GameObject, ICanMove{
                 TravelTargetChanged?.Invoke(this, EventArgs.Empty);
                 //Queues to change travelTarget (by SetQueuedTravelTarget) in Offset number of ticks
             }
-            //if(value == null) return;
-            //_travelPath = GameMap.BFS(Position, value.Value); => is now in SetQueuedTravelTarget
         }
     }
     public abstract (int, int) Target{set;}
@@ -64,7 +63,7 @@ public abstract class Troop : GameObject, ICanMove{
         else
             _travelPath.Clear();
     }
-    public event EventHandler TravelTargetChanged;
+    public event EventHandler? TravelTargetChanged;
     
     public Troop(Player player, string Icon) : base(player, Icon){}
     public virtual void Move(){

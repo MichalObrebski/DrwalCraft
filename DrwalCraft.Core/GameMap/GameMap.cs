@@ -95,8 +95,8 @@ public static class GameMap{
         gameObject = Map[x, y];
         return true;
     }
-    public static bool IndexBoundSafeGet((int, int) position, out GameObject? gameObject){
-        return IndexBoundSafeGet(position.Item1, position.Item2, out gameObject);
+    public static bool IndexBoundSafeGet((int x, int y) position, out GameObject? gameObject){
+        return IndexBoundSafeGet(position.x, position.y, out gameObject);
     }
     public static bool TryGetNearestEmptyField(GameObject gameObject, out (int, int) resultField){
         resultField = (-1, -1);
@@ -132,7 +132,7 @@ public static class GameMap{
         }
         return false;
     }
-    public static bool TryGetNearestEmptyField((int, int) position, out (int, int) resultField){
+    public static bool TryGetNearestEmptyField((int x, int y) position, out (int, int) resultField){
         resultField = (-1, -1);
         int x, y;
         (x, y) = position;
@@ -157,24 +157,24 @@ public static class GameMap{
         XGreaterYSmaller,
         XSmallerYSmaller,
     }
-    private static (int, int) NeighbouringField((int, int) field, FieldPosition direction){
+    private static (int, int) NeighbouringField((int x, int y) field, FieldPosition direction){
         return direction switch{
-            FieldPosition.XEqualYGreater => (field.Item1, field.Item2 + 1), 
-            FieldPosition.XEqualYSmaller => (field.Item1, field.Item2 - 1),
-            FieldPosition.XGreaterYEqual => (field.Item1 + 1, field.Item2),
-            FieldPosition.XSmallerYEqual => (field.Item1 - 1, field.Item2),
-            FieldPosition.XGreaterYGreater => (field.Item1 + 1, field.Item2 + 1),
-            FieldPosition.XGreaterYSmaller => (field.Item1 + 1, field.Item2 - 1),
-            FieldPosition.XSmallerYGreater => (field.Item1 - 1, field.Item2 + 1),
-            FieldPosition.XSmallerYSmaller => (field.Item1 - 1, field.Item2 - 1),
+            FieldPosition.XEqualYGreater => (field.x, field.y + 1), 
+            FieldPosition.XEqualYSmaller => (field.x, field.y - 1),
+            FieldPosition.XGreaterYEqual => (field.x + 1, field.y),
+            FieldPosition.XSmallerYEqual => (field.x - 1, field.y),
+            FieldPosition.XGreaterYGreater => (field.x + 1, field.y + 1),
+            FieldPosition.XGreaterYSmaller => (field.x + 1, field.y - 1),
+            FieldPosition.XSmallerYGreater => (field.x - 1, field.y + 1),
+            FieldPosition.XSmallerYSmaller => (field.x - 1, field.y - 1),
             _ => (-1, -1)
         };
     }
-    public static void ForEachNeighbouringField((int, int)field, Action<(int, int), GameObject?> action){
+    public static void ForEachNeighbouringField((int x, int y)field, Action<(int, int), GameObject?> action){
         for(int i=0; i<8; i++){
-            var temp = NeighbouringField(field, (FieldPosition)i);;
-            if(IndexBoundSafeGet(temp.Item1, temp.Item2, out var neighbour))
-                action((temp.Item1, temp.Item2), neighbour);
+            (int x, int y) = NeighbouringField(field, (FieldPosition)i);;
+            if(IndexBoundSafeGet(x, y, out var neighbour))
+                action((x, y), neighbour);
         }
     }
     public static IEnumerator<int> Trees(){

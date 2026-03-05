@@ -44,6 +44,9 @@ public abstract class Factory : Building, ICanCreate{
     //pojawia się taki problem (czasami przy pierwszej produkcji ale może też i później(nie zauważyłem tego narazie)) że jednostka natychmiastowo się pojawia bez czekania na zakończenie czasu produkcji
     //produkcja też się wtedy kończy więc problem leży pewnie tam
     //wstawiłem spinlocka i chyba działa
+    /// <summary>
+    /// Starts a production in a multi-thread safe way by using a SpinLock to synchronize with Production() method.
+    /// </summary>
     public virtual void Create(ItemToCreate item){
         if(InProduction) return;
 
@@ -70,6 +73,7 @@ public abstract class Factory : Building, ICanCreate{
     /// <summary>
     /// Tick action for producing. 
     /// Assumes that there is something to produce.
+    /// Uses SpinLock to synchronize with Create() method which might be called from an UI thread.
     /// </summary>
     protected virtual void Production(){
         bool lockTaken = false;

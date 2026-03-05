@@ -39,13 +39,13 @@ public class ObjectMovement{
         _path.Clear();
     }
 
-    private List<(int, int)> GetNewPath((int, int) position, (int, int) target){        
+    private List<(int, int)> GetNewPath((int x, int y) position, (int x, int y) target){        
         bool[,] visited = new bool[GameMap.Size, GameMap.Size];
-        (int, int)[,] path = new (int, int)[GameMap.Size, GameMap.Size];
-        Queue<((int, int), (int, int))> queue = new();
+        (int x, int y)[,] path = new (int x, int y)[GameMap.Size, GameMap.Size];
+        Queue<((int x, int y), (int x, int y))> queue = new();
 
         // kolejkowanie pól sąsiadujących z position
-        visited[position.Item1, position.Item2] = true;
+        visited[position.x, position.y] = true;
         GameMap.ForEachNeighbouringField(position, (neighbourgh, _) => {
             queue.Enqueue((neighbourgh, position));
         });
@@ -82,16 +82,16 @@ public class ObjectMovement{
         }
 
         // tworzenie ścieżki
-        var list = new List<(int, int)>();
+        var list = new List<(int x, int y)>();
 
-        if(visited[target.Item1, target.Item2]){
+        if(visited[target.x, target.y]){
             //dodawanie targetu do ścieżki jeżeli się da
-            if(GameMap.Map[target.Item1, target.Item2] == null)
+            if(GameMap.Map[target.x, target.y] == null)
                 list.Insert(0, target);
             
             //wracanie ścieżką od targetu do początku i dodawanie kolejnych przejść
             while(target != position){
-                target = path[target.Item1, target.Item2];
+                target = path[target.x, target.y];
                 if(target != position)
                     list.Insert(0, target);
             }
@@ -100,14 +100,14 @@ public class ObjectMovement{
         return list;
     }
 
-    private bool CorrectPath((int, int) position){
+    private bool CorrectPath((int x, int y) position){
         bool[,] visited = new bool[GameMap.Size, GameMap.Size];
-        (int, int)[,] path = new (int, int)[GameMap.Size, GameMap.Size];
-        Queue<((int, int), (int, int))> queue = new();
-        (int, int) target;
+        (int x, int y)[,] path = new (int x, int y)[GameMap.Size, GameMap.Size];
+        Queue<((int x, int y), (int x, int y))> queue = new();
+        (int x, int y) target;
 
         // kolejkowanie pól sąsiadujących z position
-        visited[position.Item1, position.Item2] = true;
+        visited[position.x, position.y] = true;
         GameMap.ForEachNeighbouringField(position, (neighbourgh, _) => {
             queue.Enqueue((neighbourgh, position));
         });
@@ -149,9 +149,9 @@ public class ObjectMovement{
                 // tworzenie ścieżki
                 _path = new ();
 
-                if(visited[target.Item1, target.Item2]){
+                if(visited[target.x, target.y]){
                     //dodawanie targetu do ścieżki jeżeli się da
-                    if(GameMap.Map[target.Item1, target.Item2] == null)
+                    if(GameMap.Map[target.x, target.y] == null)
                         _path.Insert(0, target);
                 }
                 break;
@@ -164,7 +164,7 @@ public class ObjectMovement{
         }
         //wracanie ścieżką od targetu do początku i dodawanie kolejnych przejść
         while(target != position){
-            target = path[target.Item1, target.Item2];
+            target = path[target.x, target.y];
             if(target != position)
                 _path.Insert(0, target);
         }
