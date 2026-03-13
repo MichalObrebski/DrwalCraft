@@ -12,6 +12,7 @@ using DrwalCraft.Core.Groups;
 using DrwalCraft.Core.Animations;
 using System.Windows.Automation.Text;
 using DrwalCraft.Core.GameLoop;
+using DrwalCraft.Core.Interfaces;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -134,7 +135,7 @@ public class Game{
             
             var activeUnit = dataContext.ActiveUnit;
             if(activeUnit.Owner == Players.you){
-                if(activeUnit is ICanMove unit)
+                if(activeUnit is ICanReceiveTarget unit)
                     unit.Target = (x, y);
             }
         }

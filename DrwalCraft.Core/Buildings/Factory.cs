@@ -1,4 +1,5 @@
 using DrwalCraft.Core;
+using DrwalCraft.Core.Interfaces;
 
 namespace DrwalCraft.Core.Buildings;
 

@@ -1,12 +1,12 @@
-namespace DrwalCraft.Core;
+namespace DrwalCraft.Core.Interfaces;
 
 public interface ICanCreate{
-    public abstract GameObject? ObjectInProduction {get; set;}
-    public abstract bool InProduction {get;}
-    public abstract int ProductionTime {get;}
-    public abstract int ProductionProgress {get;}
-    public abstract List<ItemToCreate> Products {get;}
-    public abstract void Create(ItemToCreate product);
+    public GameObject? ObjectInProduction {get; set;}
+    public bool InProduction {get;}
+    public int ProductionTime {get;}
+    public int ProductionProgress {get;}
+    public List<ItemToCreate> Products {get;}
+    public void Create(ItemToCreate product);
 }
 
 public class ItemToCreate{

@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using DrwalCraft.Core.Interfaces;
 
 
 namespace DrwalCraft.Core.Troops;
@@ -54,6 +55,7 @@ public abstract class Troop : GameObject, ICanMove{
         }
     }
     public abstract (int, int) Target{set;}
+    public bool IsMoving {get => _travelTarget is not null;}
 
     public void SetQueuedTravelTarget ((int,int)?  travelTarget)
     {

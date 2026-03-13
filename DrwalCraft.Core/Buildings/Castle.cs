@@ -1,5 +1,6 @@
 using System.Windows.Documents;
 using DrwalCraft.Core.Troops;
+using DrwalCraft.Core.Interfaces;
 
 namespace DrwalCraft.Core.Buildings;
 

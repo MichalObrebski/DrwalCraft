@@ -1,14 +1,14 @@
 using System.Text.RegularExpressions;
 using DrwalCraft.Core.Troops;
+using DrwalCraft.Core.Interfaces;
 
 namespace DrwalCraft.Core.Groups;
 
-public abstract class UnitsGroup : GameObject, ICanMove{
+public abstract class UnitsGroup : GameObject, ICanReceiveTarget{
     protected readonly List<Troop> _units = new();
     protected bool _isActive;
     protected int _capacity;
     protected int _count;
-    protected (int, int)? _travelTarget;
 
     public List<Troop> Units {get => _units;}
     public int Capacity {get => _capacity;}
@@ -23,17 +23,17 @@ public abstract class UnitsGroup : GameObject, ICanMove{
     }
     public virtual (int, int) Target{
         set{
-            _travelTarget = value;
             foreach(var unit in _units)
                 unit.Target = value;
         }
     }
-    public (int, int)? TravelTarget{get => _travelTarget;}
-    public event EventHandler? TravelTargetChanged;
 
     public UnitsGroup(Player player) : base(player){
 
     }
+    /// <summary>
+    /// Creates instance of unit type specific Group if all units are the same type or Gathering if units are different types of there is no type specific Group
+    /// </summary>
     /// <param name="units">A non-empty list of Units which shall form a UnitsGroup</param>
     /// <returns>
     /// A UnitsGroup derived class instance based on units type
@@ -46,13 +46,13 @@ public abstract class UnitsGroup : GameObject, ICanMove{
         Type type = units.First().GetType();
         foreach(var unit in units)
             if(unit.GetType() != type) //jeśli nie są to zwraca
-                throw new NotImplementedException();
+                return new Gathering(Players.you);
 
         //utworzenie i zwrócenie grupy odpowiedniej dla danego typu jednostek
         Troop representative = units.First();
         return representative switch{
             Soldier => new Army(Players.you),
-            _ => throw new NotImplementedException()
+            _ => new Gathering(Players.you)
         };
     }
     public virtual bool TryAddTroop(Troop troop){

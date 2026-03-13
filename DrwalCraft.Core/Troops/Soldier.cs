@@ -1,8 +1,9 @@
+using DrwalCraft.Core.Interfaces;
 using DrwalCraft.Core.Mines;
 
 namespace DrwalCraft.Core.Troops;
 
-public class Soldier: Troop{
+public class Soldier: Troop, ICanAttack{
     protected int _damage;
     public int Damage{get => _damage;}
     public override (int, int) Target{
@@ -39,8 +40,8 @@ public class Soldier: Troop{
             Move();
         }
         else{
-            int distX = Math.Abs(AttackTarget.Position.Item1 - Position.Item1);
-            int distY = Math.Abs(AttackTarget.Position.Item2 - Position.Item2);
+            int distX = Math.Abs(AttackTarget.Position.X - Position.X);
+            int distY = Math.Abs(AttackTarget.Position.Y - Position.Y);
             if(Math.Max(distX, distY) <= _range && ClearRange(Position, AttackTarget.Position)){
                 Attack();
             }

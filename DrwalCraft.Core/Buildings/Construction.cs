@@ -45,7 +45,7 @@ public class Construction : Building{
         //odliczanie postępu budowy
         if(_productionProgress >= _productionTime){
             Hp = -1;//żeby konstrukcja się usunęła
-            GameMap.AddObjectToMap(Position.Item1, Position.Item2, _objectInProduction);
+            GameMap.AddObjectToMap(Position.X, Position.Y, _objectInProduction);
             _builder.InProduction = false;
             //wyrzucanie budowniczego (jeśli się da) i ponowne dodanie go do ExistingObjects
             if(GameMap.TryGetNearestEmptyField(this, out var builderPosition))

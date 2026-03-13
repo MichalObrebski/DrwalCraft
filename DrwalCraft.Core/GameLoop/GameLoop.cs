@@ -21,7 +21,7 @@ public static class GameLoop{
         var timer = Stopwatch.StartNew();
         double accumulator = 0.0;
         long lastTime = 0;
-        //var trees = DrwalCraft.Core.GameMap.Trees();
+        
         while (true){
             long currentTime = timer.ElapsedMilliseconds;
             double deltaTime = currentTime - lastTime;
@@ -33,7 +33,6 @@ public static class GameLoop{
                 mapLock?.EnterWriteLock();
                 try{
                     UpdateGameLogic();
-                    // trees.MoveNext();
                     CurrentTick++;
                     accumulator -= TargetDt;
                 }

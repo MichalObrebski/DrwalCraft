@@ -59,8 +59,8 @@ public class Mine : GameObject{
 
     public void AddMiner(Miner miner){
         if(Miners.Count >= 5) return;
-        for(int i=Position.Item1-1; i<=Position.Item1+Size; i++){
-            for(int j=Position.Item2-1; j<=Position.Item2+Size; j++){
+        for(int i=Position.X-1; i<=Position.X+Size; i++){
+            for(int j=Position.Y-1; j<=Position.Y+Size; j++){
                 if(!GameMap.IndexBoundSafeGet(i, j, out var field) && field is null) continue;
                 if(field == miner){
                     if(CurrentPlayer == Players.game.PlayerId)

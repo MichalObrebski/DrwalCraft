@@ -1,7 +1,6 @@
-namespace DrwalCraft.Core;
+namespace DrwalCraft.Core.Interfaces;
 
-public interface ICanAttack{
-    public (int, int) Target{set;}
+public interface ICanAttack : ICanReceiveTarget{
     public GameObject? AttackTarget{get;}
     public event EventHandler? AttackTargetChanged;
 }

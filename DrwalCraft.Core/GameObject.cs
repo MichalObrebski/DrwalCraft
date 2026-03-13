@@ -16,14 +16,14 @@ public abstract class GameObject : INotifyPropertyChanged{
     protected static ImageBytes _chunkPlaceholder = SetIconPlaceholder(1);
     protected int _hp;
     protected int _maxHp;
-    protected (int, int) _position;
+    protected (int X, int Y) _position;
     protected bool _mortal = true;
 
     public int Id {init; get;}
     public Player Owner {init; get;}
     public ImageBytes ObjectIcon {protected set; get;}
     public byte[][] ObjectIconPart {protected set; get;}
-    public (int, int) Position {
+    public (int X, int Y) Position {
         get => _position;
         set{
             _position = value;
@@ -38,7 +38,8 @@ public abstract class GameObject : INotifyPropertyChanged{
             if(_hp <= 0 && _mortal){
                 for(int i=0; i<Size; i++)
                     for(int j=0; j<Size; j++)
-                        GameMap.Map[Position.Item1+i, Position.Item2+j] = null;
+                        if(GameMap.Map[Position.X+i, Position.Y+j] == this)
+                            GameMap.Map[Position.X+i, Position.Y+j] = null;
                 BitingTheDust?.Invoke(this, new EventArgs());
                 ExistingObjects.Remove(this);
             }
@@ -85,8 +86,8 @@ public abstract class GameObject : INotifyPropertyChanged{
     }
 
     public virtual byte[] GetIconPart(int positionX, int positionY){
-        int indexX = positionX - Position.Item1;
-        int indexY = positionY - Position.Item2;
+        int indexX = positionX - Position.X;
+        int indexY = positionY - Position.Y;
         int index = indexX + indexY * Size;
 
         if(index < 0 || index >= ObjectIconPart.Length)

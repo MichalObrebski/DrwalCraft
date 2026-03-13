@@ -101,8 +101,8 @@ public static class GameMap{
     public static bool TryGetNearestEmptyField(GameObject gameObject, out (int, int) resultField){
         resultField = (-1, -1);
         // granica sprawdzanego obszsaru
-        int startX = gameObject.Position.Item1 - 1;
-        int startY = gameObject.Position.Item2 - 1;
+        int startX = gameObject.Position.X - 1;
+        int startY = gameObject.Position.Y - 1;
         int endX = startX + gameObject.Size;
         int endY = startY + gameObject.Size;
 

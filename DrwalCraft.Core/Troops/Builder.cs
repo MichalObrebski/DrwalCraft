@@ -1,5 +1,6 @@
 using System.Xml.Linq;
 using DrwalCraft.Core.Buildings;
+using DrwalCraft.Core.Interfaces;
 
 namespace DrwalCraft.Core.Troops;
 
@@ -81,8 +82,8 @@ public class Builder : Troop, ICanCreate{
         }
     }
     private bool EnoughSpaceToBuild(int size, out (int, int) placeToBuild){
-        for(int i = Position.Item1 - size + 1; i <= Position.Item1; i++)
-            for(int j = Position.Item2 - size + 1; j <= Position.Item2; j++)
+        for(int i = Position.X - size + 1; i <= Position.X; i++)
+            for(int j = Position.Y - size + 1; j <= Position.Y; j++)
                 if(IsAbleToBuild(i, j, size)){
                     placeToBuild = (i, j);
                     return true;

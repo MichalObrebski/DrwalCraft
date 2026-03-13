@@ -197,13 +197,13 @@ public partial class MainWindow : Window{
     }
     protected void OnProduceClick(object sender, RoutedEventArgs e){
         var button = sender as Button;
-        var product = button.DataContext as ItemToCreate;
+        var product = button.DataContext as Core.Interfaces.ItemToCreate;
         var gameObject = button.Tag as DrwalCraft.Core.GameObject;
         
         if(gameObject.Owner.PlayerId != Players.you.PlayerId) return;
         
         if (gameObject != null && product != null){
-            if (gameObject is ICanCreate creator)
+            if (gameObject is Core.Interfaces.ICanCreate creator)
             {
                 // if(building is DrwalCraft.Core.Buildings.Barrack barrack)
                 //     barrack.DoMessage(product);

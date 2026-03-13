@@ -1,4 +1,5 @@
 using System.Data;
+using DrwalCraft.Core.Interfaces;
 
 namespace DrwalCraft.Core;
 
@@ -9,14 +10,14 @@ public class ObjectMovement{
     private List<(int,int)> _path;
 
     public ObjectMovement(GameObject gameObject, (int, int) target){
-        _path = GetNewPath(gameObject.Position, target);
         _gameObject = gameObject;
         _target = target;
         GameMap.IndexBoundSafeGet(target, out _targetObject);
+        _path = GetNewPath(gameObject.Position, target);
     }
     public bool Move(){
         if(_path.Count == 0) return false;
-        (int, int) nextPosition = _path[0];
+        (int, int) nextPosition = _path.First();
         //czy pozycja nie jest poza mapą
         if(!GameMap.IndexBoundSafeGet(nextPosition, out var nextField))
             return false;
@@ -27,10 +28,13 @@ public class ObjectMovement{
             else
                 return false;
         }
+
         //przesunięcie obiektu na mapie i zmiana pozycji
-        GameMap.Map[nextPosition.Item1, nextPosition.Item2] = _gameObject;
-        GameMap.Map[_gameObject.Position.Item1, _gameObject.Position.Item2] = null;
-        _gameObject.Position = nextPosition;
+        if(_gameObject.Position != nextPosition){
+            GameMap.Map[nextPosition.Item1, nextPosition.Item2] = _gameObject;
+            GameMap.Map[_gameObject.Position.X, _gameObject.Position.Y] = null;
+            _gameObject.Position = nextPosition;
+        }
         //zdjęcie pozycji z listy
         _path.RemoveAt(0);
         return true;
@@ -42,7 +46,7 @@ public class ObjectMovement{
     private List<(int, int)> GetNewPath((int x, int y) position, (int x, int y) target){        
         bool[,] visited = new bool[GameMap.Size, GameMap.Size];
         (int x, int y)[,] path = new (int x, int y)[GameMap.Size, GameMap.Size];
-        Queue<((int x, int y), (int x, int y))> queue = new();
+        Queue<((int x, int y) curr, (int x, int y) prev)> queue = new();
 
         // kolejkowanie pól sąsiadujących z position
         visited[position.x, position.y] = true;
@@ -53,9 +57,9 @@ public class ObjectMovement{
         // main loop dla bfs
         while(queue.Count != 0){
             //dequeue
-            var deq = queue.Dequeue();
-            var currnetField = deq.Item1;
-            var previousField = deq.Item2;
+            var (curr, prev) = queue.Dequeue();
+            var currnetField = curr;
+            var previousField = prev;
 
             int x, y;
             (x, y) = currnetField;
@@ -68,11 +72,13 @@ public class ObjectMovement{
             path[x, y] = previousField;
 
             //czy doszliśmy do celu
-            if(currnetField == target || (_targetObject is not null && fieldValue == _targetObject))
+            if(currnetField == target || (_targetObject is not null && fieldValue == _targetObject)){
+                target = currnetField;
                 break;
-
-            //czy można przejść przez pole
-            if(fieldValue is not null && fieldValue is not Troops.Troop)
+            }
+            
+            //czy można przejść przez pole (puste lub obiekt na tym polu się porusza)
+            if(fieldValue is not null && !(fieldValue is Interfaces.ICanMove fieldValueMove && fieldValueMove.IsMoving))
                 continue;
 
             //kolejkowanie sąsiadujących pól
@@ -103,7 +109,7 @@ public class ObjectMovement{
     private bool CorrectPath((int x, int y) position){
         bool[,] visited = new bool[GameMap.Size, GameMap.Size];
         (int x, int y)[,] path = new (int x, int y)[GameMap.Size, GameMap.Size];
-        Queue<((int x, int y), (int x, int y))> queue = new();
+        Queue<((int x, int y) curr, (int x, int y) prev)> queue = new();
         (int x, int y) target;
 
         // kolejkowanie pól sąsiadujących z position
@@ -117,9 +123,9 @@ public class ObjectMovement{
             if(queue.Count == 0)
                 return false;
             //dequeue
-            var deq = queue.Dequeue();
-            var currnetField = deq.Item1;
-            var previousField = deq.Item2;
+            var (curr, prev) = queue.Dequeue();
+            var currnetField = curr;
+            var previousField = prev;
 
             int x, y;
             (x, y) = currnetField;
@@ -127,33 +133,30 @@ public class ObjectMovement{
             //czy pole jest dostępne (nie jest out of bound i nie było jeszcze odwiedzone)
             if(!GameMap.IndexBoundSafeGet(currnetField, out var fieldValue) || visited[x, y])
                 continue;
+            
+            visited[x, y] = true;
+            path[x, y] = previousField;
+
+            //czy dotarliśmy do celu
+            if(currnetField == _target || (_targetObject is not null && fieldValue == _targetObject)){
+                target = currnetField;
+                // tworzenie nowej ścieżki
+                _path.Clear();
+                //dodawanie targetu do ścieżki jeżeli się da
+                if(GameMap.Map[target.x, target.y] == null)
+                    _path.Insert(0, target);
+                break;
+            }
 
             //czy można przejść przez pole
             if(fieldValue is not null)//trzeba umożliwić "chodzenie" przez jednostki jak zaszliśmy wystarczająco daleko
                 continue;
-            
-            visited[x, y] = true;
-            path[x, y] = previousField;
 
             //czy wróciliśmy na ścieżkę
             if(_path.Contains(currnetField)){
                 target = currnetField;
                 //usunięcie poprzedniej ścieżki aż do momentu powrotu na pierwotną trasę
                 _path.RemoveRange(0, _path.IndexOf(currnetField));
-                break;
-            }
-
-            //czy dotarliśmy do celu
-            if(currnetField == _target || (_targetObject is not null && fieldValue == _targetObject)){
-                target = currnetField;
-                // tworzenie ścieżki
-                _path = new ();
-
-                if(visited[target.x, target.y]){
-                    //dodawanie targetu do ścieżki jeżeli się da
-                    if(GameMap.Map[target.x, target.y] == null)
-                        _path.Insert(0, target);
-                }
                 break;
             }
 
